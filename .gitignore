@@ -1,0 +1,11 @@
+upload/
+.DS_Store
+BACK_SpringBoot_API/.idea/
+BACK_SpringBoot_API/board/.idea/
+BACK_SpringBoot_API/board/build/
+BACK_SpringBoot_API/board/gradle/
+FRONT_Vue_User_Page/.idea/
+FRONT_Vue_User_Page/board/node_modules/
+FRONT_Vue_User_Page/board.env
+FRONT_Vue_User_Page/packe-lock.json
+FRONT_Vue_User_Page/package.json
