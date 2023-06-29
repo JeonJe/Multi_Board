@@ -1,4 +1,4 @@
-# board
+# multi-board
 
 ## Project setup
 ```

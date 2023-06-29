@@ -8,7 +8,8 @@ BACK_SpringBoot_API/board/bin/
 BACK_SpringBoot_API/board/gradle/
 BACK_SpringBoot_API/board/src/main/resources/templates/application.properties
 FRONT_Vue_User_Page/.idea/
-FRONT_Vue_User_Page/board/node_modules/
-FRONT_Vue_User_Page/board/.env
-FRONT_Vue_User_Page/packe-lock.json
-FRONT_Vue_User_Page/package.json
+FRONT_Vue_User_Page/.DS_Store
+FRONT_Vue_User_Page/multi-board/node_modules/
+FRONT_Vue_User_Page/multi-board/.env
+FRONT_Vue_User_Page/multi-board/packe-lock.json
+FRONT_Vue_User_Page/multi-board/package.json
