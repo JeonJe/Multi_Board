@@ -1,39 +1,51 @@
 <template>
   <div>
     <h1>로그인</h1>
-    <form>
+    <form @submit.prevent>
       <div>
-        <label for="id">ID:</label>
-        <input type="text" id="id" v-model="id" />
+        <input
+          type="text"
+          id="id"
+          v-model="userData.userId"
+          placeholder="아이디"
+        />
       </div>
       <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" />
+        <input
+          type="password"
+          id="password"
+          v-model="userData.password"
+          :placeholder="passwordPlaceholder"
+        />
       </div>
-      <button @click="login">Login</button>
+      <button @click="login">로그인</button>
     </form>
-    <button @click="register">Register as a Member</button>
+    <button @click="signup">회원가입</button>
   </div>
 </template>
 
 <script>
+import { apiLogin } from "@/service/services";
 export default {
   data() {
     return {
-      id: "",
-      password: "",
+      userData: {
+        userId: "",
+        password: "",
+      },
     };
+  },
+  computed: {
+    passwordPlaceholder() {
+      return this.password ? "" : "비밀번호";
+    },
   },
   methods: {
     login() {
-      // Perform login logic here
-      // You can access the entered ID and password as this.userId and this.password
-      // Example validation:
-      alert("login ");
+      apiLogin(this.userData);
     },
-    register() {
-      // Perform registration logic here
-      alert("Redirect to member registration page");
+    signup() {
+      this.$router.push({ path: process.env.VUE_APP_USER_SIGNUP_PAGE });
     },
   },
 };

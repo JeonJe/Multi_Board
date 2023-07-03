@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    유저 매퍼
+    UserRepository 인터페이스와 연결
+-->
+<mapper namespace="ebrain.board.mapper.UserRepository">
+
+    <!-- 회원가입 정보를 users 테이블에 저장 -->
+    <insert id="saveUser" parameterType="User">
+        INSERT INTO users (user_id, password, name)
+        VALUES (#{userId}, #{password}, #{name})
+    </insert>
+
+    <!-- user_id로 사용자 정보를 조회 -->
+    <select id="findUserByUserId" parameterType="String" resultType="User">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+
+</mapper>
