@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class ExceptionManager {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        APIResponse apiResponse = ResponseUtil.createErrorWithData("잘못된 요청입니다", errorMessages);
+        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다", errorMessages);
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
@@ -57,10 +58,19 @@ public class ExceptionManager {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
 
-        APIResponse apiResponse = ResponseUtil.createErrorWithData("잘못된 요청입니다.", errorMessages);
+        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다.", errorMessages);
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
+
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<APIResponse> handleSQLException(SQLException e) {
+        String errorMessage = "서버 오류가 발생하였습니다.(SQL Exception)";
+
+        APIResponse apiResponse = ResponseUtil.ErrorWithoutData(errorMessage);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+    }
+
     /**
      * AppException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
      *

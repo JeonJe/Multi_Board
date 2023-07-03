@@ -1,9 +1,11 @@
 package ebrain.board.service;
 
+import ebrain.board.dto.UserLoginDTO;
 import ebrain.board.dto.UserSignupDTO;
 import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.UserRepository;
+import ebrain.board.security.JwtTokenProvider;
 import ebrain.board.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    private final JwtTokenProvider jwtTokenProvider;
     /**
      * 사용자 정보 저장 메서드
      *
@@ -29,9 +31,9 @@ public class UserService {
         //아이디 중복 확인
         User user = userRepository.findUserByUserId(userSignupDTO.getUserId());
         if (user != null){
-            throw new AppException(ErrorCode.DUPLICATE_USERID, user.getName() + "는 이미 가입된 아이디입니다.");
+            throw new AppException(ErrorCode.DUPLICATE_USERID, user.getUserId() + "는 이미 가입된 아이디입니다.");
         }
-
+        //TODO : 비밀번호 해시화 저장
         User newUser = User.builder()
                         .userId(userSignupDTO.getUserId())
                                 .password(userSignupDTO.getPassword())
@@ -50,5 +52,10 @@ public class UserService {
      */
     public User findUserByUserId(String userId){
         return userRepository.findUserByUserId(userId);
+    }
+
+    public String createJwtToken(UserLoginDTO userLoginDTO){
+        return jwtTokenProvider.createToken(userLoginDTO.getUserId());
+
     }
 }

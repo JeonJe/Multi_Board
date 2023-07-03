@@ -12,6 +12,15 @@ public class ResponseUtil {
     private static final String FAIL_STATUS = "fail";
     private static final String ERROR_STATUS = "error";
 
+    public static APIResponse SuccessWithData(String message, Object data) {
+        APIResponse response = APIResponse.builder()
+                .status(SUCCESS_STATUS)
+                .message(message)
+                .data(data)
+                .build();
+        return response;
+    }
+
     /**
      * 데이터를 포함한 성공 응답 생성 메서드
      *
@@ -19,14 +28,6 @@ public class ResponseUtil {
      * @param data    응답 데이터
      * @return APIResponse 객체
      */
-    public static APIResponse createSuccessWithData(String message, Object data) {
-        APIResponse response = APIResponse.builder()
-                        .status(SUCCESS_STATUS)
-                        .message(message)
-                        .data(data)
-                        .build();
-        return response;
-    }
 
     /**
      * 데이터 없이 성공 응답 생성 메서드
@@ -34,7 +35,7 @@ public class ResponseUtil {
      * @param message 응답 메시지
      * @return APIResponse 객체
      */
-    public static APIResponse createSuccessWithoutData(String message) {
+    public static APIResponse SuccessWithoutData(String message) {
         APIResponse response = APIResponse.builder()
                 .status(SUCCESS_STATUS)
                 .message(message)
@@ -50,7 +51,7 @@ public class ResponseUtil {
      * @param data    에러 데이터
      * @return APIResponse 객체
      */
-    public static APIResponse createErrorWithData(String message, Object data) {
+    public static APIResponse ErrorWithData(String message, Object data) {
         APIResponse response = APIResponse.builder()
                 .status(ERROR_STATUS)
                 .message(message)
@@ -65,7 +66,7 @@ public class ResponseUtil {
      * @param message 에러 메시지
      * @return APIResponse 객체
      */
-    public static APIResponse createErrorWithoutData(String message) {
+    public static APIResponse ErrorWithoutData(String message) {
         APIResponse response = APIResponse.builder()
                 .status(ERROR_STATUS)
                 .message(message)

@@ -7,6 +7,6 @@ module.exports = defineConfig({
     plugins: [new Dotenv()],
   },
   // devServer: {
-  //   // proxy: process.env.VUE_APP_API_SER_URL,
+  //   proxy: process.env.VUE_APP_API_SER_URL,
   // },
 });

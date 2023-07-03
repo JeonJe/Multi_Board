@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { apiLogin } from "@/service/services";
+import { loginUser } from "@/service/services";
 export default {
   data() {
     return {
@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     login() {
-      apiLogin(this.userData);
+      loginUser(this.userData);
     },
     signup() {
       this.$router.push({ path: process.env.VUE_APP_USER_SIGNUP_PAGE });

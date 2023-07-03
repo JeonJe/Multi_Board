@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>회원가입</h1>
-    <form>
+    <form @submit.prevent>
       <div>
         <input type="text" id="id" v-model="userData.id" placeholder="아이디" />
         <button @click="isIdDuplicate">중복확인</button>
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { apiSignup } from "@/service/services";
+import { signupUser, checkDuplicateId } from "@/service/services";
 
 export default {
   data() {
@@ -60,13 +60,13 @@ export default {
   },
   methods: {
     signup() {
-      apiSignup(this.userData);
+      signupUser(this.userData);
     },
     moveToLogin() {
       this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
     },
-    isIdDuplicate(id) {
-      alert(id);
+    isIdDuplicate() {
+      checkDuplicateId(this.userData.id);
     },
   },
 };
