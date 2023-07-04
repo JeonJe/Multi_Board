@@ -21,5 +21,13 @@
         WHERE user_id = #{userId}
     </select>
 
+    <!-- user_id, password와 일치하는 사용자가 있는지 확인합니다.-->
+    <select id="checkUserCredentials" parameterType="String" resultType="int">
+        SELECT COUNT(*)
+        FROM users
+        WHERE user_id = #{userId}
+          AND password = #{password}
+    </select>
+
 
 </mapper>

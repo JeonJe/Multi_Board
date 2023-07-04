@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class APIResponse {
     /**
-     *  정상(success), 예외(error), 오류(fail) 중 하나의 값을 가집니다.
+     * 정상(success), 예외(error), 오류(fail) 중 하나의 값을 가집니다.
      */
     private String status;
 

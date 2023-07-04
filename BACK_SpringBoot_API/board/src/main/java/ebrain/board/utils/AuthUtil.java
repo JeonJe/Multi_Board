@@ -1,15 +1,11 @@
 package ebrain.board.utils;
 
-import ebrain.board.response.APIResponse;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 /**
- * 게시판 관련 유틸리티 클래스입니다.
+ * 인증 관련 유틸리티 클래스입니다.
  */
-public class BoardUtil {
+public class AuthUtil {
 
 
     /**

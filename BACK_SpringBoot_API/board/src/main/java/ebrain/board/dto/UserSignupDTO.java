@@ -4,8 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 /**
- * UserSignupDTO 클래스
- * 사용자 회원 가입 정보를 담는 DTO입니다.
+ * 사용자 회원 가입 정보를 담는 DTO
  */
 @AllArgsConstructor
 @Getter

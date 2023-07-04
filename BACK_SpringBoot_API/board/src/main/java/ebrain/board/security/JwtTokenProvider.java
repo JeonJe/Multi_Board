@@ -7,18 +7,40 @@ import org.springframework.stereotype.Component;
 import java.util.Base64;
 import java.util.Date;
 
+
+/**
+ * JWT 토큰 생성 및 검증을 담당하는 클래스입니다.
+ */
 @Component
 public class JwtTokenProvider {
 
+    /**
+     * JWT 비밀키
+     */
     private String secretKey;
+    /**
+     * 토큰 유효 기간(밀리초)
+     */
     private long validityInMilliseconds;
 
-    public JwtTokenProvider(@Value("${SECRET_KEY}") String secretKey, @Value("${JWT_TOKEN_EXPIRE}") long validityInMilliseconds) {
+    /**
+     * JwtTokenProvider 생성자입니다.
+     *
+     * @param secretKey              시크릿 키
+     * @param validityInMilliseconds 토큰의 유효 기간(밀리초)
+     */
+    public JwtTokenProvider(@Value("${SECRET_KEY}") String secretKey,
+                            @Value("${JWT_TOKEN_EXPIRE}") long validityInMilliseconds) {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    //토큰생성
+    /**
+     * 주어진 subject를 기반으로 JWT 토큰을 생성합니다.
+     *
+     * @param subject 토큰의 subject
+     * @return 생성된 JWT 토큰
+     */
     public String createToken(String subject) {
         Claims claims = Jwts.claims().setSubject(subject);
 
@@ -34,12 +56,22 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    //토큰에서 값 추출
+    /**
+     * 주어진 토큰에서 subject 값을 추출합니다.
+     *
+     * @param token 추출할 토큰
+     * @return 추출된 subject 값
+     */
     public String getSubject(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
-    //유효한 토큰인지 확인
+    /**
+     * 주어진 토큰이 유효한지 확인합니다.
+     *
+     * @param token 확인할 토큰
+     * @return 토큰의 유효성 여부
+     */
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);

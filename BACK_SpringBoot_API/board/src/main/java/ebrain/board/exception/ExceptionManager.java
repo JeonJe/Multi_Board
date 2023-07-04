@@ -43,6 +43,7 @@ public class ExceptionManager {
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
+
     /**
      * ConstraintViolationException이 발생했을 때 호출되어 유효성 검사 실패 메시지를 반환합니다.
      *
@@ -51,7 +52,7 @@ public class ExceptionManager {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<APIResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        // Handle constraint violation exception and return a custom response
+
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
 
         List<String> errorMessages = violations.stream()
@@ -78,11 +79,12 @@ public class ExceptionManager {
      * @return ResponseEntity 객체
      */
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<?> appExceptionHandler(AppException e){
+    public ResponseEntity<?> appExceptionHandler(AppException e) {
 
         return ResponseEntity.status(e.getErrorCode().getHttpStatus())
                 .body(e.getMessage());
     }
+
     /**
      * RuntimeException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
      *
@@ -90,7 +92,7 @@ public class ExceptionManager {
      * @return ResponseEntity 객체
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e){
+    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }

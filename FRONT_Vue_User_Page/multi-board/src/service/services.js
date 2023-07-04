@@ -46,8 +46,7 @@ const signupUser = async (userData) => {
       process.env.VUE_APP_API_USER_SIGNUP,
       JSON.stringify(userData)
     );
-    console.log("response: ", response.data.data);
-    // localStorage.setItem("jwt",token.accessToken)
+    localStorage.setItem("jwt", response.data.data);
     // alert("로그인 되었습니다");
   } catch (error) {
     alert("Error: " + error.response.data);
@@ -77,4 +76,17 @@ const loginUser = async (userData) => {
   }
 };
 
-export { signupUser, loginUser, checkDuplicateId };
+const checkJwtToken = async () => {
+  try {
+    api.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${localStorage.getItem("jwt")}`;
+
+    const response = await api.get("/api/auth/check");
+    alert(response);
+  } catch (error) {
+    alert("Error: " + error.response.data);
+  }
+};
+
+export { signupUser, loginUser, checkDuplicateId, checkJwtToken };

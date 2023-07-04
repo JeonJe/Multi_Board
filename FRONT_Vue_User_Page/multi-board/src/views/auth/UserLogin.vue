@@ -18,14 +18,15 @@
           :placeholder="passwordPlaceholder"
         />
       </div>
-      <button @click="login">로그인</button>
+      <button @click="clickLogin">로그인</button>
     </form>
-    <button @click="signup">회원가입</button>
+    <button @click="clickSignup">회원가입</button>
+    <button @click="clickCheckToken">Jwt토큰확인</button>
   </div>
 </template>
 
 <script>
-import { loginUser } from "@/service/services";
+import { loginUser, checkJwtToken } from "@/service/services";
 export default {
   data() {
     return {
@@ -41,11 +42,14 @@ export default {
     },
   },
   methods: {
-    login() {
+    clickLogin() {
       loginUser(this.userData);
     },
-    signup() {
+    clickSignup() {
       this.$router.push({ path: process.env.VUE_APP_USER_SIGNUP_PAGE });
+    },
+    clickCheckToken() {
+      checkJwtToken();
     },
   },
 };

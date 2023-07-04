@@ -25,4 +25,13 @@ public interface UserRepository {
      */
     User findUserByUserId(String userId);
 
+    /**
+     * 로그인 메서드
+     *
+     * @param userId 사용자 아이디
+     * @param password 사용자 비밀번호
+     * @return 사용자 아이디와 비밀번호와 일치하는 데이터 수
+     */
+    int checkUserCredentials(String userId, String password);
+
 }

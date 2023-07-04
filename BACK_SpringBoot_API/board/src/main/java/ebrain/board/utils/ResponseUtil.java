@@ -8,8 +8,17 @@ import ebrain.board.response.APIResponse;
  */
 public class ResponseUtil {
 
+    /**
+     * 성공 상태 메시지
+     */
     private static final String SUCCESS_STATUS = "success";
+    /**
+     * 실패 상태 메시지
+     */
     private static final String FAIL_STATUS = "fail";
+    /**
+     * 에러 상태 메시지
+     */
     private static final String ERROR_STATUS = "error";
 
     public static APIResponse SuccessWithData(String message, Object data) {
@@ -74,7 +83,6 @@ public class ResponseUtil {
                 .build();
         return response;
     }
-
 
 
 }

@@ -21,7 +21,7 @@ public enum ErrorCode {
 
     // 409 CONFLICT : Resource 의 현재 상태와 충돌
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다"),
-    DUPLICATE_USERID(HttpStatus.CONFLICT,"이미 회원가입된 아이디입니다."),
+    DUPLICATE_USERID(HttpStatus.CONFLICT, "이미 회원가입된 아이디입니다."),
     ;
     /**
      * HTTP 상태 코드
