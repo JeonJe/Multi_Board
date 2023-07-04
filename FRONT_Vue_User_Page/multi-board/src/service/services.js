@@ -19,11 +19,11 @@ const api = axios.create({
 // 요청 전에 실행될 인터셉터
 api.interceptors.request.use(
   (config) => {
-    console.log("Request:", config);
+    console.log("[Before] Request:", config);
     return config;
   },
   (error) => {
-    console.error("Request Error:", error);
+    console.error("[Before] Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -31,11 +31,11 @@ api.interceptors.request.use(
 // 요청 후에 실행될 인터셉터
 api.interceptors.response.use(
   (response) => {
-    console.log("Response:", response);
+    console.log("[After] Response:", response);
     return response;
   },
   (error) => {
-    console.error("Response Error:", error);
+    console.error("[After] Response Error:", error);
     return Promise.reject(error);
   }
 );
@@ -47,9 +47,11 @@ const signupUser = async (userData) => {
       JSON.stringify(userData)
     );
     localStorage.setItem("jwt", response.data.data);
-    // alert("로그인 되었습니다");
+    alert(response.data);
+    this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
   } catch (error) {
-    alert("Error: " + error.response.data);
+    const res = error.response.data;
+    alert(res.data[0]);
   }
 };
 
@@ -59,7 +61,8 @@ const checkDuplicateId = async (userId) => {
     await api.get(URL);
     alert("사용 가능한 ID입니다.");
   } catch (error) {
-    alert("Error: " + error.response.data);
+    const res = error.response.data;
+    alert(res.data);
   }
 };
 
@@ -72,7 +75,8 @@ const loginUser = async (userData) => {
     localStorage.setItem("jwt", response.data.data);
     alert("로그인이 성공하였습니다.");
   } catch (error) {
-    alert("Error: " + error.response.data);
+    const res = error.response.data;
+    alert(res.data);
   }
 };
 
@@ -81,11 +85,12 @@ const checkJwtToken = async () => {
     api.defaults.headers.common[
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
-
-    const response = await api.get("/api/auth/check");
-    alert(response);
+    console.log(localStorage.getItem("jwt"));
+    const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_TOKEN);
+    console.log(response.data);
   } catch (error) {
-    alert("Error: " + error.response.data);
+    const res = error.response.data;
+    alert(res.data);
   }
 };
 

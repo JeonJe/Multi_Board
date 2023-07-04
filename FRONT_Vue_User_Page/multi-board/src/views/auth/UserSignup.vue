@@ -3,7 +3,12 @@
     <h1>회원가입</h1>
     <form @submit.prevent>
       <div>
-        <input type="text" id="id" v-model="userData.id" placeholder="아이디" />
+        <input
+          type="text"
+          id="id"
+          v-model="userData.userId"
+          placeholder="아이디"
+        />
         <button @click="isIdDuplicate">중복확인</button>
       </div>
       <div>
