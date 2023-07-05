@@ -4,12 +4,12 @@ import UserSignup from "../views/auth/UserSignup.vue";
 
 const routes = [
   {
-    path: "/auth/login",
+    path: process.env.VUE_APP_USER_LOGIN_PAGE,
     name: UserLogin,
     component: UserLogin,
   },
   {
-    path: "/auth/signup",
+    path: process.env.VUE_APP_USER_SIGNUP_PAGE,
     name: UserSignup,
     component: UserSignup,
   },

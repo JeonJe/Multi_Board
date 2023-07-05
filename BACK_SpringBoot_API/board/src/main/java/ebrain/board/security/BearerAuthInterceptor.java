@@ -48,7 +48,7 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
 
         //JWT 토큰이 유효하지 않는 경우 예외처리
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException("유효하지 않은 토큰");
+            throw new IllegalArgumentException("유효하지 않는 토큰입니다.");
         }
 
         //추출한 토큰의 사용자 ID를 요청 속성에 저장

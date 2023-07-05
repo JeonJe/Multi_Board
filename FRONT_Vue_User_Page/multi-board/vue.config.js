@@ -6,7 +6,4 @@ module.exports = defineConfig({
   configureWebpack: {
     plugins: [new Dotenv()],
   },
-  // devServer: {
-  //   proxy: process.env.VUE_APP_API_SER_URL,
-  // },
 });

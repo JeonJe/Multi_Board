@@ -9,7 +9,7 @@
           v-model="userData.userId"
           placeholder="아이디"
         />
-        <button @click="isIdDuplicate">중복확인</button>
+        <button @click="clickIsIdDuplicate">중복확인</button>
       </div>
       <div>
         <input
@@ -35,9 +35,9 @@
           placeholder="이름"
         />
       </div>
-      <button @click="signup">회원 가입 하기</button>
+      <button @click="clickSignup">회원가입</button>
     </form>
-    <button @click="moveToLogin">취소</button>
+    <button @click="clickMoveToLogin">취소</button>
   </div>
 </template>
 
@@ -64,14 +64,14 @@ export default {
     },
   },
   methods: {
-    signup() {
+    clickSignup() {
       signupUser(this.userData);
     },
-    moveToLogin() {
+    clickMoveToLogin() {
       this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
     },
-    isIdDuplicate() {
-      checkDuplicateId(this.userData.id);
+    clickIsIdDuplicate() {
+      checkDuplicateId(this.userData.userId);
     },
   },
 };
