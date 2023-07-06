@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // 401 UNAUTHORIZED : 인증되지 않은 사용자
-    INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다"),
-    UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "현재 내 계정 정보가 존재하지 않습니다"),
+    INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않는 토큰입니다"),
+    INVALID_AUTH_USER(HttpStatus.UNAUTHORIZED, "아이디, 비밀번호가 틀렸습니다."),
 
     // 404 NOT_FOUND : Resource 를 찾을 수 없음
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 유저 정보를 찾을 수 없습니다"),
@@ -23,6 +23,7 @@ public enum ErrorCode {
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다"),
     DUPLICATE_USERID(HttpStatus.CONFLICT, "이미 회원가입된 아이디입니다."),
     ;
+
     /**
      * HTTP 상태 코드
      */
@@ -30,7 +31,7 @@ public enum ErrorCode {
     /**
      * 오류 메시지
      */
-    private String message;
+    private String errorMessage;
 
 
 }

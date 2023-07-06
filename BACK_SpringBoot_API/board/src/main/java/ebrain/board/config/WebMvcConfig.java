@@ -1,7 +1,10 @@
 package ebrain.board.config;
 
+import ebrain.board.security.BearerAuthInterceptor;
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -27,5 +30,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         //JWT 토큰 확인을 위한 인터셉터 등록
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/api/auth/check");
+    }
+
+    /**
+     * 메소드 수준의 유효성 검증을 활성화하기 위한 MethodValidationPostProcessor를 생성합니다.
+     *
+     * @return MethodValidationPostProcessor 인스턴스
+     */
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        return new MethodValidationPostProcessor();
     }
 }

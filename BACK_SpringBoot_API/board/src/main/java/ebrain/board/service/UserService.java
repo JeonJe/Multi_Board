@@ -67,7 +67,6 @@ public class UserService {
         return jwtTokenProvider.createToken(userId);
 
     }
-
     /**
      * 주어진 사용자 로그인 정보를 기반으로 사용자 인증을 확인합니다.
      *

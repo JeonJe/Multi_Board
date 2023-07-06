@@ -1,6 +1,5 @@
-package ebrain.board.config;
+package ebrain.board.security;
 
-import ebrain.board.security.JwtTokenProvider;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

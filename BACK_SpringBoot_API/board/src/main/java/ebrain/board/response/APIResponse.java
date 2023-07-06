@@ -21,7 +21,7 @@ public class APIResponse {
     private String message;
 
     /**
-     * 정상(success)의 경우 실제 전송될 데이터를 나타냅니다.
+     * Response에 전송될 데이터를 나타냅니다.
      */
     private Object data;
 }

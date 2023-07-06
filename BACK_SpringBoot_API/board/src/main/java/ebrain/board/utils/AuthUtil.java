@@ -2,6 +2,7 @@ package ebrain.board.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+
 /**
  * 인증 관련 유틸리티 클래스입니다.
  */
@@ -28,6 +29,5 @@ public class AuthUtil {
         }
         return null;
     }
-
 
 }

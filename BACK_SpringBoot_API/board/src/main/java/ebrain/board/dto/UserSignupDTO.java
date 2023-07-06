@@ -22,7 +22,7 @@ public class UserSignupDTO {
      */
     @NotEmpty(message = "비밀번호는 필수 항목입니다")
     @Size(min = 4, max = 11, message = "비밀번호는 4자 이상 11자 이하로 입력해야 합니다")
-    @Pattern(regexp = "^(?!.*([A-Za-z0-9_-])\\1{2})[A-Za-z0-9_-]+$", message = "비밀번호는 연속된 3개 이상의 문자를 포함할 수 없습니다")
+    @Pattern(regexp = "^(?!.*([A-Za-z0-9#?!@$%^&*-])\\1{2})[A-Za-z0-9#?!@$%^&*-]+$", message = "비밀번호는 영어 소문자, 대문자, 숫자, 특수문자 중 3개 이상 연속된 문자를 포함할 수 없습니다")
     private String password;
 
     /**
@@ -30,7 +30,7 @@ public class UserSignupDTO {
      */
     @NotEmpty(message = "비밀번호 확인은 필수 항목입니다")
     @Size(min = 4, max = 11, message = "비밀번호 확인은 4자 이상 11자 이하로 입력해야 합니다")
-    @Pattern(regexp = "^(?!.*([A-Za-z0-9_-])\\1{2})[A-Za-z0-9_-]+$", message = "비밀번호 확인은 연속된 3개 이상의 문자를 포함할 수 없습니다")
+    @Pattern(regexp = "^(?!.*([A-Za-z0-9#?!@$%^&*-])\\1{2})[A-Za-z0-9#?!@$%^&*-]+$", message = "비밀번호 확인은 영어 소문자, 대문자, 숫자, 특수문자 중 3개 이상 연속된 문자를 포함할 수 없습니다")
     private String confirmPassword;
 
     /**

@@ -59,7 +59,8 @@ public class ExceptionManager {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.toList());
 
-        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다.", errorMessages);
+
+        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다.", errorMessages.get(0));
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
@@ -79,10 +80,19 @@ public class ExceptionManager {
      * @return ResponseEntity 객체
      */
     @ExceptionHandler(AppException.class)
-    public ResponseEntity<?> appExceptionHandler(AppException e) {
+    public ResponseEntity<APIResponse> handleAppException(AppException e) {
 
-        return ResponseEntity.status(e.getErrorCode().getHttpStatus())
-                .body(e.getMessage());
+        APIResponse apiResponse = ResponseUtil.ErrorWithData("에러가 발생하였습니다", e.getMessage());
+        return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(apiResponse);
+
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<APIResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+
+        APIResponse apiResponse = ResponseUtil.ErrorWithData("유효하지 않는 요청입니다.", e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+
     }
 
     /**
@@ -92,7 +102,7 @@ public class ExceptionManager {
      * @return ResponseEntity 객체
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> runtimeExceptionHandler(RuntimeException e) {
+    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }

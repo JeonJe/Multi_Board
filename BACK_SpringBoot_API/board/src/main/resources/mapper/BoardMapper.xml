@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    보드 매퍼
+    BoardRepository 인터페이스와 연결
+-->
+<mapper namespace="ebrain.board.mapper.BoardRepository">
+    <sql id = "searchQuery">
+        <if test="searchText != ''">
+            AND (title LIKE concat('%', #{searchText}, '%')
+            OR content LIKE concat('%', #{searchText}, '%'))
+        </if>
+        AND created_at BETWEEN #{startDate} AND DATE_ADD(#{endDate}, INTERVAL 1 DAY)
+    </sql>
+    <!-- user_id로 사용자 정보를 조회 -->
+    <select id="searchNoticeBoards" parameterType="SearchConditionDTO" resultType="NoticeBoard">
+        SELECT *
+        FROM notice_board
+        WHERE 1=1
+        <include refid="searchQuery" />
+        ORDER BY
+        <choose>
+            <when test="sortCriteria == 'createdAt'">
+                 created_at
+            </when>
+            <when test="sortCriteria == 'title'">
+                 title
+            </when>
+            <when test="sortCriteria == 'visitCount'">
+                 visit_count
+            </when>
+            <otherwise>
+                 created_at
+            </otherwise>
+        </choose>
+        <if test="orderBy == 'desc'">
+            DESC
+        </if>
+        <if test="orderBy == 'asc'">
+            ASC
+        </if>
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+</mapper>

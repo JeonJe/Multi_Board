@@ -11,10 +11,14 @@ import ebrain.board.utils.ResponseUtil;
 import ebrain.board.vo.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,9 +26,10 @@ import org.springframework.web.bind.annotation.*;
  * UserController class
  * 유저 관련 요청을 처리하고 APIResponse 데이터 반환합니다.
  */
+@Validated
 
-@RequiredArgsConstructor
 @RestController
+@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:8082")
 public class UserController {
 
@@ -58,7 +63,11 @@ public class UserController {
      * @throws AppException 중복된 ID일 경우 발생하는 예외 (ErrorCode.DUPLICATE_USERID)
      */
     @GetMapping("/api/auth/check/{userId}")
-    public ResponseEntity<APIResponse> checkDuplicateId(@PathVariable String userId) {
+    public ResponseEntity<APIResponse>
+    checkDuplicateId(@PathVariable
+                     @NotEmpty(message = "ID는 필수 항목입니다")
+                     @Size(min = 4, max = 11, message = "ID는 4자 이상 11자 이하로 입력해야 합니다")
+                     @Pattern(regexp = "^[A-Za-z0-9_-]+$", message = "ID는 영문자, 숫자, '-', '_'만 사용할 수 있습니다") String userId) {
 
         User user = userService.findUserByUserId(userId);
         if (!ObjectUtils.isEmpty(user)) {
@@ -82,14 +91,13 @@ public class UserController {
         boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1);
 
         if (isValidUser) {
-            //JWT 토큰 생성, 전달
+            //JWT 토큰 생성
             String jwtToken = userService.createJwtToken(userLoginDTO.getUserId());
             APIResponse apiResponse = ResponseUtil.SuccessWithData("로그인 성공", jwtToken);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 
         } else {
-            APIResponse apiResponse = ResponseUtil.ErrorWithoutData("아이디, 비밀번호가 틀립니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+            throw new AppException(ErrorCode.INVALID_AUTH_USER, "아이디, 비밀번호가 틀렸습니다.");
         }
     }
 
@@ -102,18 +110,17 @@ public class UserController {
     @GetMapping("/api/auth/check")
     public ResponseEntity<APIResponse> checkUserToken(HttpServletRequest request) {
 
-        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달 받습니다.
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
         User user = userService.findUserByUserId(userId);
 
-        APIResponse apiResponse = (ObjectUtils.isEmpty(user))
-                ? ResponseUtil.ErrorWithoutData("사용자를 찾을 수 없습니다.")
-                : ResponseUtil.SuccessWithData("유효한 토큰입니다.", user);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "사용자를 찾을 수 없습니다.");
+        }
 
-
+        //TODO : 패스워드 제외 필요, 이름만 전달하여 로그인 시 이름을 보여줄 수 있도록
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", user);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-
     }
-
 
 }

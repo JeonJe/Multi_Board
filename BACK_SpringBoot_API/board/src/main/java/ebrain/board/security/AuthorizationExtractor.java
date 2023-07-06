@@ -1,4 +1,4 @@
-package ebrain.board.config;
+package ebrain.board.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class AuthorizationExtractor {
      * 요청헤더에서 JWT 토큰을 추출합니다.
      *
      * @param request 요청을 나타내는 HttpServletRequest 객체
-     * @param type    액세스 토큰 유형 ("Bearer"
+     * @param type    액세스 토큰 유형 ("Bearer")
      * @return 추출된 인증 토큰 또는 찾을 수 없을 경우 빈 문자열
      */
     public String extract(HttpServletRequest request, String type) {
