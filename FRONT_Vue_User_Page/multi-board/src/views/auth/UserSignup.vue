@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { signupUser, checkDuplicateId } from "@/service/services";
+import { signupUser, checkDuplicateId } from "@/services/user-service";
 
 export default {
   data() {

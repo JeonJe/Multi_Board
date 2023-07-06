@@ -91,6 +91,7 @@ const loginUser = async (userData) => {
     );
     localStorage.setItem("jwt", response.data.data);
     alert("로그인이 성공하였습니다.");
+    //TODO : 사용자 정보는 비밀번호를 포함하면 안되고, vuex로 상태관리가 되어야 함.
   } catch (error) {
     const res = error.response.data;
     alert(res.data);

@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { loginUser, checkJwtToken } from "@/service/services";
+import { loginUser, checkJwtToken } from "@/services/user-service";
 export default {
   data() {
     return {
