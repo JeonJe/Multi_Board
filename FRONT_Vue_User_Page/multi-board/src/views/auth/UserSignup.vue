@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import { signupUser, checkDuplicateId } from "@/services/user-service";
+import userService from "@/services/user-service";
 
 export default {
   data() {
@@ -65,13 +65,13 @@ export default {
   },
   methods: {
     clickSignup() {
-      signupUser(this.userData);
+      userService.signupUser(this.userData);
     },
     clickMoveToLogin() {
       this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
     },
     clickIsIdDuplicate() {
-      checkDuplicateId(this.userData.userId);
+      userService.checkDuplicateId(this.userData.userId);
     },
   },
 };

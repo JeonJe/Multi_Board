@@ -48,23 +48,10 @@ const getNoticeBoardList = async (searchCondtion) => {
       params: searchCondtion,
     });
     console.log(response);
+    return response.data;
   } catch (error) {
     console.log(error);
   }
 };
-// const signupUser = async (userData) => {
-//   try {
-//     const response = await api.post(
-//       process.env.VUE_APP_API_USER_SIGNUP,
-//       JSON.stringify(userData)
-//     );
-//     localStorage.setItem("jwt", response.data.data);
-//     alert(response.data);
-//     this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
-//   } catch (error) {
-//     const res = error.response.data;
-//     alert(res.data[0]);
-//   }
-// };
 
-export { getNoticeBoardList };
+export default { getNoticeBoardList };

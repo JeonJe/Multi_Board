@@ -116,4 +116,4 @@ const checkJwtToken = async () => {
   }
 };
 
-export { signupUser, loginUser, checkDuplicateId, checkJwtToken };
+export default { signupUser, loginUser, checkDuplicateId, checkJwtToken };

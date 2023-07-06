@@ -17,6 +17,7 @@
       v-model="searchCondition.endDate"
     />
     <!-- 카테고리 -->
+    <!-- TODO :  카테고리 가져오기  -->
     <!-- 검색어 -->
     <input
       type="text"

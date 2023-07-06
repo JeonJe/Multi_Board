@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { loginUser, checkJwtToken } from "@/services/user-service";
+import userService from "@/services/user-service";
 export default {
   data() {
     return {
@@ -43,13 +43,13 @@ export default {
   },
   methods: {
     clickLogin() {
-      loginUser(this.userData);
+      userService.loginUser(this.userData);
     },
     clickSignup() {
       this.$router.push({ path: process.env.VUE_APP_USER_SIGNUP_PAGE });
     },
     clickCheckToken() {
-      checkJwtToken();
+      userService.checkJwtToken();
     },
   },
 };
