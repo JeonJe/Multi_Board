@@ -64,12 +64,24 @@ export default {
     },
   },
   methods: {
+    /**
+     * 회원가입 버튼 클릭 이벤트 핸들러 함수입니다.
+     * userService를 사용하여 사용자 회원가입을 처리합니다.
+     */
     clickSignup() {
       userService.signupUser(this.userData);
     },
+    /**
+     * 로그인 페이지로 이동하는 버튼 클릭 이벤트 핸들러 함수입니다.
+     * 로그인 페이지로 이동합니다.
+     */
     clickMoveToLogin() {
       this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
     },
+    /**
+     * 아이디 중복 확인 버튼 클릭 이벤트 핸들러 함수입니다.
+     * userService를 사용하여 아이디 중복 여부를 확인합니다.
+     */
     clickIsIdDuplicate() {
       userService.checkDuplicateId(this.userData.userId);
     },

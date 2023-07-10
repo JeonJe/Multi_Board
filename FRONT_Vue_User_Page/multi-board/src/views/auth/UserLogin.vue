@@ -42,12 +42,24 @@ export default {
     },
   },
   methods: {
+    /**
+     * 로그인 버튼 클릭 이벤트 핸들러 함수입니다.
+     * userService를 사용하여 사용자 로그인을 처리합니다.
+     */
     clickLogin() {
       userService.loginUser(this.userData);
     },
+    /**
+     * 회원가입 버튼 클릭 이벤트 핸들러 함수입니다.
+     * 회원가입 페이지로 이동합니다.
+     */
     clickSignup() {
       this.$router.push({ path: process.env.VUE_APP_USER_SIGNUP_PAGE });
     },
+    /**
+     * JWT 토큰 확인 버튼 클릭 이벤트 핸들러 함수입니다.
+     * userService를 사용하여 JWT 토큰을 확인합니다.
+     */
     clickCheckToken() {
       userService.checkJwtToken();
     },

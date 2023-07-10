@@ -8,6 +8,7 @@
 -->
 <mapper namespace="ebrain.board.mapper.BoardRepository">
     <sql id = "searchQuery">
+        AND is_noticed = 0
         <if test="searchText != ''">
             AND (title LIKE concat('%', #{searchText}, '%')
             OR content LIKE concat('%', #{searchText}, '%'))
@@ -44,4 +45,31 @@
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
+    <!-- 검색 조건에 해당하는 공지 게시글의 개수를 조회 -->
+    <select id="countNoticeBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM notice_board
+        WHERE 1=1
+        <include refid="searchQuery" />
+    </select>
+    <!-- 알림 표시된 공지 게시글 목록을 조회 -->
+    <select id="getMarkedNoticedBoards" resultType="NoticeBoard">
+        SELECT *
+        FROM notice_board
+        WHERE is_noticed = 1
+    </select>
+    <!-- 알림 표시된 공지 게시글의 개수를 조회 -->
+    <select id="countMarkedNoticedBoards" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM notice_board
+        WHERE is_noticed = 1
+    </select>
+    <!-- 공지사항의 상세 내용을 조회 -->
+    <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="NoticeBoard">
+        SELECT *
+        FROM notice_board
+        WHERE board_id = #{boardId}
+    </select>
+
+
 </mapper>

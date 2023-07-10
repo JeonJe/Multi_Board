@@ -16,7 +16,51 @@ public class BoardService {
      */
     private final BoardRepository boardRepository;
 
-    public List<NoticeBoard> searchNoticeBoards(SearchConditionDTO searchParamsDTO)  {
+    /**
+     * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
+     *
+     * @param searchParamsDTO 검색 조건 DTO
+     * @return 공지 게시글 목록
+     */
+    public List<NoticeBoard> searchNoticeBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.searchNoticeBoards(searchParamsDTO);
+    }
+
+    /**
+     * 검색 조건에 해당하는 공지 게시글의 개수를 조회합니다.
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 공지 게시글의 개수
+     */
+    public int countNoticeBoards(SearchConditionDTO searchConditionDTO) {
+        return boardRepository.countNoticeBoards(searchConditionDTO);
+    }
+
+    /**
+     * 알림 표시된 공지 게시글 목록을 조회합니다.
+     *
+     * @return 알림 표시된 게시글 목록
+     */
+    public List<NoticeBoard> getMarkedNoticedBoards() {
+        return boardRepository.getMarkedNoticedBoards();
+    }
+
+    /**
+     * 알림 표시된 공지 게시글의 개수를 조회합니다.
+     *
+     * @return 알림 표시된 게시글의 개수
+     */
+    public int countMarkedNoticedBoards() {
+        return boardRepository.countMarkedNoticedBoards();
+    }
+
+    /**
+     * 공지사항의 상세 내용을 조회합니다.
+     *
+     * @param boardId 게시글 ID
+     * @return 공지사항의 상세 내용
+     */
+    public NoticeBoard getNoticeBoardDetail(int boardId) {
+        return boardRepository.getNoticeBoardDetail(boardId);
     }
 }

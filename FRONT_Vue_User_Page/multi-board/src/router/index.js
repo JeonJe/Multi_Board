@@ -23,12 +23,12 @@ const routes = [
     component: BoardNoticeList,
   },
   {
-    path: process.env.VUE_APP_BOARD_NOTICE_WIRTE,
+    path: `${process.env.VUE_APP_BOARD_NOTICE_WRITE}/:boardId`,
     name: BoardNoticeWrite,
     component: BoardNoticeWrite,
   },
   {
-    path: process.env.VUE_APP_BOARD_NOTICE_VIEW,
+    path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/:boardId`,
     name: BoardNoticeView,
     component: BoardNoticeView,
   },
