@@ -25,10 +25,12 @@ public class SearchConditionDTO {
      * 검색 종료 날짜
      */
     private LocalDate endDate;
+
     /**
      * 페이지 사이즈
      */
     private Integer pageSize;
+
     /**
      * 현재페이지
      */
@@ -39,15 +41,13 @@ public class SearchConditionDTO {
      */
     private Integer offset;
 
-
     /**
      * 정렬 기준(예 : 등록 일시)
      */
     private String sortCriteria;
+
     /**
      * 정렬 순서(예 desc ..)
      */
     private String orderBy;
-
-
 }

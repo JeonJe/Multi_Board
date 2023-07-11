@@ -7,8 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface BoardRepository
-{
+public interface BoardRepository {
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
      *
@@ -31,6 +30,13 @@ public interface BoardRepository
      * @return 알림 표시된 게시글 목록
      */
     List<NoticeBoard> getMarkedNoticedBoards();
+
+    /**
+     * 알림 표시된 공지 게시글의 개수를 조회합니다.
+     *
+     * @return 알림 표시된 공지 게시글의 개수
+     */
+
     int countMarkedNoticedBoards();
 
 
@@ -44,8 +50,11 @@ public interface BoardRepository
 
     /**
      * 공지사항의 카테고리 목록을 가져옵니다.
+     *
      * @return 카테고리 목록
      */
     List<String> getNoticeBoardCategories();
+
+    void updateNoticeBoardVisitCount(int boardId);
 
 }

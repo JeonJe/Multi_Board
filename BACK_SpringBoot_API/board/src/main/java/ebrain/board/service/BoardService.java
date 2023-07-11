@@ -61,17 +61,17 @@ public class BoardService {
      * @return 공지사항의 상세 내용
      */
     public NoticeBoard getNoticeBoardDetail(int boardId) {
+        boardRepository.updateNoticeBoardVisitCount(boardId);
         return boardRepository.getNoticeBoardDetail(boardId);
     }
 
     /**
      * 공지사항의 카테고리 목록을 가져옵니다.
+     *
      * @return 공지사항의 카테고리 목록
      */
     public List<String> getNoticeBoardCategories() {
         return boardRepository.getNoticeBoardCategories();
     }
-
-
 
 }

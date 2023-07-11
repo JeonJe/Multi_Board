@@ -86,6 +86,12 @@
         JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
         WHERE cp.parent_code_name LIKE '%공지사항%'
     </select>
+    <!-- 공지 게시글의 방문수를 1 증가    -->
+    <update id="updateNoticeBoardVisitCount" parameterType="java.lang.Integer">
+        UPDATE notice_board
+        SET visit_count = visit_count + 1
+        WHERE board_id = #{boardId}
+    </update>
 
 
 </mapper>
