@@ -2,8 +2,11 @@
   <div class="container">
     <h1>공지사항</h1>
 
-    <SearchForm @emitSearchContion="updateSearchCondtion" />
-    <!-- 총 조회 건수 -->
+    <!-- 게시글 카테고리를 pros로 전달 -->
+    <SearchForm
+      :categories="categories"
+      @emitSearchContion="updateSearchCondtion"
+    />
 
     <!-- 게시글 리스트 -->
     <table>
@@ -18,9 +21,10 @@
         </tr>
       </thead>
       <tbody>
+        <!-- 알림 표시된 공지 게시글 -->
         <tr v-for="item in markNoticedBoardList" :key="item.boardId">
           <td>{{}}</td>
-          <td><!-- 분류 데이터 출력 --></td>
+          <td>{{ item.categoryName }}</td>
           <router-link :to="getBoardDetail(item.boardId)">
             {{ item.title }}
             <span v-if="IsNewBoard(item.createdAt)">New</span>
@@ -29,10 +33,10 @@
           <td>{{ getFormattedDate(item.createdAt) }}</td>
           <td>{{ item.userId }}</td>
         </tr>
-
+        <!-- 알림 표시되지 않은 공지 게시글 -->
         <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
           <td>{{ index + 1 }}</td>
-          <td><!-- 분류 데이터 출력 --></td>
+          <td>{{ item.categoryName }}</td>
           <router-link :to="getBoardDetail(item.boardId)">
             {{ item.title }}
             <span v-if="IsNewBoard(item.createdAt)">New</span>
@@ -63,7 +67,6 @@ export default {
     SearchForm,
     BoardPagination,
   },
-  mixins: [],
   data() {
     return {
       searchCondition: {},
@@ -74,6 +77,12 @@ export default {
       totalPosts: 0,
       totalPages: 0,
     };
+  },
+  mounted() {
+    /**
+     * 게시판 카테고리를 가져옵니다.
+     */
+    this.getNoticeBoardCategories();
   },
   methods: {
     /**
@@ -134,6 +143,18 @@ export default {
         path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
+    },
+    /**
+     * 공지 게시판 카테고리르 가져옵니다.
+     */
+    async getNoticeBoardCategories() {
+      try {
+        const response = await boardService.getNoticeBoardCategories();
+        this.categories = response.data;
+        this.getNoticeBoardList();
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

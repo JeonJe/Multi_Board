@@ -17,7 +17,15 @@
       v-model="searchCondition.endDate"
     />
     <!-- 카테고리 -->
-    <!-- TODO :  카테고리 가져오기  -->
+    <select v-model="searchCondition.categoryName" class="form-control">
+      <option
+        v-for="categoryOption in categoryOptions"
+        :key="categoryOption.value"
+        :value="categoryOption.value"
+      >
+        {{ categoryOption.label }}
+      </option>
+    </select>
     <!-- 검색어 -->
     <input
       type="text"
@@ -68,22 +76,56 @@ import moment from "moment";
 import { getQueryParamOrDefault } from "@/utils/util";
 
 export default {
+  props: {
+    categories: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
-    //TOOD : 관리자 카테고리 관리에서 등록된 공지사항 카테고리 목록 가져오기
     return {
+      /**
+       * 검색 조건을 담는 객체
+       */
       searchCondition: this.createDefaultSearchCondition(),
     };
   },
+  computed: {
+    /**
+     * 카테고리 select-option 목록을 생성합니다.
+     */
+    categoryOptions() {
+      const defaultOption = { value: "", label: "전체" };
+      const options = this.categories.map((category) => ({
+        value: category,
+        label: category,
+      }));
+      return [defaultOption, ...options];
+    },
+  },
   mounted() {
+    // 컴포넌트가 마운트되면 기본 검색 조건을 이벤트로 전달합니다.
     this.$emit("emitSearchContion", this.searchCondition);
   },
   methods: {
+    /**
+     * 검색 버튼 클릭 이벤트 핸들러입니다.
+     * 현재 검색 조건을 부모 컴포넌트에 이벤트로 전달합니다.
+     */
     clickSearch() {
       this.$emit("emitSearchContion", this.searchCondition);
     },
+    /**
+     * 리스트 뷰 조건 변경 이벤트 핸들러입니다.
+     * 현재 검색 조건을 이벤트로 전달합니다.
+     */
     changeListViewCondition() {
       this.$emit("emitSearchContion", this.searchCondition);
     },
+    /**
+     * 기본 검색 조건 객체를 생성합니다.
+     * @returns {object} - 기본 검색 조건 객체
+     */
     createDefaultSearchCondition() {
       const now = moment().format("YYYY-MM-DD");
       const oneYearsAgo = moment().subtract(1, "year").format("YYYY-MM-DD");
@@ -97,6 +139,7 @@ export default {
         offset: getQueryParamOrDefault("offset", "0"),
         sortCriteria: getQueryParamOrDefault("sortCriteria", "createdAt"),
         orderBy: getQueryParamOrDefault("orderBy", "desc"),
+        categoryName: getQueryParamOrDefault("categoryName", ""),
       };
       return searchCondition;
     },

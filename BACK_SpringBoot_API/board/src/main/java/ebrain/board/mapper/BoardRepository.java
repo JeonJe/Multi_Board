@@ -41,4 +41,11 @@ public interface BoardRepository
      * @return 공지사항의 상세 내용
      */
     NoticeBoard getNoticeBoardDetail(int boardId);
+
+    /**
+     * 공지사항의 카테고리 목록을 가져옵니다.
+     * @return 카테고리 목록
+     */
+    List<String> getNoticeBoardCategories();
+
 }

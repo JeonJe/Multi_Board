@@ -91,8 +91,20 @@ const getNoticeBoardDetail = async (boardId) => {
   }
 };
 
+const getNoticeBoardCategories = async () => {
+  try {
+    const response = await api.get(
+      process.env.VUE_APP_API_BOARD_NOTICE_CATEGORIES
+    );
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default {
   getNoticeBoardList,
   getMarkNoticedBoardList,
   getNoticeBoardDetail,
+  getNoticeBoardCategories,
 };

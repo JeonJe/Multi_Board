@@ -9,31 +9,37 @@
 <mapper namespace="ebrain.board.mapper.BoardRepository">
     <sql id = "searchQuery">
         AND is_noticed = 0
-        <if test="searchText != ''">
+        <if test="searchText != null and searchText != ''">
             AND (title LIKE concat('%', #{searchText}, '%')
             OR content LIKE concat('%', #{searchText}, '%'))
+        </if>
+        <if test="categoryName != null and categoryName != ''">
+            AND nb.child_code_value IN (
+            SELECT cc.child_code_value FROM category_child_code AS cc WHERE cc.child_code_name = #{categoryName}
+            )
         </if>
         AND created_at BETWEEN #{startDate} AND DATE_ADD(#{endDate}, INTERVAL 1 DAY)
     </sql>
     <!-- user_id로 사용자 정보를 조회 -->
     <select id="searchNoticeBoards" parameterType="SearchConditionDTO" resultType="NoticeBoard">
-        SELECT *
-        FROM notice_board
+        SELECT nb.*, cc.child_code_name AS categoryName
+        FROM notice_board AS nb
+        JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
         WHERE 1=1
         <include refid="searchQuery" />
         ORDER BY
         <choose>
             <when test="sortCriteria == 'createdAt'">
-                 created_at
+                 nb.created_at
             </when>
             <when test="sortCriteria == 'title'">
-                 title
+                nb.title
             </when>
             <when test="sortCriteria == 'visitCount'">
-                 visit_count
+                nb.visit_count
             </when>
             <otherwise>
-                 created_at
+                nb.created_at
             </otherwise>
         </choose>
         <if test="orderBy == 'desc'">
@@ -48,14 +54,15 @@
     <!-- 검색 조건에 해당하는 공지 게시글의 개수를 조회 -->
     <select id="countNoticeBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
         SELECT COUNT(*)
-        FROM notice_board
+        FROM notice_board AS nb
         WHERE 1=1
         <include refid="searchQuery" />
     </select>
     <!-- 알림 표시된 공지 게시글 목록을 조회 -->
     <select id="getMarkedNoticedBoards" resultType="NoticeBoard">
-        SELECT *
-        FROM notice_board
+        SELECT nb.*, cc.child_code_name AS categoryName
+        FROM notice_board AS nb
+        JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
         WHERE is_noticed = 1
     </select>
     <!-- 알림 표시된 공지 게시글의 개수를 조회 -->
@@ -66,9 +73,18 @@
     </select>
     <!-- 공지사항의 상세 내용을 조회 -->
     <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="NoticeBoard">
-        SELECT *
-        FROM notice_board
-        WHERE board_id = #{boardId}
+        SELECT nb.*, cc.child_code_name AS categoryName
+        FROM notice_board AS nb
+        JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
+        WHERE nb.board_id = #{boardId}
+    </select>
+
+    <!--  공지사항의 카테고리 목록을 조회  -->
+    <select id="getNoticeBoardCategories" resultType="java.lang.String">
+        SELECT cc.child_code_name
+        FROM category_child_code cc
+        JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
+        WHERE cp.parent_code_name LIKE '%공지사항%'
     </select>
 
 

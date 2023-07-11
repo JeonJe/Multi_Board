@@ -41,4 +41,9 @@ public class NoticeBoard {
      */
     private int isNoticed;
 
+    /**
+     * 카테고리 값
+     */
+    private String categoryName;
+
 }

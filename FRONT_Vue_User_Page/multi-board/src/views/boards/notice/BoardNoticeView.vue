@@ -2,7 +2,7 @@
   <div>
     <div v-if="noticeInfo">
       <h1>공지사항</h1>
-      <p>분류 :</p>
+      <p>분류 : {{ noticeInfo.categoryName }}</p>
       <p>제목 : {{ noticeInfo.title }}</p>
       <p>생성일시 : {{ getFormattedDate(noticeInfo.createdAt) }}</p>
       <p>작성자 : {{ noticeInfo.userId }}</p>

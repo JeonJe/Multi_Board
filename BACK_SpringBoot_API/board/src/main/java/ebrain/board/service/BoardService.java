@@ -63,4 +63,15 @@ public class BoardService {
     public NoticeBoard getNoticeBoardDetail(int boardId) {
         return boardRepository.getNoticeBoardDetail(boardId);
     }
+
+    /**
+     * 공지사항의 카테고리 목록을 가져옵니다.
+     * @return 공지사항의 카테고리 목록
+     */
+    public List<String> getNoticeBoardCategories() {
+        return boardRepository.getNoticeBoardCategories();
+    }
+
+
+
 }

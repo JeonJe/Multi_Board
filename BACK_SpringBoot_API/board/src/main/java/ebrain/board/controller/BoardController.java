@@ -38,7 +38,6 @@ public class BoardController {
 
         List<NoticeBoard> markedNoticedBoards = boardService.getMarkedNoticedBoards();
         int countMarkedNoticedBoards = boardService.countMarkedNoticedBoards();
-        //TODO : 카테고리는?
 
         BoardSearchResponse boardSearchResponse = BoardSearchResponse
                 .builder()
@@ -85,6 +84,22 @@ public class BoardController {
 
         APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 상세 내용입니다.", noticeBoard);
         if (ObjectUtils.isEmpty(noticeBoard)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    /**
+     * 공지 게시판의 카테고리 목록을 가져옵니다.
+     * @return API 응답 객체
+     */
+    @GetMapping("/api/boards/notice/categories")
+    ResponseEntity<APIResponse> getNoticeBoardCategories(){
+        List<String> categories = boardService.getNoticeBoardCategories();
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 카테고리 목록입니다.", categories);
+        if (ObjectUtils.isEmpty(categories)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
