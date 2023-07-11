@@ -91,10 +91,11 @@ public class BoardController {
 
     /**
      * 공지 게시판의 카테고리 목록을 가져옵니다.
+     *
      * @return API 응답 객체
      */
     @GetMapping("/api/boards/notice/categories")
-    ResponseEntity<APIResponse> getNoticeBoardCategories(){
+    ResponseEntity<APIResponse> getNoticeBoardCategories() {
         List<String> categories = boardService.getNoticeBoardCategories();
 
         APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 카테고리 목록입니다.", categories);

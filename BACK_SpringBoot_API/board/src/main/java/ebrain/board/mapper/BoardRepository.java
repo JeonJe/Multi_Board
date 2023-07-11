@@ -55,6 +55,10 @@ public interface BoardRepository {
      */
     List<String> getNoticeBoardCategories();
 
+    /**
+     * 공지사항의 조회수를 1 증가시킵니다.
+     * @param boardId 게시글 ID
+     */
     void updateNoticeBoardVisitCount(int boardId);
 
 }
