@@ -1,22 +1,22 @@
 <template>
   <div>
     <!-- 처음 페이지 링크 -->
-    <a v-if="currentPage > 1" @click="clickPagenation(1)">&lt;&lt;&nbsp;</a>
+    <a v-if="currentPage > 1" @click="clickPagination(1)">&lt;&lt;&nbsp;</a>
     <!-- 이전 페이지 링크  -->
-    <a v-if="currentPage > 1" @click="clickPagenation(currentPage - 1)"
+    <a v-if="currentPage > 1" @click="clickPagination(currentPage - 1)"
       >&lt;&nbsp;</a
     >
     <template v-for="page in totalPages" :key="page">
       <!-- 현재 페이지 링크 -->
       <strong v-if="page === currentPage">{{ page }}</strong>
-      <a v-else @click="clickPagenation(page)">{{ page }}</a>
+      <a v-else @click="clickPagination(page)">{{ page }}</a>
     </template>
     <!-- 다음 페이지 링크 -->
-    <a v-if="currentPage < totalPages" @click="clickPagenation(currentPage + 1)"
+    <a v-if="currentPage < totalPages" @click="clickPagination(currentPage + 1)"
       >&nbsp;&gt;</a
     >
     <!-- 마지막 페이지 링크 -->
-    <a v-if="currentPage < totalPages" @click="clickPagenation(totalPages)"
+    <a v-if="currentPage < totalPages" @click="clickPagination(totalPages)"
       >&nbsp;&gt;&gt;</a
     >
   </div>
@@ -46,8 +46,8 @@ export default {
      *
      * @param {number} page - 이동할 페이지 번호
      */
-    clickPagenation(page) {
-      this.$emit("clickPagenation", page);
+    clickPagination(page) {
+      this.$emit("clickPagination", page);
     },
   },
 };

@@ -44,7 +44,6 @@ public class BoardController {
                 .searchNoticeBoards(searchResult)
                 .countNoticeBoards(countNoticeBoards)
                 .markNoticedBoards(markedNoticedBoards)
-                .countMarkNoticedBoards(countMarkedNoticedBoards)
                 .build();
 
         APIResponse apiResponse = ResponseUtil.SuccessWithData("검색조건에 해당하는 공지 게시글 목록입니다.", boardSearchResponse);

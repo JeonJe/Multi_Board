@@ -25,9 +25,5 @@ public class BoardSearchResponse {
      */
     private int countNoticeBoards;
 
-    /**
-     * 알림 표시된 게시글의 개수
-     */
-    private int countMarkNoticedBoards;
 
 }

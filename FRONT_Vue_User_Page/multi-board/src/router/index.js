@@ -3,7 +3,6 @@ import UserLogin from "../views/auth/UserLogin.vue";
 import UserSignup from "../views/auth/UserSignup.vue";
 
 import BoardNoticeList from "../views/boards/notice/BoardNoticeList.vue";
-import BoardNoticeWrite from "../views/boards/notice/BoardNoticeWrite.vue";
 import BoardNoticeView from "../views/boards/notice/BoardNoticeView.vue";
 
 const routes = [
@@ -21,11 +20,6 @@ const routes = [
     path: process.env.VUE_APP_BOARD_NOTICE_LIST,
     name: BoardNoticeList,
     component: BoardNoticeList,
-  },
-  {
-    path: `${process.env.VUE_APP_BOARD_NOTICE_WRITE}/:boardId`,
-    name: BoardNoticeWrite,
-    component: BoardNoticeWrite,
   },
   {
     path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/:boardId`,

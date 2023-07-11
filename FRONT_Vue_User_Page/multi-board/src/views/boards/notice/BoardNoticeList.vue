@@ -2,10 +2,10 @@
   <div class="container">
     <h1>공지사항</h1>
 
-    <!-- 게시글 카테고리를 pros로 전달 -->
+    <!-- 게시판 카테고리를 pros로 전달 -->
     <SearchForm
       :categories="categories"
-      @emitSearchContion="updateSearchCondtion"
+      @emitSearchContion="updateSearchCondition"
     />
 
     <!-- 게시글 리스트 -->
@@ -51,7 +51,7 @@
     <BoardPagination
       :currentPage="searchCondition.currentPage"
       :totalPages="totalPages"
-      @clickPagenation="updatePagination"
+      @clickPagination="updatePagination"
     />
   </div>
 </template>
@@ -72,7 +72,6 @@ export default {
       searchCondition: {},
       searchBoardList: [],
       markNoticedBoardList: [],
-      markNoticedBoardSize: 0,
       categories: [],
       totalPosts: 0,
       totalPages: 0,
@@ -97,7 +96,7 @@ export default {
      * 검색 조건을 업데이트하고 공지사항 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
-    updateSearchCondtion(searchCondition) {
+    updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
       this.getNoticeBoardList();
     },
@@ -145,13 +144,17 @@ export default {
       };
     },
     /**
-     * 공지 게시판 카테고리르 가져옵니다.
+     * 공지 게시판 카테고리를 가져옵니다.
      */
     async getNoticeBoardCategories() {
       try {
         const response = await boardService.getNoticeBoardCategories();
-        this.categories = response.data;
-        this.getNoticeBoardList();
+        if (response === "") {
+          alert("카테고리 목록이 없습니다.");
+        } else {
+          this.categories = response.data;
+          this.getNoticeBoardList();
+        }
       } catch (error) {
         console.log(error);
       }
