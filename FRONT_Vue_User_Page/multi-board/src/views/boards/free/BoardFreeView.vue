@@ -8,7 +8,7 @@
       <p>작성자 : {{ boardInfo.userId }}</p>
       <p>조회수 : {{ boardInfo.visitCount }}</p>
       <p>내용 : {{ boardInfo.content }}</p>
-      <router-link :to="moveToNoticeBoardList()"> 목록 </router-link>
+      <router-link :to="moveToFreeBoardList()"> 목록 </router-link>
     </div>
     <div v-else>
       <p>내용을 가져오는 중입니다.</p>
@@ -24,16 +24,16 @@ export default {
   data() {
     return {
       /**
-       * 공지사항 상세 정보 데이터
+       * 자유게시글의 상세 정보 데이터
        */
       boardInfo: null,
     };
   },
   mounted() {
     /**
-     * boardId에 해당하는 공지 게시글 상세 정보를 가져옵니다.
+     * boardId에 해당하는 자유 게시글 상세 정보를 가져옵니다.
      */
-    this.getNoticeBoardDetail(this.$route.params.boardId);
+    this.getFreeBoardDetail(this.$route.params.boardId);
   },
   methods: {
     /**
@@ -44,9 +44,9 @@ export default {
      * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
      * @param {number} boardId - 공지사항 게시글의 ID
      */
-    async getNoticeBoardDetail(boardId) {
+    async getFreeBoardDetail(boardId) {
       try {
-        const response = await boardService.getBoardDetail("notice", boardId);
+        const response = await boardService.getBoardDetail("free", boardId);
         if (response.data != "") {
           this.boardInfo = response.data;
         }
@@ -58,9 +58,9 @@ export default {
      * 공지사항 목록 페이지로 이동하는 함수입니다.
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
-    moveToNoticeBoardList() {
+    moveToFreeBoardList() {
       return {
-        path: process.env.VUE_APP_BOARD_NOTICE_LIST,
+        path: process.env.VUE_APP_BOARD_FREE_LIST,
         query: this.$route.query,
       };
     },

@@ -8,38 +8,27 @@
 -->
 <mapper namespace="ebrain.board.mapper.BoardRepository">
     <sql id = "searchQuery">
-        AND is_noticed = 0
         <if test="searchText != null and searchText != ''">
             AND (title LIKE concat('%', #{searchText}, '%')
             OR content LIKE concat('%', #{searchText}, '%'))
         </if>
-        <if test="categoryName != null and categoryName != ''">
-            AND nb.child_code_value IN (
-            SELECT cc.child_code_value FROM category_child_code AS cc WHERE cc.child_code_name = #{categoryName}
-            )
-        </if>
         AND created_at BETWEEN #{startDate} AND DATE_ADD(#{endDate}, INTERVAL 1 DAY)
     </sql>
-    <!-- user_id로 사용자 정보를 조회 -->
-    <select id="searchNoticeBoards" parameterType="SearchConditionDTO" resultType="NoticeBoard">
-        SELECT nb.*, cc.child_code_name AS categoryName
-        FROM notice_board AS nb
-        JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
-        WHERE 1=1
-        <include refid="searchQuery" />
+
+    <sql id="orderQuery">
         ORDER BY
         <choose>
             <when test="sortCriteria == 'createdAt'">
-                 nb.created_at
+                created_at
             </when>
             <when test="sortCriteria == 'title'">
-                nb.title
+                title
             </when>
             <when test="sortCriteria == 'visitCount'">
-                nb.visit_count
+                visit_count
             </when>
             <otherwise>
-                nb.created_at
+                created_at
             </otherwise>
         </choose>
         <if test="orderBy == 'desc'">
@@ -48,9 +37,26 @@
         <if test="orderBy == 'asc'">
             ASC
         </if>
+    </sql>
+
+    <!-- 검색 조건에 해당하는 공지 게시글 리스트 조회  -->
+    <select id="searchNoticeBoards" parameterType="SearchConditionDTO" resultType="BoardDTO">
+        SELECT nb.*, cc.child_code_name AS categoryName
+        FROM notice_board AS nb
+        JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
+        WHERE 1=1
+        AND is_noticed = 0
+        <if test="categoryName != null and categoryName != ''">
+            AND nb.child_code_value IN (
+            SELECT cc.child_code_value FROM category_child_code AS cc WHERE cc.child_code_name = #{categoryName}
+            )
+        </if>
+        <include refid="searchQuery" />
+        <include refid="orderQuery" />
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
+
     <!-- 검색 조건에 해당하는 공지 게시글의 개수를 조회 -->
     <select id="countNoticeBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
         SELECT COUNT(*)
@@ -58,21 +64,24 @@
         WHERE 1=1
         <include refid="searchQuery" />
     </select>
+
     <!-- 알림 표시된 공지 게시글 목록을 조회 -->
-    <select id="getMarkedNoticedBoards" resultType="NoticeBoard">
+    <select id="getMarkedNoticedBoards" resultType="BoardDTO">
         SELECT nb.*, cc.child_code_name AS categoryName
         FROM notice_board AS nb
         JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
         WHERE is_noticed = 1
     </select>
+
     <!-- 알림 표시된 공지 게시글의 개수를 조회 -->
     <select id="countMarkedNoticedBoards" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM notice_board
         WHERE is_noticed = 1
     </select>
+
     <!-- 공지사항의 상세 내용을 조회 -->
-    <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="NoticeBoard">
+    <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
         SELECT nb.*, cc.child_code_name AS categoryName
         FROM notice_board AS nb
         JOIN category_child_code AS cc ON nb.child_code_value = cc.child_code_value
@@ -86,12 +95,63 @@
         JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
         WHERE cp.parent_code_name LIKE '%공지사항%'
     </select>
+
     <!-- 공지 게시글의 방문수를 1 증가    -->
     <update id="updateNoticeBoardVisitCount" parameterType="java.lang.Integer">
         UPDATE notice_board
         SET visit_count = visit_count + 1
         WHERE board_id = #{boardId}
     </update>
+
+    <!-- 검색 조건에 해당하는 자유 게시글 리스트 조회  -->
+    <select id="searchFreeBoards" parameterType="SearchConditionDTO" resultType="BoardDTO">
+        SELECT fb.*, cc.child_code_name AS categoryName
+        FROM free_board AS fb
+        JOIN category_child_code AS cc ON fb.child_code_value = cc.child_code_value
+        WHERE 1=1
+        <if test="categoryName != null and categoryName != ''">
+            AND fb.child_code_value IN (
+            SELECT cc.child_code_value FROM category_child_code AS cc WHERE cc.child_code_name = #{categoryName}
+            )
+        </if>
+        <include refid="searchQuery" />
+        <include refid="orderQuery" />
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <!-- 검색 조건에 해당하는 자유 게시글의 개수를 조회 -->
+    <select id="countFreeBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM free_board AS fb
+        WHERE 1=1
+        <include refid="searchQuery" />
+    </select>
+
+    <!-- 공지사항의 상세 내용을 조회 -->
+    <select id="getFreeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
+        SELECT fb.*, cc.child_code_name AS categoryName
+        FROM free_board AS fb
+                 JOIN category_child_code AS cc ON fb.child_code_value = cc.child_code_value
+        WHERE fb.board_id = #{boardId}
+    </select>
+
+    <!--  공지사항의 카테고리 목록을 조회  -->
+    <select id="getFreeBoardCategories" resultType="java.lang.String">
+        SELECT cc.child_code_name
+        FROM category_child_code cc
+                 JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
+        WHERE cp.parent_code_name LIKE '%자유%'
+    </select>
+
+    <!-- 공지 게시글의 방문수를 1 증가    -->
+    <update id="updateFreeBoardVisitCount" parameterType="java.lang.Integer">
+        UPDATE free_board
+        SET visit_count = visit_count + 1
+        WHERE board_id = #{boardId}
+    </update>
+
+
 
 
 </mapper>

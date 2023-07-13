@@ -1,6 +1,6 @@
 package ebrain.board.service;
 
-import ebrain.board.vo.NoticeBoard;
+import ebrain.board.dto.BoardDTO;
 import ebrain.board.dto.SearchConditionDTO;
 import ebrain.board.mapper.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class BoardService {
      * @param searchParamsDTO 검색 조건 DTO
      * @return 공지 게시글 목록
      */
-    public List<NoticeBoard> searchNoticeBoards(SearchConditionDTO searchParamsDTO) {
+    public List<BoardDTO> searchNoticeBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.searchNoticeBoards(searchParamsDTO);
     }
 
@@ -41,7 +41,7 @@ public class BoardService {
      *
      * @return 알림 표시된 게시글 목록
      */
-    public List<NoticeBoard> getMarkedNoticedBoards() {
+    public List<BoardDTO> getMarkedNoticedBoards() {
         return boardRepository.getMarkedNoticedBoards();
     }
 
@@ -60,7 +60,7 @@ public class BoardService {
      * @param boardId 게시글 ID
      * @return 공지사항의 상세 내용
      */
-    public NoticeBoard getNoticeBoardDetail(int boardId) {
+    public BoardDTO getNoticeBoardDetail(int boardId) {
         boardRepository.updateNoticeBoardVisitCount(boardId);
         return boardRepository.getNoticeBoardDetail(boardId);
     }
@@ -72,6 +72,46 @@ public class BoardService {
      */
     public List<String> getNoticeBoardCategories() {
         return boardRepository.getNoticeBoardCategories();
+    }
+
+    /**
+     * 검색 조건에 해당하는 자유 게시글 목록을 조회합니다.
+     *
+     * @param searchParamsDTO 검색 조건 DTO
+     * @return 자유 게시글 목록
+     */
+    public List<BoardDTO> searchFreeBoards(SearchConditionDTO searchParamsDTO) {
+        return boardRepository.searchFreeBoards(searchParamsDTO);
+    }
+
+    /**
+     * 검색 조건에 해당하는 자유 게시글의 개수를 조회합니다.
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 공지 게시글의 개수
+     */
+    public int countFreeBoards(SearchConditionDTO searchConditionDTO) {
+        return boardRepository.countFreeBoards(searchConditionDTO);
+    }
+
+    /**
+     * 자유게시글의 상세 내용을 조회합니다.
+     *
+     * @param boardId 게시글 ID
+     * @return 자유게시글 상세 내용
+     */
+    public BoardDTO getFreeBoardDetail(int boardId) {
+        boardRepository.updateFreeBoardVisitCount(boardId);
+        return boardRepository.getFreeBoardDetail(boardId);
+    }
+
+    /**
+     * 공지사항의 카테고리 목록을 가져옵니다.
+     *
+     * @return 공지사항의 카테고리 목록
+     */
+    public List<String> getFreeBoardCategories() {
+        return boardRepository.getFreeBoardCategories();
     }
 
 }

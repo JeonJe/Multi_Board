@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1>공지사항</h1>
+    <h1>자유게시판</h1>
 
     <!-- 게시판 카테고리를 pros로 전달 -->
     <SearchForm
@@ -21,19 +21,7 @@
         </tr>
       </thead>
       <tbody>
-        <!-- 알림 표시된 공지 게시글 -->
-        <tr v-for="item in markNoticedBoardList" :key="item.boardId">
-          <td>{{}}</td>
-          <td>{{ item.categoryName }}</td>
-          <router-link :to="getBoardDetail(item.boardId)">
-            {{ item.title }}
-            <span v-if="IsNewBoard(item.createdAt)">New</span>
-          </router-link>
-          <td>{{ item.visitCount }}</td>
-          <td>{{ getFormattedDate(item.createdAt) }}</td>
-          <td>{{ item.userId }}</td>
-        </tr>
-        <!-- 알림 표시되지 않은 공지 게시글 -->
+        <!-- 자유게시글 -->
         <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
           <td>{{ index + 1 }}</td>
           <td>{{ item.categoryName }}</td>
@@ -71,7 +59,6 @@ export default {
     return {
       searchCondition: {},
       searchBoardList: [],
-      markNoticedBoardList: [],
       categories: [],
       totalPosts: 0,
       totalPages: 0,
@@ -81,7 +68,7 @@ export default {
     /**
      * 게시판 카테고리를 가져옵니다.
      */
-    this.getNoticeBoardCategories();
+    this.getFreeBoardCategories();
   },
   methods: {
     /**
@@ -93,29 +80,27 @@ export default {
      */
     IsNewBoard,
     /**
-     * 검색 조건을 업데이트하고 공지사항 목록을 가져오는 함수입니다.
+     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
     updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
-      this.getNoticeBoardList();
+      this.getFreeBoardList();
     },
     /**
-     * 공지사항 목록을 가져오는 비동기 함수입니다.
+     * 자유게시글 목록을 가져오는 비동기 함수입니다.
      */
-    async getNoticeBoardList() {
+    async getFreeBoardList() {
       try {
         const response = await boardService.getBoardList(
-          "notice",
+          "free",
           this.searchCondition
         );
+        console.log(response);
         if (response === "") {
-          alert("표시 할 공지사항이 없습니다.");
+          alert("표시 할 자유게시글이 없습니다.");
         } else {
-          console.log(response);
           this.searchBoardList = response.data.searchBoards;
-          this.markNoticedBoardList = response.data.markNoticedBoards;
-          this.countMarkNoticedBoards = response.data.countMarkNoticedBoards;
           this.totalPosts = response.data.countSearchBoards;
           this.totalPages = Math.ceil(
             this.totalPosts / this.searchCondition.pageSize
@@ -132,7 +117,7 @@ export default {
     updatePagination(page) {
       this.searchCondition.currentPage = page;
       this.searchCondition.offset = (page - 1) * this.searchCondition.pageSize;
-      this.getNoticeBoardList();
+      this.getFreeBoardList();
     },
     /**
      * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수입니다.
@@ -141,21 +126,21 @@ export default {
      */
     getBoardDetail(boardId) {
       return {
-        path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/${boardId}`,
+        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
     },
     /**
      * 공지 게시판 카테고리를 가져옵니다.
      */
-    async getNoticeBoardCategories() {
+    async getFreeBoardCategories() {
       try {
-        const response = await boardService.getBoardCategories("notice");
+        const response = await boardService.getBoardCategories("free");
         if (response === "") {
           alert("카테고리 목록이 없습니다.");
         } else {
           this.categories = response.data;
-          this.getNoticeBoardList();
+          this.getFreeBoardList();
         }
       } catch (error) {
         console.log(error);

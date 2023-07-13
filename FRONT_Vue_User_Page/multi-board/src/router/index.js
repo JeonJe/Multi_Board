@@ -1,9 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 import UserLogin from "../views/auth/UserLogin.vue";
 import UserSignup from "../views/auth/UserSignup.vue";
-
 import BoardNoticeList from "../views/boards/notice/BoardNoticeList.vue";
 import BoardNoticeView from "../views/boards/notice/BoardNoticeView.vue";
+import BoardFreeList from "../views/boards/free/BoardFreeList.vue";
+import BoardFreeView from "../views/boards/free/BoardFreeView.vue";
 
 const routes = [
   {
@@ -25,6 +26,16 @@ const routes = [
     path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/:boardId`,
     name: BoardNoticeView,
     component: BoardNoticeView,
+  },
+  {
+    path: process.env.VUE_APP_BOARD_FREE_LIST,
+    name: BoardFreeList,
+    component: BoardFreeList,
+  },
+  {
+    path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/:boardId`,
+    name: BoardFreeView,
+    component: BoardFreeView,
   },
 ];
 

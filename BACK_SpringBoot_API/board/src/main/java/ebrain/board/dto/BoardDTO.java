@@ -1,11 +1,11 @@
-package ebrain.board.vo;
+package ebrain.board.dto;
 
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class NoticeBoard {
+public class BoardDTO {
     /**
      * 공지 게시글 ID
      */
@@ -37,13 +37,12 @@ public class NoticeBoard {
     private int visitCount;
 
     /**
-     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
-     */
-    private int isNoticed;
-
-    /**
      * 카테고리 값
      */
     private String categoryName;
 
+    /**
+     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
+     */
+    private int isNoticed;
 }
