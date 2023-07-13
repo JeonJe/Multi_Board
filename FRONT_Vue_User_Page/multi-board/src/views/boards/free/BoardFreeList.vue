@@ -9,6 +9,14 @@
     />
 
     <!-- 게시글 리스트 -->
+    <div>
+      <router-link
+        v-if="showRegisterButton"
+        :to="clickBoardWriteBtn(this.searchCondition)"
+      >
+        <button>글 등록</button>
+      </router-link>
+    </div>
     <table>
       <thead>
         <tr>
@@ -48,6 +56,7 @@
 import SearchForm from "@/components/SearchForm.vue";
 import BoardPagination from "@/components/BoardPagination.vue";
 import boardService from "@/services/board-service";
+import userService from "@/services/user-service";
 import { getFormattedDate, IsNewBoard } from "@/utils/util";
 
 export default {
@@ -62,6 +71,7 @@ export default {
       categories: [],
       totalPosts: 0,
       totalPages: 0,
+      showRegisterButton: false,
     };
   },
   mounted() {
@@ -69,6 +79,7 @@ export default {
      * 게시판 카테고리를 가져옵니다.
      */
     this.getFreeBoardCategories();
+    this.checkAuthentication();
   },
   methods: {
     /**
@@ -131,7 +142,7 @@ export default {
       };
     },
     /**
-     * 공지 게시판 카테고리를 가져옵니다.
+     * 자유 게시판 카테고리를 가져옵니다.
      */
     async getFreeBoardCategories() {
       try {
@@ -145,6 +156,21 @@ export default {
       } catch (error) {
         console.log(error);
       }
+    },
+    async checkAuthentication() {
+      try {
+        const hasPermission = await userService.getAuthenticationStatus();
+        this.showRegisterButton = hasPermission;
+      } catch (error) {
+        this.showRegisterButton = false; // 토큰 확인 실패 시 버튼을 숨김
+        console.log(error);
+      }
+    },
+    clickBoardWriteBtn(searchCondition) {
+      return {
+        path: process.env.VUE_APP_BOARD_FREE_WRITE,
+        query: searchCondition,
+      };
     },
   },
 };

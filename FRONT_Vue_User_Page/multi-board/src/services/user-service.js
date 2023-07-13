@@ -107,13 +107,35 @@ const checkJwtToken = async () => {
     api.defaults.headers.common[
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
-    console.log(localStorage.getItem("jwt"));
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_TOKEN);
-    console.log(response.data);
+    return response.data;
   } catch (error) {
     const res = error.response.data;
-    alert(res.data);
+    console.log(res.data);
   }
 };
 
-export default { signupUser, loginUser, checkDuplicateId, checkJwtToken };
+/**
+ * JWT 토큰 확인을 위한 함수
+ * @returns {Promise<void>}
+ */
+const getAuthenticationStatus = async () => {
+  try {
+    api.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${localStorage.getItem("jwt")}`;
+    const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
+    return response.data;
+  } catch (error) {
+    const res = error.response.data;
+    console.log(res.data);
+  }
+};
+
+export default {
+  signupUser,
+  loginUser,
+  checkDuplicateId,
+  checkJwtToken,
+  getAuthenticationStatus,
+};

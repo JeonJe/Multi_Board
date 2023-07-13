@@ -5,6 +5,7 @@ import BoardNoticeList from "../views/boards/notice/BoardNoticeList.vue";
 import BoardNoticeView from "../views/boards/notice/BoardNoticeView.vue";
 import BoardFreeList from "../views/boards/free/BoardFreeList.vue";
 import BoardFreeView from "../views/boards/free/BoardFreeView.vue";
+import BoardFreeWrite from "../views/boards/free/BoardFreeWrite.vue";
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/:boardId`,
     name: BoardFreeView,
     component: BoardFreeView,
+  },
+  {
+    path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/:boardId?`,
+    name: BoardFreeWrite,
+    component: BoardFreeWrite,
   },
 ];
 
