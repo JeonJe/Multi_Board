@@ -11,7 +11,9 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -106,4 +108,19 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> handleIOException(IOException e) {
+        // IOException에 대한 처리 로직
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(e.getMessage());
+    }
+
+    @ExceptionHandler(MultipartException.class)
+    public ResponseEntity<?> handleMultipartException(MultipartException e) {
+        // MultipartException에 대한 처리 로직
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(e.getMessage());
+    }
+
 }

@@ -144,7 +144,7 @@
         WHERE board_id = #{boardId}
     </update>
 
-    <insert id="saveFreeBoardInfo" parameterType="BoardDTO">
+    <insert id="saveFreeBoardInfo" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO free_board
         (title, content, user_id, created_at, visit_count, child_code_value)
         VALUES(#{title}, #{content},#{userId},now(),0,#{categoryValue})

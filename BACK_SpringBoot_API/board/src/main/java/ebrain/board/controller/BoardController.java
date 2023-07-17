@@ -10,6 +10,7 @@ import ebrain.board.response.APIResponse;
 import ebrain.board.service.BoardService;
 import ebrain.board.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -173,17 +174,21 @@ public class BoardController {
     }
 
     @PostMapping("/api/boards/free")
-    ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @ModelAttribute BoardDTO boardDTO) {
+    ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
 
         if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
-        } else{
-            APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
-            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
+
+        boardService.saveFreeBoardInfo(boardDTO);
+
+        //TODO : 첨부파일 저장 + 유효성 검증
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
 

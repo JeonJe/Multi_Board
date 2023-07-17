@@ -1,11 +1,17 @@
 package ebrain.board.service;
 
+import ebrain.board.dto.AttachmentDTO;
 import ebrain.board.dto.BoardDTO;
 import ebrain.board.dto.CategoryDTO;
 import ebrain.board.dto.SearchConditionDTO;
+import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.BoardRepository;
+import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,9 +19,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
     /**
+     * 파일 업로드 경로
+     */
+    @Value("${UPLOAD_PATH}")
+    private String UPLOAD_PATH;
+
+    /**
      * 게시글 저장소 객체
      */
     private final BoardRepository boardRepository;
+
+    /**
+     * 첨부파일 저장소 객체
+     */
+    private final AttachmentRepository attachmentRepository;
 
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
@@ -115,8 +132,28 @@ public class BoardService {
         return boardRepository.getFreeBoardCategories();
     }
 
-    public void saveFreeBoardInfo(BoardDTO boardDTO) {
-        boardRepository.saveFreeBoardInfo(boardDTO);
+    public void saveFreeBoardInfo(BoardDTO boardDTO) throws Exception {
+
+        int boardId = boardRepository.saveFreeBoardInfo(boardDTO);
+
+        List<MultipartFile> newFiles = boardDTO.getNewFiles();
+
+        if (newFiles != null){
+            for (MultipartFile file : newFiles) {
+                if (!file.isEmpty()) {
+                    String originName = file.getOriginalFilename();
+                    String numberedFileName = FileUtil.uploadFile(file, UPLOAD_PATH).getName();
+                    AttachmentDTO attachment = AttachmentDTO.builder()
+                            .boardId(boardId)
+                            .fileName(numberedFileName)
+                            .originFileName(originName)
+                            .build();
+                    attachmentRepository.saveAttachment(attachment);
+                }
+            }
+        }
+
+
     }
 
 }

@@ -29,13 +29,27 @@
           required
         ></textarea>
       </form>
-      <input
-        type="file"
-        id="attachment1"
-        name="files"
-        class="form-control-file mb-2"
-        @change="handleFileChange($event)"
-      />
+      <div v-for="(file, index) in fileInputBoxes" :key="index">
+        <input
+          type="file"
+          :id="'attachment' + (index + 1)"
+          :name="files"
+          @change="handleFileChange($event)"
+        />
+        <button
+          type="button"
+          @click="clickRemoveFile(index, file.attachmentId)"
+        >
+          삭제
+        </button>
+      </div>
+      <button
+        type="button"
+        @click="clickAddFile"
+        v-show="fileInputBoxes.length < 5"
+      >
+        첨부파일 추가
+      </button>
       <button type="button" @click="clickBoardInfoSubmit">
         {{ isUpdate ? "수정" : "등록" }}
       </button>
@@ -59,9 +73,12 @@ export default {
         userId: "",
         title: "",
         content: "",
+        getFiles: [],
         newFiles: [],
         deletedFiles: [],
       },
+      fileInputBoxes: [],
+      maxAttachments: 5,
     };
   },
   computed: {
@@ -86,17 +103,26 @@ export default {
       this.isUpdate = true;
       this.boardId = boardId;
     } else {
-      // write
+      // 글쓰기
       this.isUpdate = false;
       this.initBoardInfo();
     }
   },
   methods: {
     handleFileChange(event) {
-      // 선택한 파일
       const file = event.target.files[0];
-
       this.boardInfo.newFiles.push(file);
+    },
+    clickAddFile() {
+      console.log(this.fileInputBoxes);
+      this.fileInputBoxes.push({});
+    },
+    clickRemoveFile(index, attachmentId) {
+      this.fileInputBoxes.splice(index, 1);
+      // 서버에 저장되어 삭제가 필요한 파일
+      if (attachmentId !== undefined) {
+        this.boardInfo.deletedFiles.push(attachmentId);
+      }
     },
     /**
      * 자유 게시판 카테고리를 가져옵니다.
@@ -145,12 +171,8 @@ export default {
       this.boardInfo.newFiles.forEach((file) => {
         newBoardInfo.append(`newFiles`, file);
       });
-      // 폼 객체 key 와 value 값을 순회.
-      let entries = newBoardInfo.entries();
-      for (const pair of entries) {
-        console.log(pair[0] + ", " + pair[1]);
-      }
       boardService.saveBoardInfo("free", newBoardInfo);
+      this.moveToFreeBoardList();
     },
   },
 };

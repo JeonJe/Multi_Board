@@ -99,7 +99,7 @@ public interface BoardRepository {
      */
     void updateFreeBoardVisitCount(int boardId);
 
-    void saveFreeBoardInfo(BoardDTO boardDTO);
+    int saveFreeBoardInfo(BoardDTO boardDTO);
 
 
 
