@@ -67,7 +67,7 @@
     <select id="getMarkedNoticedBoards" resultType="BoardDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName
         FROM notice_board AS target_board
-        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         WHERE is_noticed = 1
     </select>
 
@@ -82,7 +82,7 @@
     <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName
         FROM notice_board AS target_board
-        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         WHERE target_board.board_id = #{boardId}
     </select>
 
@@ -90,7 +90,7 @@
     <select id="getNoticeBoardCategories" resultType="CategoryDTO">
         SELECT  cc.child_code_name as categoryName ,cc.child_code_value as categoryValue
         FROM category_child_code cc
-        JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
+                 JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
         WHERE cp.parent_code_name LIKE '%공지사항%'
     </select>
 
@@ -125,7 +125,7 @@
     <select id="getFreeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName
         FROM free_board AS target_board
-        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         WHERE target_board.board_id = #{boardId}
     </select>
 
@@ -133,7 +133,7 @@
     <select id="getFreeBoardCategories" resultType="CategoryDTO">
         SELECT cc.child_code_name as categoryName ,cc.child_code_value as categoryValue
         FROM category_child_code cc
-        JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
+                 JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
         WHERE cp.parent_code_name LIKE '%자유%'
     </select>
 
@@ -144,9 +144,9 @@
         WHERE board_id = #{boardId}
     </update>
 
-    <insert id="saveFreeBoardInfo" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="boardId">
+    <insert id="saveFreeBoardInfo" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="boardId" >
         INSERT INTO free_board
-        (title, content, user_id, created_at, visit_count, child_code_value)
+            (title, content, user_id, created_at, visit_count, child_code_value)
         VALUES(#{title}, #{content},#{userId},now(),0,#{categoryValue})
     </insert>
 

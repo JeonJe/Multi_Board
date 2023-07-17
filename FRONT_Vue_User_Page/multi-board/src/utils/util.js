@@ -32,4 +32,14 @@ const IsNewBoard = (createdAt) => {
   return createdDate.isAfter(sevenDaysAgo);
 };
 
-export { getQueryParamOrDefault, getFormattedDate, IsNewBoard };
+const downloadAttachment = (attachmentId) => {
+  const port = 8080; // 원하는 포트 번호로 수정
+  return `http://localhost:${port}/api/attachments/${attachmentId}`;
+};
+
+export {
+  getQueryParamOrDefault,
+  getFormattedDate,
+  IsNewBoard,
+  downloadAttachment,
+};

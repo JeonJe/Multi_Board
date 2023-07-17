@@ -8,6 +8,13 @@
       <p>작성자 : {{ boardInfo.userId }}</p>
       <p>조회수 : {{ boardInfo.visitCount }}</p>
       <p>내용 : {{ boardInfo.content }}</p>
+      <a
+        v-for="(attachment, index) in boardInfo.boardAttachments"
+        :key="index"
+        :href="downloadAttachment(attachment.attachmentId)"
+      >
+        {{ attachment.originFileName }}<br />
+      </a>
       <router-link :to="moveToFreeBoardList()"> 목록으로 </router-link>
     </div>
     <div v-else>
@@ -18,7 +25,7 @@
 
 <script>
 import boardService from "@/services/board-service";
-import { getFormattedDate } from "@/utils/util";
+import { getFormattedDate, downloadAttachment } from "@/utils/util";
 
 export default {
   data() {
@@ -40,6 +47,7 @@ export default {
      * util의 날짜 포맷을 변환하는 함수입니다.
      */
     getFormattedDate,
+    downloadAttachment,
     /**
      * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
      * @param {number} boardId - 공지사항 게시글의 ID

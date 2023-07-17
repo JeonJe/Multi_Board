@@ -2,6 +2,7 @@ package ebrain.board.utils;
 
 import ebrain.board.dto.AttachmentDTO;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +17,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class FileUtil {
-    /**
-     * 파일을 업로드하는 메서드
-     *
-     * @param file        업로드할 파일
-     * @param uploadPath  파일 업로드 경로
-     * @return 업로드된 파일의 이름
-     * @throws Exception 파일 업로드 중 발생한 예외
-     */
-    //TODO : 이름만 넘겨주기보다 파일로 넘겨서 나중에 사용하기 용이하게 처리
-    public static File uploadFile(MultipartFile file, String uploadPath) throws IOException {
+
+    public static File uploadFile(MultipartFile file, String uploadPath) throws Exception {
         String fileName = file.getOriginalFilename();
         String baseName = FilenameUtils.getBaseName(fileName);
         String extension = FilenameUtils.getExtension(fileName);
@@ -54,9 +47,9 @@ public class FileUtil {
      * @return 파일 다운로드를 위한 ResponseEntity
      * @throws IOException IO 예외 발생 시
      */
-    public static ResponseEntity<Resource> fileDownload(AttachmentDTO attachment, String UPLOAD_PATH) throws IOException {
         // 파일을 읽어올 InputStream을 생성합니다.
-        String filePath = UPLOAD_PATH + File.separator + attachment.getFileName();
+    public static ResponseEntity<Resource> fileDownload(AttachmentDTO attachment, String uploadPath) throws IOException {
+        String filePath = uploadPath + File.separator + attachment.getFileName();
         File file = new File(filePath);
 
         // 파일이 존재하는지 확인합니다.

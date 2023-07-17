@@ -45,6 +45,10 @@ public class BoardDTO {
      * 방문 횟수
      */
     private int visitCount;
+    /**
+     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
+     */
+    private int isNoticed;
 
     /**
      * 카테고리 이름
@@ -58,18 +62,19 @@ public class BoardDTO {
     private String categoryName;
 
     /**
-     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
-     */
-    private int isNoticed;
-
-    /**
      * 삭제할 첨부 파일의 ID 목록
      */
-    private List<Integer> deletedFiles;
+    private List<Integer> deletedAttachmentIDs;
 
     /**
      * 업로드된 첨부 파일 목록
      */
-    private List<MultipartFile> newFiles;
+    private List<MultipartFile> uploadAttachments;
+
+    /**
+     * 업로드된 첨부 파일 목록
+     */
+    private List<AttachmentDTO> boardAttachments;
+
 
 }

@@ -1,5 +1,6 @@
 package ebrain.board.controller;
 
+import ebrain.board.dto.AttachmentDTO;
 import ebrain.board.dto.BoardDTO;
 import ebrain.board.dto.CategoryDTO;
 import ebrain.board.exception.AppException;
@@ -7,7 +8,9 @@ import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.BoardSearchResponse;
 import ebrain.board.dto.SearchConditionDTO;
 import ebrain.board.response.APIResponse;
+import ebrain.board.service.AttachmentService;
 import ebrain.board.service.BoardService;
+import ebrain.board.utils.FileUtil;
 import ebrain.board.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -15,6 +18,8 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +35,18 @@ public class BoardController {
      * 유저 서비스
      */
     private final BoardService boardService;
+
+    /**
+     * 첨부파일 서비스
+     */
+    private final AttachmentService attachmentService;
+
+    /**
+     * 파일 업로드 경로
+     */
+    @Value("${UPLOAD_PATH}")
+    private String UPLOAD_PATH;
+
 
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 가져옵니다.
@@ -185,10 +202,17 @@ public class BoardController {
 
         boardService.saveFreeBoardInfo(boardDTO);
 
-        //TODO : 첨부파일 저장 + 유효성 검증
-
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @GetMapping("api/attachments/{attachmentId}")
+    public ResponseEntity<Resource> downloadAttachment(@PathVariable @NotEmpty int attachmentId)
+            throws Exception{
+
+            AttachmentDTO attachment = attachmentService.getAttachmentByAttachmentId(attachmentId);
+            return FileUtil.fileDownload(attachment, UPLOAD_PATH);
+
     }
 
 

@@ -14,19 +14,19 @@
         VALUES (#{boardId}, #{fileName}, #{originFileName})
     </insert>
 
-<!--    &lt;!&ndash; 게시글 ID에 해당하는 첨부 파일 정보 조회 &ndash;&gt;-->
-<!--    <select id="getAttachmentsByBoardId" parameterType="int" resultType="AttachmentVO">-->
-<!--        SELECT attachment_id, board_id, filename, origin_filename AS originName-->
-<!--        FROM attachment-->
-<!--        WHERE board_id = #{boardId}-->
-<!--    </select>-->
+    <!-- 게시글 ID에 해당하는 첨부 파일 정보 조회 -->
+    <select id="getAttachmentsByBoardId" parameterType="int" resultType="AttachmentDTO">
+        SELECT attachment_id, board_id, filename, origin_filename AS originFileName
+        FROM attachments
+        WHERE board_id = #{boardId}
+    </select>
 
-<!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 정보 조회 &ndash;&gt;-->
-<!--    <select id="getAttachmentInfoByAttachmentId" parameterType="int" resultType="AttachmentVO">-->
-<!--        SELECT attachment_id, board_id, filename, origin_filename AS originName-->
-<!--        FROM attachment-->
-<!--        WHERE attachment_id = #{attachmentId}-->
-<!--    </select>-->
+    <!-- 첨부 파일 ID에 해당하는 첨부 파일 정보 조회 -->
+    <select id="getAttachmentByAttachmentId" parameterType="int" resultType="AttachmentDTO">
+        SELECT attachment_id, board_id, filename, origin_filename AS originName
+        FROM attachments
+        WHERE attachment_id = #{attachmentId}
+    </select>
 
 <!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 삭제 &ndash;&gt;-->
 <!--    <delete id="deleteAttachmentByAttachmentId" parameterType="int">-->

@@ -8,7 +8,6 @@ import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.BoardRepository;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -120,7 +119,12 @@ public class BoardService {
      */
     public BoardDTO getFreeBoardDetail(int boardId) {
         boardRepository.updateFreeBoardVisitCount(boardId);
-        return boardRepository.getFreeBoardDetail(boardId);
+        List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
+        BoardDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
+        boardDTO.setBoardAttachments(attachments);
+
+        return boardDTO;
+
     }
 
     /**
@@ -134,17 +138,17 @@ public class BoardService {
 
     public void saveFreeBoardInfo(BoardDTO boardDTO) throws Exception {
 
-        int boardId = boardRepository.saveFreeBoardInfo(boardDTO);
+        boardRepository.saveFreeBoardInfo(boardDTO);
 
-        List<MultipartFile> newFiles = boardDTO.getNewFiles();
+        List<MultipartFile> newFiles = boardDTO.getUploadAttachments();
 
-        if (newFiles != null){
+        if (newFiles != null) {
             for (MultipartFile file : newFiles) {
                 if (!file.isEmpty()) {
                     String originName = file.getOriginalFilename();
                     String numberedFileName = FileUtil.uploadFile(file, UPLOAD_PATH).getName();
                     AttachmentDTO attachment = AttachmentDTO.builder()
-                            .boardId(boardId)
+                            .boardId(boardDTO.getBoardId())
                             .fileName(numberedFileName)
                             .originFileName(originName)
                             .build();

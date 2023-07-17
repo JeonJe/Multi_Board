@@ -29,6 +29,17 @@
           required
         ></textarea>
       </form>
+      <!-- 기존 첨부파일 리스트  -->
+      <div v-for="attachment in boardInfo.boardAttachments" :key="attachment">
+        <span> {{ attachment.originFileName }}</span>
+        <button
+          type="button"
+          @click="clickDeleteAttachment(attachment.attachmentId)"
+        >
+          삭제
+        </button>
+      </div>
+      <!-- 새로 첨부파일 추가할 수 있는 input -->
       <div v-for="(file, index) in fileInputBoxes" :key="index">
         <input
           type="file"
@@ -36,16 +47,13 @@
           :name="files"
           @change="handleFileChange($event)"
         />
-        <button
-          type="button"
-          @click="clickRemoveFile(index, file.attachmentId)"
-        >
+        <button type="button" @click="clickRemoveEmptyInput(index)">
           삭제
         </button>
       </div>
       <button
         type="button"
-        @click="clickAddFile"
+        @click="clickAddAttachmentForm"
         v-show="fileInputBoxes.length < 5"
       >
         첨부파일 추가
@@ -73,9 +81,9 @@ export default {
         userId: "",
         title: "",
         content: "",
-        getFiles: [],
-        newFiles: [],
-        deletedFiles: [],
+        boardAttachments: [],
+        uploadAttachments: [],
+        deletedAttachmentIDs: [],
       },
       fileInputBoxes: [],
       maxAttachments: 5,
@@ -111,19 +119,20 @@ export default {
   methods: {
     handleFileChange(event) {
       const file = event.target.files[0];
-      this.boardInfo.newFiles.push(file);
+      this.boardInfo.uploadAttachments.push(file);
     },
-    clickAddFile() {
-      console.log(this.fileInputBoxes);
+    clickAddAttachmentForm() {
+      console.log("before", this.fileInputBoxes);
       this.fileInputBoxes.push({});
+      console.log("after", this.fileInputBoxes);
     },
-    clickRemoveFile(index, attachmentId) {
+    clickRemoveEmptyInput(index) {
       this.fileInputBoxes.splice(index, 1);
-      // 서버에 저장되어 삭제가 필요한 파일
-      if (attachmentId !== undefined) {
-        this.boardInfo.deletedFiles.push(attachmentId);
-      }
     },
+    // clickDeleteAttachment(index, attachmentId) {
+    //   this.boardInfo.deletedAttachmentIDs.push(attachmentId);
+    //   this.boardInfo.boardAttachments.splice(index, 1);
+    // },
     /**
      * 자유 게시판 카테고리를 가져옵니다.
      */
@@ -168,8 +177,8 @@ export default {
       newBoardInfo.append("title", this.boardInfo.title);
       newBoardInfo.append("content", this.boardInfo.content);
 
-      this.boardInfo.newFiles.forEach((file) => {
-        newBoardInfo.append(`newFiles`, file);
+      this.boardInfo.uploadAttachments.forEach((file) => {
+        newBoardInfo.append(`uploadAttachments`, file);
       });
       boardService.saveBoardInfo("free", newBoardInfo);
       this.moveToFreeBoardList();
