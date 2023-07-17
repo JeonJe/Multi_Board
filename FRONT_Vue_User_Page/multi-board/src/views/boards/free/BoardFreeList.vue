@@ -142,7 +142,7 @@ export default {
       };
     },
     /**
-     * 자유 게시판 카테고리를 가져옵니다.
+     * 자유 게시판 카테고리를 가져오는 함수입니다.
      */
     async getFreeBoardCategories() {
       try {
@@ -156,15 +156,23 @@ export default {
         console.log(error);
       }
     },
+    /**
+     * 사용자 인증 상태를 확인하는 함수입니다.
+     */
     async checkAuthentication() {
       try {
         const hasPermission = await userService.getAuthenticationStatus();
         this.showRegisterButton = hasPermission;
       } catch (error) {
-        this.showRegisterButton = false; // 토큰 확인 실패 시 버튼을 숨김
+        this.showRegisterButton = false;
         console.log(error);
       }
     },
+    /**
+     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수입니다.
+     * @param {Object} searchCondition - 검색 조건 데이터
+     * @returns {Object} - 게시글 작성 페이지의 URL과 쿼리스트링
+     */
     clickBoardWriteBtn(searchCondition) {
       return {
         path: process.env.VUE_APP_BOARD_FREE_WRITE,

@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 
+/**
+ * 첨부파일 정보를 전달하는 DTO
+ */
 @Builder
 @Getter
 public class AttachmentDTO {

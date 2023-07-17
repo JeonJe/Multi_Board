@@ -126,6 +126,13 @@ const getBoardDetail = async (boardType, boardId) => {
   }
 };
 
+/**
+ * saveBoardInfo 메소드는 주어진 게시판 타입과 새로운 게시글 정보를 받아와 저장하는 기능을 제공합니다.
+ *
+ * @param boardType     게시판 타입 (예: "free", "notice" 등)
+ * @param newBoardInfo  새로운 게시글 정보
+ * @return              게시글 저장 결과
+ */
 const saveBoardInfo = async (boardType, newBoardInfo) => {
   try {
     const apiRUL = await getAPIUrlByBoardType(boardType);
@@ -133,7 +140,7 @@ const saveBoardInfo = async (boardType, newBoardInfo) => {
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
     const response = await multipartApi.post(apiRUL, newBoardInfo);
-    console.log(response, newBoardInfo);
+    return response.data;
   } catch (err) {
     console.error(err);
   }

@@ -117,22 +117,38 @@ export default {
     }
   },
   methods: {
+    /**
+     * 파일 선택 이벤트 핸들러입니다. 선택한 파일을 boardInfo.uploadAttachments 배열에 추가합니다.
+     * @param {Event} event - 파일 선택 이벤트 객체
+     */
     handleFileChange(event) {
       const file = event.target.files[0];
       this.boardInfo.uploadAttachments.push(file);
     },
+    /**
+     * 첨부 파일 입력 양식을 추가하는 함수입니다.
+     */
     clickAddAttachmentForm() {
       console.log("before", this.fileInputBoxes);
       this.fileInputBoxes.push({});
       console.log("after", this.fileInputBoxes);
     },
+    /**
+     * 빈 입력 양식을 제거하는 함수입니다.
+     * @param {number} index - 제거할 입력 양식의 인덱스
+     */
     clickRemoveEmptyInput(index) {
       this.fileInputBoxes.splice(index, 1);
     },
-    // clickDeleteAttachment(index, attachmentId) {
-    //   this.boardInfo.deletedAttachmentIDs.push(attachmentId);
-    //   this.boardInfo.boardAttachments.splice(index, 1);
-    // },
+    /**
+     * 첨부 파일을 삭제하는 함수입니다.
+     * @param {number} index - 삭제할 첨부 파일의 인덱스
+     * @param {string} attachmentId - 삭제할 첨부 파일의 ID
+     */
+    clickDeleteAttachment(index, attachmentId) {
+      this.boardInfo.deletedAttachmentIDs.push(attachmentId);
+      this.boardInfo.boardAttachments.splice(index, 1);
+    },
     /**
      * 자유 게시판 카테고리를 가져옵니다.
      */
@@ -150,12 +166,9 @@ export default {
         console.log(error);
       }
     },
-    moveToFreeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
-        query: this.$route.query,
-      };
-    },
+    /**
+     * 게시판 정보를 초기화하는 함수입니다.
+     */
     async initBoardInfo() {
       await this.getFreeBoardCategories();
       this.boardInfo.userId = await userService.getUserIDByJWT();
@@ -168,6 +181,9 @@ export default {
         });
       }
     },
+    /**
+     * 게시판 정보를 서버에 저장하는 함수입니다.
+     */
     clickBoardInfoSubmit() {
       //Multipart FormData 전송을 위해 FormData 사용
       const newBoardInfo = new FormData();
@@ -182,6 +198,16 @@ export default {
       });
       boardService.saveBoardInfo("free", newBoardInfo);
       this.moveToFreeBoardList();
+    },
+    /**
+     * 자유 게시판 목록으로 이동하는 함수입니다.
+     * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
+     */
+    moveToFreeBoardList() {
+      return {
+        path: process.env.VUE_APP_BOARD_FREE_LIST,
+        query: this.$route.query,
+      };
     },
   },
 };

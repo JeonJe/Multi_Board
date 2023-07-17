@@ -108,14 +108,24 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
-
+    /**
+     * IOException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
+     *
+     * @param e IOException 예외 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(IOException.class)
     public ResponseEntity<?> handleIOException(IOException e) {
         // IOException에 대한 처리 로직
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
     }
-
+    /**
+     * MultipartException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
+     *
+     * @param e MultipartException 예외 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(MultipartException.class)
     public ResponseEntity<?> handleMultipartException(MultipartException e) {
         // MultipartException에 대한 처리 로직

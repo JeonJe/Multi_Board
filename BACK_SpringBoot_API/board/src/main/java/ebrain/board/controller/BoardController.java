@@ -189,7 +189,14 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
     }
-
+    /**
+     * 자유 게시글을 저장합니다.
+     *
+     * @param request   HttpServletRequest 객체
+     * @param boardDTO  저장할 게시글 정보
+     * @return          API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
     @PostMapping("/api/boards/free")
     ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
 
@@ -199,20 +206,24 @@ public class BoardController {
         if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }
-
         boardService.saveFreeBoardInfo(boardDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
+    /**
+     * 첨부 파일을 다운로드합니다.
+     *
+     * @param attachmentId   다운로드할 첨부 파일의 ID
+     * @return               Resource 객체를 ResponseEntity로 래핑한 결과
+     * @throws Exception     예외 발생 시
+     */
     @GetMapping("api/attachments/{attachmentId}")
     public ResponseEntity<Resource> downloadAttachment(@PathVariable @NotEmpty int attachmentId)
             throws Exception{
 
             AttachmentDTO attachment = attachmentService.getAttachmentByAttachmentId(attachmentId);
             return FileUtil.fileDownload(attachment, UPLOAD_PATH);
-
     }
 
 

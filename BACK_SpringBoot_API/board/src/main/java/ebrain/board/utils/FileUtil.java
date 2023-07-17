@@ -16,8 +16,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+/**
+ * 파일 업로드 및 다운로드에 사용되는 유틸리티 클래스입니다.
+ */
 public class FileUtil {
-
+    /**
+     * 파일을 업로드합니다.
+     *
+     * @param file        업로드할 파일
+     * @param uploadPath  파일을 업로드할 경로
+     * @return            업로드된 파일 객체
+     * @throws Exception  예외 발생 시
+     */
     public static File uploadFile(MultipartFile file, String uploadPath) throws Exception {
         String fileName = file.getOriginalFilename();
         String baseName = FilenameUtils.getBaseName(fileName);
@@ -40,14 +50,13 @@ public class FileUtil {
         return uploadedFile;
     }
     /**
-     * 첨부 파일을 다운로드하기 위한 ResponseEntity를 생성합니다.
+     * 파일을 다운로드합니다.
      *
-     * @param attachment   다운로드할 첨부 파일 정보
-     * @param UPLOAD_PATH  파일 업로드 경로
-     * @return 파일 다운로드를 위한 ResponseEntity
-     * @throws IOException IO 예외 발생 시
+     * @param attachment   다운로드할 파일 정보
+     * @param uploadPath   파일이 업로드된 경로
+     * @return             파일 다운로드 응답 객체
+     * @throws IOException 예외 발생 시
      */
-        // 파일을 읽어올 InputStream을 생성합니다.
     public static ResponseEntity<Resource> fileDownload(AttachmentDTO attachment, String uploadPath) throws IOException {
         String filePath = uploadPath + File.separator + attachment.getFileName();
         File file = new File(filePath);
@@ -73,6 +82,5 @@ public class FileUtil {
         // 파일 다운로드 응답을 생성하여 반환합니다.
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
-
 
 }

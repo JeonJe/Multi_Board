@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 게시글 정보를 전달하는 DTO
+ */
 @Data
 public class BoardDTO {
     /**

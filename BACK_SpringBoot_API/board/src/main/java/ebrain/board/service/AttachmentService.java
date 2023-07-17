@@ -13,6 +13,11 @@ public class AttachmentService {
      */
     private final AttachmentRepository attachmentRepository;
 
+    /**
+     * 첨부파일 ID로 첨부파일 정보를 가져옵니다.
+     * @param attachmentId
+     * @return
+     */
     public AttachmentDTO getAttachmentByAttachmentId(int attachmentId){
         return attachmentRepository.getAttachmentByAttachmentId(attachmentId);
     }

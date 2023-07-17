@@ -136,10 +136,15 @@ public class BoardService {
         return boardRepository.getFreeBoardCategories();
     }
 
+    /**
+     * 자유 게시글 정보를 저장합니다.
+     *
+     * @param boardDTO 저장할 게시글 정보
+     * @throws Exception 예외 발생 시
+     */
     public void saveFreeBoardInfo(BoardDTO boardDTO) throws Exception {
 
         boardRepository.saveFreeBoardInfo(boardDTO);
-
         List<MultipartFile> newFiles = boardDTO.getUploadAttachments();
 
         if (newFiles != null) {
@@ -156,8 +161,6 @@ public class BoardService {
                 }
             }
         }
-
-
     }
 
 }

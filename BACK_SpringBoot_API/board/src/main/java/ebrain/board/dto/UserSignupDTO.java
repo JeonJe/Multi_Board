@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 /**
- * 사용자 회원 가입 정보를 담는 DTO
+ * 사용자 회원 가입 정보를 전달하는 DTO
  */
 @AllArgsConstructor
 @Getter

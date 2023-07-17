@@ -99,6 +99,11 @@ public interface BoardRepository {
      */
     void updateFreeBoardVisitCount(int boardId);
 
+    /**
+     * 새로운 자유게시판을 저장합니다.
+     * @param boardDTO
+     * @return
+     */
     int saveFreeBoardInfo(BoardDTO boardDTO);
 
 

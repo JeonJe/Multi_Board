@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 사용자 로그인 정보를 담는 DTO
+ * 사용자 로그인 정보를 전달하는 DTO
  */
 @AllArgsConstructor
 @Getter

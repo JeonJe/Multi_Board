@@ -31,10 +31,15 @@ const IsNewBoard = (createdAt) => {
   const sevenDaysAgo = moment().subtract(7, "days");
   return createdDate.isAfter(sevenDaysAgo);
 };
-
+/**
+ * downloadAttachment 함수는 첨부 파일 ID를 사용하여 첨부 파일 다운로드 URL을 생성합니다.
+ *
+ * @param attachmentId 첨부 파일 ID
+ * @return 다운로드 URL
+ */
 const downloadAttachment = (attachmentId) => {
-  const port = 8080; // 원하는 포트 번호로 수정
-  return `http://localhost:${port}/api/attachments/${attachmentId}`;
+  // return `http://localhost:8080/api/attachments/${attachmentId}`;
+  return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_FILE_DOWNLOAD}/${attachmentId}`;
 };
 
 export {

@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+/**
+ * 검색 조건을 전달하는 DTO
+ */
 @Data
 public class SearchConditionDTO {
     /**

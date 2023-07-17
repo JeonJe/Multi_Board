@@ -56,7 +56,7 @@ public class UserController {
     }
 
     /**
-     * 특정 사용자 ID가 중복되는지 확인하는 메서드입니다.
+     * 특정 사용자 ID가 중복되는지 확인합니다.
      *
      * @param userId 사용자 ID
      * @return 중복 여부에 따른 API 응답 객체 (ResponseEntity<APIResponse>)
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     /**
-     * 사용자 로그인을 처리하는 메서드입니다.
+     * 사용자 로그인을 처리합니다.
      *
      * @param userLoginDTO 사용자 로그인 정보
      * @return ResponseEntity<APIResponse> 아이디 패스워드 확인에 따른 API 응답
@@ -102,7 +102,7 @@ public class UserController {
     }
 
     /**
-     * 클라이언트의 JWT 토큰을 추출하고 검증하여 userId를 얻어온 후, 해당 userId를 사용하여 사용자를 조회하는 메서드입니다.
+     * 클라이언트의 JWT 토큰을 추출하고 검증하여 userId를 얻어온 후, 해당 userId를 사용하여 사용자를 조회합니다.
      *
      * @param request HttpServletRequest 객체 (요청 객체)
      * @return APIResponse 객체에 담긴 사용자 정보와 함께 HTTP 응답 엔티티
@@ -121,6 +121,12 @@ public class UserController {
         APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", user.getName());
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+    /**
+     * JWT 토큰 인증 상태를 확인합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @return API 응답 객체
+     */
     @GetMapping("/api/auth/status")
     public ResponseEntity<APIResponse> getAuthenticationStatus(HttpServletRequest request) {
 
