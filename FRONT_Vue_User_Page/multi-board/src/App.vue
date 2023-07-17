@@ -2,6 +2,7 @@
   <nav>
     <router-link to="/boards/notice/list">공지사항</router-link>
     <router-link to="/boards/free/list">자유 게시판</router-link>
+    <router-link to="/auth/login">로그인</router-link>
   </nav>
   <router-view />
 </template>

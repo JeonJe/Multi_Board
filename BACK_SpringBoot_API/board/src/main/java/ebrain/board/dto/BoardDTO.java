@@ -37,6 +37,10 @@ public class BoardDTO {
     private int visitCount;
 
     /**
+     * 카테고리 이름
+     */
+    private String categoryValue;
+    /**
      * 카테고리 값
      */
     private String categoryName;

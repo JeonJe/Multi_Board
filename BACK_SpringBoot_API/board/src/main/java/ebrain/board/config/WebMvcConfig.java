@@ -4,6 +4,7 @@ import ebrain.board.security.BearerAuthInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,7 +30,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     public void addInterceptors(InterceptorRegistry registry) {
         //JWT 토큰 확인을 위한 인터셉터 등록
-        registry.addInterceptor(bearerAuthInterceptor).addPathPatterns("/api/auth/check");
+        registry.addInterceptor(bearerAuthInterceptor)
+                .addPathPatterns("/api/auth/check")
+                .addPathPatterns("/api/auth/status")
+                .addPathPatterns("/api/boards/**")
+                ;
     }
 
     /**

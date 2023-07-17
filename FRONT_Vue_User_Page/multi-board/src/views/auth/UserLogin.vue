@@ -61,7 +61,7 @@ export default {
      * userService를 사용하여 JWT 토큰을 확인합니다.
      */
     clickCheckToken() {
-      userService.checkJwtToken();
+      userService.getUserIDByJWT();
     },
   },
 };

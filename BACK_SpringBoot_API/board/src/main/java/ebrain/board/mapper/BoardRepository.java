@@ -1,6 +1,7 @@
 package ebrain.board.mapper;
 
 import ebrain.board.dto.BoardDTO;
+import ebrain.board.dto.CategoryDTO;
 import ebrain.board.dto.SearchConditionDTO;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -53,7 +54,7 @@ public interface BoardRepository {
      *
      * @return 카테고리 목록
      */
-    List<String> getNoticeBoardCategories();
+    List<CategoryDTO> getNoticeBoardCategories();
 
     /**
      * 공지사항의 조회수를 1 증가시킵니다.
@@ -90,13 +91,15 @@ public interface BoardRepository {
      *
      * @return 카테고리 목록
      */
-    List<String> getFreeBoardCategories();
+    List<CategoryDTO> getFreeBoardCategories();
 
     /**
      * 공지사항의 조회수를 1 증가시킵니다.
      * @param boardId 게시글 ID
      */
     void updateFreeBoardVisitCount(int boardId);
+
+    void saveFreeBoardInfo(BoardDTO boardDTO);
 
 
 

@@ -17,7 +17,7 @@
       v-model="searchCondition.endDate"
     />
     <!-- 카테고리 -->
-    <select v-model="searchCondition.categoryName" class="form-control">
+    <select v-model="searchCondition.categoryValue" class="form-control">
       <option
         v-for="categoryOption in categoryOptions"
         :key="categoryOption.value"
@@ -97,8 +97,8 @@ export default {
     categoryOptions() {
       const defaultOption = { value: "", label: "전체" };
       const options = this.categories.map((category) => ({
-        value: category,
-        label: category,
+        value: category.categoryValue,
+        label: category.categoryName,
       }));
       return [defaultOption, ...options];
     },
@@ -139,7 +139,7 @@ export default {
         offset: getQueryParamOrDefault("offset", "0"),
         sortCriteria: getQueryParamOrDefault("sortCriteria", "createdAt"),
         orderBy: getQueryParamOrDefault("orderBy", "desc"),
-        categoryName: getQueryParamOrDefault("categoryName", ""),
+        categoryValue: getQueryParamOrDefault("categoryValue", ""),
       };
       return searchCondition;
     },

@@ -118,8 +118,19 @@ public class UserController {
             throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "사용자를 찾을 수 없습니다.");
         }
 
-        //TODO : 패스워드 제외 필요, 이름만 전달하여 로그인 시 이름을 보여줄 수 있도록
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", user);
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", user.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+    @GetMapping("/api/auth/status")
+    public ResponseEntity<APIResponse> getAuthenticationStatus(HttpServletRequest request) {
+
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        //JWT 토큰이 유효하다면 글쓰기 권한 있는 것으로 간주
+        boolean hasPermission = true;
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", hasPermission);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 

@@ -1,14 +1,19 @@
 package ebrain.board.controller;
 
 import ebrain.board.dto.BoardDTO;
+import ebrain.board.dto.CategoryDTO;
+import ebrain.board.exception.AppException;
+import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.BoardSearchResponse;
 import ebrain.board.dto.SearchConditionDTO;
 import ebrain.board.response.APIResponse;
 import ebrain.board.service.BoardService;
 import ebrain.board.utils.ResponseUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -96,7 +101,7 @@ public class BoardController {
      */
     @GetMapping("/api/boards/notice/categories")
     ResponseEntity<APIResponse> getNoticeBoardCategories() {
-        List<String> categories = boardService.getNoticeBoardCategories();
+        List<CategoryDTO> categories = boardService.getNoticeBoardCategories();
 
         APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 카테고리 목록입니다.", categories);
         if (ObjectUtils.isEmpty(categories)) {
@@ -157,7 +162,7 @@ public class BoardController {
      */
     @GetMapping("/api/boards/free/categories")
     ResponseEntity<APIResponse> getFreeBoardCategories() {
-        List<String> categories = boardService.getFreeBoardCategories();
+        List<CategoryDTO> categories = boardService.getFreeBoardCategories();
 
         APIResponse apiResponse = ResponseUtil.SuccessWithData("자유게시판 카테고리 목록입니다.", categories);
         if (ObjectUtils.isEmpty(categories)) {
@@ -167,6 +172,19 @@ public class BoardController {
         }
     }
 
+    @PostMapping("/api/boards/free")
+    ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @ModelAttribute BoardDTO boardDTO) {
+
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        } else{
+            APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
 
 
 }

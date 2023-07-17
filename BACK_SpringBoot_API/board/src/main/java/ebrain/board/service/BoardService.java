@@ -1,6 +1,7 @@
 package ebrain.board.service;
 
 import ebrain.board.dto.BoardDTO;
+import ebrain.board.dto.CategoryDTO;
 import ebrain.board.dto.SearchConditionDTO;
 import ebrain.board.mapper.BoardRepository;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +71,7 @@ public class BoardService {
      *
      * @return 공지사항의 카테고리 목록
      */
-    public List<String> getNoticeBoardCategories() {
+    public List<CategoryDTO> getNoticeBoardCategories() {
         return boardRepository.getNoticeBoardCategories();
     }
 
@@ -110,8 +111,12 @@ public class BoardService {
      *
      * @return 공지사항의 카테고리 목록
      */
-    public List<String> getFreeBoardCategories() {
+    public List<CategoryDTO> getFreeBoardCategories() {
         return boardRepository.getFreeBoardCategories();
+    }
+
+    public void saveFreeBoardInfo(BoardDTO boardDTO) {
+        boardRepository.saveFreeBoardInfo(boardDTO);
     }
 
 }

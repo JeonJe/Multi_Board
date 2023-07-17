@@ -31,4 +31,5 @@ const IsNewBoard = (createdAt) => {
   const sevenDaysAgo = moment().subtract(7, "days");
   return createdDate.isAfter(sevenDaysAgo);
 };
+
 export { getQueryParamOrDefault, getFormattedDate, IsNewBoard };

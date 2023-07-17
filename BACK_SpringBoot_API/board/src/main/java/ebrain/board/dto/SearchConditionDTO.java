@@ -7,9 +7,9 @@ import java.time.LocalDate;
 @Data
 public class SearchConditionDTO {
     /**
-     * 검색할 카테고리의 이름
+     * 검색할 카테고리의 값
      */
-    private String categoryName;
+    private String categoryValue;
 
     /**
      * 검색 키워드

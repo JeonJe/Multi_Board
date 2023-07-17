@@ -11,6 +11,16 @@ const api = axios.create({
 });
 
 /**
+ * JSON 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
+ */
+const multipartApi = axios.create({
+  baseURL: "http://localhost:8080",
+  headers: {
+    "Content-Type": "multipart/form-data",
+  },
+});
+
+/**
  * 요청 전에 실행될 인터셉터
  * @param {Object} config - 요청 설정 객체
  * @returns {Object} - 처리된 요청 설정 객체
@@ -108,7 +118,6 @@ const getBoardCategories = async (boardType) => {
 const getBoardDetail = async (boardType, boardId) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
-    console.log(apiURL);
     const requestURL = `${apiURL}/${boardId}`;
     const response = await api.get(requestURL);
     return response.data;
@@ -117,6 +126,18 @@ const getBoardDetail = async (boardType, boardId) => {
   }
 };
 
+const saveBoardInfo = async (boardType, newBoardInfo) => {
+  try {
+    const apiRUL = await getAPIUrlByBoardType(boardType);
+    multipartApi.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${localStorage.getItem("jwt")}`;
+    const response = await multipartApi.post(apiRUL, newBoardInfo);
+    console.log(response, newBoardInfo);
+  } catch (err) {
+    console.error(err);
+  }
+};
 /**
  * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수입니다.
  *
@@ -144,4 +165,5 @@ export default {
   getBoardCategories,
   getBoardDetail,
   getBoardList,
+  saveBoardInfo,
 };

@@ -151,7 +151,6 @@ export default {
           alert("카테고리 목록이 없습니다.");
         } else {
           this.categories = response.data;
-          this.getFreeBoardList();
         }
       } catch (error) {
         console.log(error);

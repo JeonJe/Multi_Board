@@ -8,7 +8,7 @@
       <p>작성자 : {{ boardInfo.userId }}</p>
       <p>조회수 : {{ boardInfo.visitCount }}</p>
       <p>내용 : {{ boardInfo.content }}</p>
-      <router-link :to="moveToFreeBoardList()"> 목록 </router-link>
+      <router-link :to="moveToFreeBoardList()"> 목록으로 </router-link>
     </div>
     <div v-else>
       <p>내용을 가져오는 중입니다.</p>
