@@ -21,4 +21,8 @@ public class AttachmentService {
     public AttachmentDTO getAttachmentByAttachmentId(int attachmentId){
         return attachmentRepository.getAttachmentByAttachmentId(attachmentId);
     }
+
+    public void deleteAttachmentsByBoardId(int boardId) {
+        attachmentRepository.deleteAttachmentsByBoardId(boardId);
+    }
 }

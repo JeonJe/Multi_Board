@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    유저 매퍼
+    UserRepository 인터페이스와 연결
+-->
+<mapper namespace="ebrain.board.mapper.CommentRepository">
+
+    <!-- 검색 조건에 해당하는 자유 게시글의 개수를 조회 -->
+    <select id="countCommentByFreeBoardId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM comments
+        WHERE board_Id = #{board_id}
+    </select>
+
+    <insert id="addFreeBoardComment" parameterType="CommentDTO">
+        INSERT INTO comments (user_id,content,created_at, board_id)
+        VALUES(#{userId},#{content},now(),#{boardId})
+    </insert>
+
+    <select id="getCommentsByBoardId" resultType="CommentDTO">
+        SELECT *
+        FROM comments
+        WHERE board_id = #{boardId}
+    </select>
+
+
+
+
+
+</mapper>

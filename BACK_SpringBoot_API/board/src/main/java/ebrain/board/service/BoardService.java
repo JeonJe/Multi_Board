@@ -1,11 +1,9 @@
 package ebrain.board.service;
 
-import ebrain.board.dto.AttachmentDTO;
-import ebrain.board.dto.BoardDTO;
-import ebrain.board.dto.CategoryDTO;
-import ebrain.board.dto.SearchConditionDTO;
+import ebrain.board.dto.*;
 import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.BoardRepository;
+import ebrain.board.mapper.CommentRepository;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +30,11 @@ public class BoardService {
      * 첨부파일 저장소 객체
      */
     private final AttachmentRepository attachmentRepository;
+
+    /**
+     * 댓글 저장소 객체
+     */
+    private final CommentRepository commentRepository;
 
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
@@ -120,8 +123,12 @@ public class BoardService {
     public BoardDTO getFreeBoardDetail(int boardId) {
         boardRepository.updateFreeBoardVisitCount(boardId);
         List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
+        List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
+
+        //TODO : builder 패턴으로 바꿀 수 있을까?
         BoardDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
         boardDTO.setBoardAttachments(attachments);
+        boardDTO.setBoardComments(comments);
 
         return boardDTO;
 
@@ -152,15 +159,23 @@ public class BoardService {
                 if (!file.isEmpty()) {
                     String originName = file.getOriginalFilename();
                     String numberedFileName = FileUtil.uploadFile(file, UPLOAD_PATH).getName();
-                    AttachmentDTO attachment = AttachmentDTO.builder()
+                    AttachmentDTO attachmentDTO = AttachmentDTO.builder()
                             .boardId(boardDTO.getBoardId())
                             .fileName(numberedFileName)
                             .originFileName(originName)
                             .build();
-                    attachmentRepository.saveAttachment(attachment);
+                    attachmentRepository.saveAttachment(attachmentDTO);
                 }
             }
         }
+    }
+
+    public int hasFreeBoardEditPermission(String userId, int boardId) {
+        return boardRepository.hasFreeBoardEditPermission(userId, boardId);
+    }
+
+    public void deleteFreeBoard(String userId, int boardId) {
+        boardRepository.deleteFreeBoard(userId, boardId);
     }
 
 }

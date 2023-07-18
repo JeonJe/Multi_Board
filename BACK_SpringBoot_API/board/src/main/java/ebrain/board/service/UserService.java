@@ -77,4 +77,6 @@ public class UserService {
         String hashedPassword = AuthUtil.hashPassword(userLoginDTO.getPassword());
         return userRepository.checkUserCredentials(userLoginDTO.getUserId(), hashedPassword);
     }
+
+
 }

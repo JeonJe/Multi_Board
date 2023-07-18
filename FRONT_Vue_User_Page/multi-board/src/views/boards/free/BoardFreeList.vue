@@ -79,7 +79,7 @@ export default {
      * 게시판 카테고리를 가져옵니다.
      */
     this.getFreeBoardCategories();
-    this.checkAuthentication();
+    this.checkJWTAuth();
   },
   methods: {
     /**
@@ -159,9 +159,9 @@ export default {
     /**
      * 사용자 인증 상태를 확인하는 함수입니다.
      */
-    async checkAuthentication() {
+    async checkJWTAuth() {
       try {
-        const hasPermission = await userService.getAuthenticationStatus();
+        const hasPermission = await userService.getJWTAuthStatus();
         this.showRegisterButton = hasPermission;
       } catch (error) {
         this.showRegisterButton = false;

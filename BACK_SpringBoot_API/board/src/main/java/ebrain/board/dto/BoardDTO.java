@@ -49,20 +49,22 @@ public class BoardDTO {
      */
     private int visitCount;
     /**
-     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
-     */
-    private int isNoticed;
-
-    /**
      * 카테고리 이름
      */
     @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
     private String categoryValue;
 
+
     /**
      * 카테고리 값
      */
     private String categoryName;
+
+
+    /**
+     * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
+     */
+    private int isNoticed;
 
     /**
      * 삭제할 첨부 파일의 ID 목록
@@ -78,6 +80,8 @@ public class BoardDTO {
      * 업로드된 첨부 파일 목록
      */
     private List<AttachmentDTO> boardAttachments;
+
+    private List<CommentDTO> boardComments;
 
 
 }

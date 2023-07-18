@@ -151,4 +151,18 @@
         VALUES(#{title}, #{content},#{userId},now(),0,#{categoryValue})
     </insert>
 
+    <!-- boardId 게시글에 대한 작성자가 userId인지 확인합니다.-->
+    <select id="hasFreeBoardEditPermission" resultType="int">
+        SELECT COUNT(*) > 0
+        FROM free_board
+        WHERE board_id = #{boardId}
+          AND user_id = #{userId}
+    </select>
+
+    <delete id="deleteFreeBoard">
+        DELETE FROM free_board
+        WHERE board_id = #{boardId}
+        AND user_id = #{userId}
+    </delete>
+
 </mapper>

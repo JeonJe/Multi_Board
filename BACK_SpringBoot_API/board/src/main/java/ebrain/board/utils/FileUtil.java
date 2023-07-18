@@ -15,6 +15,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 파일 업로드 및 다운로드에 사용되는 유틸리티 클래스입니다.
@@ -32,6 +34,18 @@ public class FileUtil {
         String fileName = file.getOriginalFilename();
         String baseName = FilenameUtils.getBaseName(fileName);
         String extension = FilenameUtils.getExtension(fileName);
+
+        // 파일 크기 제한: 2MB
+        long maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("파일 크기는 최대 2MB까지 업로드 가능합니다.");
+        }
+
+        // 확장자 제한: jpg, gif, png, zip
+        List<String> allowedExtensions = Arrays.asList("jpg", "gif", "png", "zip");
+        if (!allowedExtensions.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("jpg, gif, png, zip 형식의 파일만 업로드 가능합니다.");
+        }
 
         // 중복 파일명 처리합니다.
         File uploadedFile = new File(uploadPath + File.separator + fileName);

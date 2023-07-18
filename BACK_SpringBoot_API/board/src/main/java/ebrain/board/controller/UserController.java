@@ -88,7 +88,7 @@ public class UserController {
     public ResponseEntity<APIResponse> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
 
         //아이디, 비밀번호 확인
-        boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1);
+        boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1)  ? true : false;
 
         if (isValidUser) {
             //JWT 토큰 생성
@@ -115,10 +115,10 @@ public class UserController {
         User user = userService.findUserByUserId(userId);
 
         if (ObjectUtils.isEmpty(user)) {
-            throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "사용자를 찾을 수 없습니다.");
+            throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "유효한 사용자가 아닙니다.");
         }
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", user.getName());
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 사용자입니다.", user.getName());
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -133,11 +133,13 @@ public class UserController {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
 
-        //JWT 토큰이 유효하다면 글쓰기 권한 있는 것으로 간주
-        boolean hasPermission = true;
+        User user = userService.findUserByUserId(userId);
+        if (ObjectUtils.isEmpty(user)) {
+            throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "유효한 사용자가 아닙니다.");
+        }
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", hasPermission);
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("유효한 토큰입니다.", true);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
 }

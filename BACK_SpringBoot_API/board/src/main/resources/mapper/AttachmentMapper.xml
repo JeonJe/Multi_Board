@@ -23,7 +23,7 @@
 
     <!-- 첨부 파일 ID에 해당하는 첨부 파일 정보 조회 -->
     <select id="getAttachmentByAttachmentId" parameterType="int" resultType="AttachmentDTO">
-        SELECT attachment_id, board_id, filename, origin_filename AS originName
+        SELECT attachment_id as attachmentId, filename as fileName, origin_filename AS originFileName, board_id as boardId
         FROM attachments
         WHERE attachment_id = #{attachmentId}
     </select>
@@ -33,6 +33,10 @@
 <!--        DELETE FROM attachment-->
 <!--        WHERE attachment_id = #{attachmentId}-->
 <!--    </delete>-->
+    <delete id="deleteAttachmentsByBoardId">
+        DELETE FROM attachments
+        WHERE board_id = ${board_id}
+    </delete>
 
 
 </mapper>

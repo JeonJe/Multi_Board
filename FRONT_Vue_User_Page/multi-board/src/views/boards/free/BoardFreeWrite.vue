@@ -104,14 +104,13 @@ export default {
 
   mounted() {
     const boardId = this.$route.params.boardId;
-    //update
+    //글 수정
     if (boardId) {
-      // TODO : 토큰 권한이 있는지 확인, 없으면 유효한 접근이 아님
-      // TODO : 값 가져오기 (토큰도 검사 필요)
+      // TODO : 토큰 권한이 있는지 확인, 없으면 유효한 접근이 아님,값 가져오기
       this.isUpdate = true;
       this.boardId = boardId;
     } else {
-      // 글쓰기
+      // 글 작성
       this.isUpdate = false;
       this.initBoardInfo();
     }
@@ -129,9 +128,7 @@ export default {
      * 첨부 파일 입력 양식을 추가하는 함수입니다.
      */
     clickAddAttachmentForm() {
-      console.log("before", this.fileInputBoxes);
       this.fileInputBoxes.push({});
-      console.log("after", this.fileInputBoxes);
     },
     /**
      * 빈 입력 양식을 제거하는 함수입니다.
@@ -145,6 +142,7 @@ export default {
      * @param {number} index - 삭제할 첨부 파일의 인덱스
      * @param {string} attachmentId - 삭제할 첨부 파일의 ID
      */
+    //TODO : 삭제 정상 작동 확인 필요
     clickDeleteAttachment(index, attachmentId) {
       this.boardInfo.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
@@ -172,7 +170,7 @@ export default {
     async initBoardInfo() {
       await this.getFreeBoardCategories();
       this.boardInfo.userId = await userService.getUserIDByJWT();
-      if (this.boardInfo.writer === null) {
+      if (this.boardInfo.userId === null) {
         alert("작성자 정보를 가져오지 못했습니다.");
 
         this.$router.replace({

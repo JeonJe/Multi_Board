@@ -37,4 +37,6 @@ public interface AttachmentRepository {
      */
     AttachmentDTO getAttachmentByAttachmentId(int attachmentId);
 
+    void deleteAttachmentsByBoardId(int boardId);
+
 }

@@ -106,6 +106,8 @@ public interface BoardRepository {
      */
     int saveFreeBoardInfo(BoardDTO boardDTO);
 
+    int hasFreeBoardEditPermission(String userId, int boardId);
 
+    void deleteFreeBoard(String userId, int boardId);
 
 }

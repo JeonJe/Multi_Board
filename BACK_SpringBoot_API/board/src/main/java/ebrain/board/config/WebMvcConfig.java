@@ -33,6 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(bearerAuthInterceptor)
                 .addPathPatterns("/api/auth/check")
                 .addPathPatterns("/api/auth/status")
+                .addPathPatterns("/api/auth/boards/**")
                 .addPathPatterns("/api/boards/**")
                 ;
     }

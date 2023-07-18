@@ -10,6 +10,10 @@ const api = axios.create({
   },
 });
 
+api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(
+  "jwt"
+)}`;
+
 /**
  * JSON 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
  */
@@ -19,6 +23,9 @@ const multipartApi = axios.create({
     "Content-Type": "multipart/form-data",
   },
 });
+multipartApi.defaults.headers.common[
+  "Authorization"
+] = `Bearer ${localStorage.getItem("jwt")}`;
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -67,7 +74,7 @@ const getMarkNoticedBoardList = async () => {
     );
     return response.data;
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 };
 
@@ -86,7 +93,7 @@ const getBoardList = async (boardType, searchCondtion) => {
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    alert(error.data);
   }
 };
 
@@ -103,7 +110,7 @@ const getBoardCategories = async (boardType) => {
     const response = await api.get(`${apiURL}/categories`);
     return response.data;
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 };
 
@@ -122,7 +129,7 @@ const getBoardDetail = async (boardType, boardId) => {
     const response = await api.get(requestURL);
     return response.data;
   } catch (error) {
-    console.log(error);
+    alert(error);
   }
 };
 
@@ -135,16 +142,62 @@ const getBoardDetail = async (boardType, boardId) => {
  */
 const saveBoardInfo = async (boardType, newBoardInfo) => {
   try {
-    const apiRUL = await getAPIUrlByBoardType(boardType);
-    multipartApi.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${localStorage.getItem("jwt")}`;
-    const response = await multipartApi.post(apiRUL, newBoardInfo);
+    const apiURL = await getAPIUrlByBoardType(boardType);
+    const response = await multipartApi.post(apiURL, newBoardInfo);
     return response.data;
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    alert(error);
   }
 };
+
+const hasBoardEditPermission = async (boardId) => {
+  try {
+    const response = await api.get(
+      `${process.env.VUE_APP_API_BOARD_FREE_EDIT_PERMISSION}/${boardId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("수정 권한이 없는 사용자입니다");
+    return false;
+  }
+};
+
+const deleteBoardInfo = async (boardType, boardId) => {
+  try {
+    const apiURL = await getAPIUrlByBoardType(boardType);
+    const response = await api.delete(`${apiURL}/${boardId}`);
+    alert(response.data.message);
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+};
+
+const updateBoardInfo = async (boardType, newBoardInfo) => {
+  try {
+    const apiURL = await getAPIUrlByBoardType(boardType);
+    const response = await multipartApi.put(apiURL, newBoardInfo);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+};
+
+const addFreeBoardComment = async (newComment, boardId) => {
+  try {
+    console.log(boardId, newComment);
+    const response = await api.post(
+      `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
+      { content: newComment }
+    );
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+};
+
 /**
  * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수입니다.
  *
@@ -172,5 +225,9 @@ export default {
   getBoardCategories,
   getBoardDetail,
   getBoardList,
+  deleteBoardInfo,
   saveBoardInfo,
+  updateBoardInfo,
+  hasBoardEditPermission,
+  addFreeBoardComment,
 };

@@ -1,15 +1,13 @@
 package ebrain.board.controller;
 
-import ebrain.board.dto.AttachmentDTO;
-import ebrain.board.dto.BoardDTO;
-import ebrain.board.dto.CategoryDTO;
+import ebrain.board.dto.*;
 import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.BoardSearchResponse;
-import ebrain.board.dto.SearchConditionDTO;
 import ebrain.board.response.APIResponse;
 import ebrain.board.service.AttachmentService;
 import ebrain.board.service.BoardService;
+import ebrain.board.service.CommentService;
 import ebrain.board.utils.FileUtil;
 import ebrain.board.utils.ResponseUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +38,12 @@ public class BoardController {
      * 첨부파일 서비스
      */
     private final AttachmentService attachmentService;
+
+    /**
+     * 첨부파일 서비스
+     */
+    private final CommentService commentService;
+
 
     /**
      * 파일 업로드 경로
@@ -226,5 +230,58 @@ public class BoardController {
             return FileUtil.fileDownload(attachment, UPLOAD_PATH);
     }
 
+    @GetMapping("/api/auth/boards/free/{boardId}")
+    public ResponseEntity<APIResponse> hasFreeBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
+
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        //boardId 작성자와 userId가 동일하면 true
+        boolean hasPermission = (boardService.hasFreeBoardEditPermission(userId, boardId) == 1) ? true : false;
+
+        if (hasPermission) {
+            APIResponse apiResponse = ResponseUtil.SuccessWithData("게시글 작성자와 동일합니다.", true);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        } else{
+            APIResponse apiResponse = ResponseUtil.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+    }
+
+    @DeleteMapping("/api/boards/free/{boardId}")
+    public ResponseEntity<APIResponse> deleteFreeBoard(HttpServletRequest request, @PathVariable int boardId) {
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        int countBoardComment = commentService.countCommentByFreeBoardId(boardId);
+        if (countBoardComment > 0){
+            APIResponse apiResponse = ResponseUtil.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+        }
+        attachmentService.deleteAttachmentsByBoardId(boardId);
+        boardService.deleteFreeBoard(userId, boardId);
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @PostMapping("/api/boards/free/{boardId}/comments")
+    public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request,@PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
+
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        CommentDTO newComment = CommentDTO.builder()
+                .boardId(boardId)
+                .content(commentDTO.getContent())
+                .userId(userId)
+                .build();
+
+        commentService.addFreeBoardComment(newComment);
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+    
 
 }

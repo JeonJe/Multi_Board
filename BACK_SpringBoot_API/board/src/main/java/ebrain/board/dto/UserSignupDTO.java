@@ -2,12 +2,15 @@ package ebrain.board.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+
 /**
  * 사용자 회원 가입 정보를 전달하는 DTO
  */
+
+@Data
 @AllArgsConstructor
-@Getter
 public class UserSignupDTO {
     /**
      * 사용자 ID

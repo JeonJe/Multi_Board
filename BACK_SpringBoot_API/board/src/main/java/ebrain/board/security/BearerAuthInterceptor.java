@@ -41,13 +41,13 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
         String token = authExtractor.extract(request, "Bearer");
 
         //빈 토큰 일 경우 다음으로 이동
-        if (StringUtils.isEmpty(token)) {
+        if (StringUtils.isEmpty(token) || "null".equals(token)) {
             return true;
         }
 
         //JWT 토큰이 유효하지 않는 경우 예외처리
         if (!jwtTokenProvider.validateToken(token)) {
-            throw new IllegalArgumentException("유효하지 않는 토큰입니다.");
+            throw new IllegalArgumentException("요청이 정상적으로 실행되지 않았습니다. 유효하지 않는 토큰입니다.");
         }
 
         //추출한 토큰의 사용자 ID를 요청 속성에 저장

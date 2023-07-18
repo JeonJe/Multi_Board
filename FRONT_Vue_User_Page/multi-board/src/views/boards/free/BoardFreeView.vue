@@ -2,12 +2,14 @@
   <div>
     <div v-if="boardInfo">
       <h1>공지사항</h1>
+      <!-- 게시판 내용 -->
       <p>분류 : {{ boardInfo.categoryName }}</p>
       <p>제목 : {{ boardInfo.title }}</p>
       <p>생성일시 : {{ getFormattedDate(boardInfo.createdAt) }}</p>
       <p>작성자 : {{ boardInfo.userId }}</p>
       <p>조회수 : {{ boardInfo.visitCount }}</p>
       <p>내용 : {{ boardInfo.content }}</p>
+      <!-- 첨부파일 -->
       <a
         v-for="(attachment, index) in boardInfo.boardAttachments"
         :key="index"
@@ -15,32 +17,53 @@
       >
         {{ attachment.originFileName }}<br />
       </a>
-      <router-link :to="moveToFreeBoardList()"> 목록으로 </router-link>
+      <!-- 댓글 -->
+      <div>
+        <textarea v-model="newComment" rows="4" cols="50"></textarea>
+        <button @click="clickSumbitCommentBtn(newComment, boardId)">
+          댓글 등록
+        </button>
+      </div>
+      <div v-for="comment in boardInfo.boardComments" :key="comment.commentId">
+        <p>작성자: {{ comment.userId }}</p>
+        <p>작성시간: {{ getFormattedDate(comment.createdAt) }}</p>
+        <p>{{ comment.content }}</p>
+      </div>
     </div>
     <div v-else>
-      <p>내용을 가져오는 중입니다.</p>
+      <p>내용을 가져올 수 없습니다.</p>
     </div>
+    <BoardEditBtnGroup
+      :editPermission="editPermission"
+      @emitUpdateBoard="clickEditBtn(boardId)"
+      @emitDeleteBoard="clickDeleteBtn(boardId)"
+    />
   </div>
 </template>
 
 <script>
 import boardService from "@/services/board-service";
 import { getFormattedDate, downloadAttachment } from "@/utils/util";
+import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
 
 export default {
+  components: {
+    BoardEditBtnGroup,
+  },
   data() {
     return {
-      /**
-       * 자유게시글의 상세 정보 데이터
-       */
       boardInfo: null,
+      boardId: null,
+      newComment: "",
+      editPermission: false,
     };
   },
   mounted() {
     /**
      * boardId에 해당하는 자유 게시글 상세 정보를 가져옵니다.
      */
-    this.getFreeBoardDetail(this.$route.params.boardId);
+    this.boardId = this.$route.params.boardId;
+    this.getFreeBoardDetail(this.boardId);
   },
   methods: {
     /**
@@ -58,9 +81,28 @@ export default {
         if (response.data != "") {
           this.boardInfo = response.data;
         }
+
+        this.editPermission = await boardService.hasBoardEditPermission(
+          boardId
+        );
       } catch (error) {
-        console.log(error);
+        alert(error);
       }
+    },
+    async clickEditBtn(boardId) {
+      console.log(boardId);
+      console.log("수정");
+    },
+    async clickDeleteBtn(boardId) {
+      await boardService.deleteBoardInfo("free", boardId);
+      this.$router.replace({
+        path: process.env.VUE_APP_BOARD_FREE_LIST,
+        query: this.$route.query,
+      });
+    },
+    async clickSumbitCommentBtn(newComment, boardId) {
+      await boardService.addFreeBoardComment(newComment, boardId);
+      await this.getFreeBoardDetail(boardId);
     },
     /**
      * 공지사항 목록 페이지로 이동하는 함수입니다.

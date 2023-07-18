@@ -54,7 +54,7 @@ const signupUser = async (userData) => {
       JSON.stringify(userData)
     );
     localStorage.setItem("jwt", response.data.data);
-    alert(response.data);
+    alert(response.data.data);
     this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
   } catch (error) {
     const res = error.response.data;
@@ -94,8 +94,7 @@ const loginUser = async (userData) => {
     //TODO : 사용자 정보는 비밀번호를 포함하면 안되고, vuex로 상태관리가 되어야 함.
   } catch (error) {
     const res = error.response.data;
-    console.log(res);
-    return res;
+    alert(res.data);
   }
 };
 
@@ -121,16 +120,17 @@ const getUserIDByJWT = async () => {
  * JWT 토큰 확인을 위한 함수
  * @returns {Promise<void>}
  */
-const getAuthenticationStatus = async () => {
+const getJWTAuthStatus = async () => {
   try {
     api.defaults.headers.common[
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
+    console.log(response);
     return response.data;
   } catch (error) {
-    const res = error.response.data;
-    console.log(res.data.data);
+    // 권한없으면 401
+    return false;
   }
 };
 
@@ -139,5 +139,5 @@ export default {
   loginUser,
   checkDuplicateId,
   getUserIDByJWT,
-  getAuthenticationStatus,
+  getJWTAuthStatus,
 };
