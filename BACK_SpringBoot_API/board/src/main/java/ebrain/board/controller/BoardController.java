@@ -222,6 +222,13 @@ public class BoardController {
             return FileUtil.fileDownload(attachment, UPLOAD_PATH);
     }
 
+    /**
+     * 게시글 수정 권한을 확인하고 결과를 반환하는 API 메서드입니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 수정할 게시글 ID
+     * @return 수정 권한 여부를 담은 API 응답 객체
+     */
     @GetMapping("/api/auth/boards/free/{boardId}")
     public ResponseEntity<APIResponse> hasFreeBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
 
@@ -239,24 +246,39 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
-
+    /**
+     * 자유 게시글을 삭제하고 결과를 반환하는 API 메서드입니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 삭제할 게시글 ID
+     * @return 삭제 결과를 담은 API 응답 객체
+     */
     @DeleteMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> deleteFreeBoard(HttpServletRequest request, @PathVariable int boardId) {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
 
+        // 댓글이 남아있는지 확인
         int countBoardComment = commentService.countCommentByFreeBoardId(boardId);
         if (countBoardComment > 0){
             APIResponse apiResponse = ResponseUtil.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         }
+        // 첨부파일 삭제 후 게시글 삭제
         attachmentService.deleteAttachmentsByBoardId(boardId);
         boardService.deleteFreeBoard(userId, boardId);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
+    /**
+     * 자유 게시글에 댓글을 추가하고 결과를 반환하는 API 메서드입니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 게시글 ID
+     * @param commentDTO 추가할 댓글 정보
+     * @return 댓글 추가 결과를 담은 API 응답 객체
+     */
     @PostMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request,@PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
 
@@ -264,25 +286,39 @@ public class BoardController {
         String userId = (String) request.getAttribute("userId");
         commentDTO.setUserId(userId);
         commentDTO.setBoardId(boardId);
-
+        // 댓글 추가
         commentService.addFreeBoardComment(userId, commentDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
+    /**
+     * 자유 게시글의 댓글을 삭제하고 결과를 반환하는 API 메서드입니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param commentDTO 삭제할 댓글 정보
+     * @return 댓글 삭제 결과를 담은 API 응답 객체
+     */
     @DeleteMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> deleteFreeBoardComment(HttpServletRequest request, @RequestBody CommentDTO commentDTO) {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
-
+        // 댓글 삭제
         commentService.deleteFreeBoardComment(userId, commentDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-
+    /**
+     * 자유 게시글을 수정하고 결과를 반환하는 API 메서드입니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 수정할 게시글 ID
+     * @param boardDTO 수정할 게시글 정보
+     * @return 게시글 수정 결과를 담은 API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
     @PutMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> updateFreeBoardInfo(HttpServletRequest request, @PathVariable int boardId,
                                                            @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {

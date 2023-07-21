@@ -5,6 +5,10 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * AttachmentRepository 인터페이스
+ * 첨부파일에 대한 데이터베이스 액세스를 담당하는 매퍼 인터페이스입니다.
+ */
 @Mapper
 public interface AttachmentRepository {
     /**
@@ -36,7 +40,11 @@ public interface AttachmentRepository {
      * @return 조회된 첨부파일의 정보
      */
     AttachmentDTO getAttachmentByAttachmentId(int attachmentId);
-
+    /**
+     * 게시글 ID를 기반으로 첨부 파일들을 삭제하는 메서드
+     *
+     * @param boardId 게시글 ID
+     */
     void deleteAttachmentsByBoardId(int boardId);
 
 }

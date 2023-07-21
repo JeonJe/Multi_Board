@@ -16,6 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.util.List;
 
+/**
+ * 게시글 서비스 클래스입니다.
+ */
 @Service
 @RequiredArgsConstructor
 public class BoardService {
@@ -176,7 +179,13 @@ public class BoardService {
             }
         }
     }
-
+    /**
+     * 자유게시판 정보를 수정합니다.
+     *
+     * @param userId   사용자 ID
+     * @param boardDTO 수정할 게시글 정보를 담은 DTO 객체
+     * @throws AppException 사용자 정보가 유효하지 않을 경우 예외 발생
+     */
     public void updateFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
         if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
@@ -222,11 +231,22 @@ public class BoardService {
             }
         }
     }
-
+    /**
+     * 자유게시판 수정 권한을 확인합니다.
+     *
+     * @param userId  사용자 ID
+     * @param boardId 게시글 ID
+     * @return 권한 여부를 나타내는 정수값 (1: 권한 있음, 0: 권한 없음)
+     */
     public int hasFreeBoardEditPermission(String userId, int boardId) {
         return boardRepository.hasFreeBoardEditPermission(userId, boardId);
     }
-
+    /**
+     * 자유게시판을 삭제합니다.
+     *
+     * @param userId  사용자 ID
+     * @param boardId 게시글 ID
+     */
     public void deleteFreeBoard(String userId, int boardId) {
         boardRepository.deleteFreeBoard(userId, boardId);
     }

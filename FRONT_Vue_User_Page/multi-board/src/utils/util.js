@@ -38,23 +38,35 @@ const IsNewBoard = (createdAt) => {
  * @return 다운로드 URL
  */
 const downloadAttachment = (attachmentId) => {
-  // return `http://localhost:8080/api/attachments/${attachmentId}`;
   return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_FILE_DOWNLOAD}/${attachmentId}`;
 };
-
+/**
+ * 제목의 유효성을 검사하는 함수
+ * @param {string} title - 검사할 제목 문자열
+ * @returns {Promise<boolean>} - 제목의 유효성 여부를 Promise로 반환 (true: 유효, false: 유효하지 않음)
+ */
 const validateTitle = async (title) => {
   if (title.length >= 100) {
     return false;
   }
   return true;
 };
-
+/**
+ * 내용의 유효성을 검사하는 함수
+ * @param {string} content - 검사할 내용 문자열
+ * @returns {Promise<boolean>} - 내용의 유효성 여부를 Promise로 반환 (true: 유효, false: 유효하지 않음)
+ */
 const validateContent = async (content) => {
   if (content.length >= 4000) {
     return false;
   }
   return true;
 };
+/**
+ * 첨부 파일의 유효성을 검사하는 함수 (2MB이하의 jpg,jif,png,zip파일 허용)
+ * @param {File[]} files - 검사할 첨부 파일 배열
+ * @returns {Promise<boolean>} - 첨부 파일의 유효성 여부를 Promise로 반환 (true: 유효, false: 유효하지 않음)
+ */
 const validateFiles = async (files) => {
   const allowedExtensions = ["jpg", "jif", "png", "zip"];
   const maxFileSize = 2 * 1024 * 1024;

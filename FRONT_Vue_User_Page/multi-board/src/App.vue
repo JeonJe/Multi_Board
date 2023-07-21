@@ -19,6 +19,10 @@ export default {
   },
   methods: {
     ...mapActions(["clearLoginUser"]),
+    /**
+     * 로그아웃 버튼 클릭 이벤트 핸들러 함수
+     * 사용자를 로그아웃하고 공지사항 목록 페이지로 이동
+     */
     async clickLogout() {
       await this.clearLoginUser();
       this.$router.replace("/boards/notice/list");

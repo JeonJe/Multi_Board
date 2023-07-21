@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import userService from "@/services/user-service";
 import { mapGetters, mapActions } from "vuex";
+import userService from "@/services/user-service";
 
 export default {
   data() {
@@ -46,7 +46,7 @@ export default {
   methods: {
     ...mapActions(["setLoginUser"]),
     /**
-     * 로그인 버튼 클릭 이벤트 핸들러 함수입니다.
+     * 로그인 버튼 클릭 이벤트 핸들러 함수
      * userService를 사용하여 사용자 로그인을 처리합니다.
      */
     async clickLogin() {
@@ -57,7 +57,7 @@ export default {
       }
     },
     /**
-     * 회원가입 버튼 클릭 이벤트 핸들러 함수입니다.
+     * 회원가입 버튼 클릭 이벤트 핸들러 함수
      * 회원가입 페이지로 이동합니다.
      */
     clickSignup() {

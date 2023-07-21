@@ -31,17 +31,17 @@ export default {
   },
   mounted() {
     /**
-     * boardId에 해당하는 공지 게시글 상세 정보를 가져옵니다.
+     * boardId에 해당하는 공지 게시글 상세 정보 조회
      */
     this.getNoticeBoardDetail(this.$route.params.boardId);
   },
   methods: {
     /**
-     * util의 날짜 포맷을 변환하는 함수입니다.
+     * util의 날짜 포맷을 변환하는 함수
      */
     getFormattedDate,
     /**
-     * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
+     * 공지사항 상세 정보를 가져오는 비동기 함수
      * @param {number} boardId - 공지사항 게시글의 ID
      */
     async getNoticeBoardDetail(boardId) {
@@ -55,7 +55,7 @@ export default {
       }
     },
     /**
-     * 공지사항 목록 페이지로 이동하는 함수입니다.
+     * 공지사항 목록 페이지로 이동하는 함수
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
     moveToNoticeBoardList() {

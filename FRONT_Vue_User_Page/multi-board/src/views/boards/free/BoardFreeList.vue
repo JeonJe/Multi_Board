@@ -53,12 +53,12 @@
 </template>
 
 <script>
+import { getFormattedDate, IsNewBoard } from "@/utils/util";
+import { mapGetters, mapActions } from "vuex";
 import SearchForm from "@/components/SearchForm.vue";
 import BoardPagination from "@/components/BoardPagination.vue";
 import boardService from "@/services/board-service";
 import userService from "@/services/user-service";
-import { getFormattedDate, IsNewBoard } from "@/utils/util";
-import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -87,15 +87,15 @@ export default {
   methods: {
     ...mapActions(["clearLoginUser"]),
     /**
-     * util의 날짜 포맷을 변환하는 함수입니다.
+     * util의 날짜 포맷을 변환하는 함수
      */
     getFormattedDate,
     /**
-     * util의 게시글이 7일 이내인지 확인하는 함수입니다.
+     * util의 게시글이 7일 이내인지 확인하는 함수
      */
     IsNewBoard,
     /**
-     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수입니다.
+     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
     async updateSearchCondition(searchCondition) {
@@ -103,7 +103,7 @@ export default {
       this.getFreeBoardList();
     },
     /**
-     * 자유게시글 목록을 가져오는 비동기 함수입니다.
+     * 자유게시글 목록을 가져오는 비동기 함수
      */
     async getFreeBoardList() {
       try {
@@ -127,7 +127,7 @@ export default {
       }
     },
     /**
-     * 페이지네이션을 업데이트하는 함수입니다.
+     * 페이지네이션을 업데이트하는 함수
      * @param {number} page - 업데이트할 페이지 번호
      */
     updatePagination(page) {
@@ -136,7 +136,7 @@ export default {
       this.getFreeBoardList();
     },
     /**
-     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수입니다.
+     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
      * @param {number} boardId - 게시글 ID
      * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
      */
@@ -147,7 +147,7 @@ export default {
       };
     },
     /**
-     * 자유 게시판 카테고리를 가져오는 함수입니다.
+     * 자유 게시판 카테고리를 가져오는 함수
      */
     async getFreeBoardCategories() {
       try {
@@ -162,7 +162,7 @@ export default {
       }
     },
     /**
-     * 사용자 인증 상태를 확인하는 함수입니다.
+     * 사용자 인증 상태를 확인하는 함수
      */
     async checkJWTAuth() {
       try {
@@ -175,7 +175,7 @@ export default {
       }
     },
     /**
-     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수입니다.
+     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수
      * @param {Object} searchCondition - 검색 조건 데이터
      * @returns {Object} - 게시글 작성 페이지의 URL과 쿼리스트링
      */

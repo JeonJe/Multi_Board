@@ -51,8 +51,6 @@ public class UserController {
 
         //회원가입 성공 후 JWT 토큰발행
         String jwtToken = userService.createJwtToken(userSignupDTO.getUserId());
-        System.out.println("userSignupDTO.getUserId() = " + userSignupDTO.getUserId());
-        System.out.println("userSignupDTO = " + userSignupDTO.getName());
         UserLoginResponse userLoginInfo = UserLoginResponse.builder()
                 .userId(userSignupDTO.getUserId())
                 .name(userSignupDTO.getName())

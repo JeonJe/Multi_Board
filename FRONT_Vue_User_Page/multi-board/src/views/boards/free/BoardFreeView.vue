@@ -66,9 +66,6 @@ export default {
     };
   },
   mounted() {
-    /**
-     * boardId에 해당하는 자유 게시글 상세 정보를 가져옵니다.
-     */
     this.boardId = this.$route.params.boardId;
     this.getFreeBoardDetail(this.boardId);
   },
@@ -80,9 +77,12 @@ export default {
      * util의 날짜 포맷을 변환하는 함수입니다.
      */
     getFormattedDate,
+    /**
+     * 첨부파일을 다운로드하는 함수입니다.
+     */
     downloadAttachment,
     /**
-     * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
+     * 공지사항 상세 정보를 가져오는 비동기 함수
      * @param {number} boardId - 공지사항 게시글의 ID
      */
     async getFreeBoardDetail(boardId) {
@@ -99,12 +99,22 @@ export default {
         alert(error);
       }
     },
+    /**
+     * 게시글 수정 버튼 클릭 이벤트 핸들러 함수
+     * @param {number} boardId - 수정할 게시글의 ID
+     * @returns {void}
+     */
     async clickEditBtn(boardId) {
       this.$router.push({
         path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/${boardId}`,
         query: this.$route.query,
       });
     },
+    /**
+     * 게시글 삭제 버튼 클릭 이벤트 핸들러 함수
+     * @param {number} boardId - 삭제할 게시글의 ID
+     * @returns {void}
+     */
     async clickDeleteBtn(boardId) {
       if (await boardService.deleteBoardInfo("free", boardId)) {
         boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
@@ -112,16 +122,28 @@ export default {
         alert("삭제가 불가합니다. 댓글이 남아있는지 확인해주세요.");
       }
     },
+    /**
+     * 댓글 작성 버튼 클릭 이벤트 핸들러 함수
+     * @param {string} newComment - 작성한 댓글 내용
+     * @param {number} boardId - 댓글이 작성된 게시글의 ID
+     * @returns {void}
+     */
     async clickSumbitCommentBtn(newComment, boardId) {
       await boardService.addFreeBoardComment(newComment, boardId);
       await this.getFreeBoardDetail(boardId);
     },
+    /**
+     * 댓글 삭제 버튼 클릭 이벤트 핸들러 함수
+     * @param {Object} comment - 삭제할 댓글 정보 객체
+     * @param {number} boardId - 댓글이 작성된 게시글의 ID
+     * @returns {void}
+     */
     async clickCommentDeleteBtn(comment, boardId) {
       await boardService.deleteFreeBoardComment(comment, boardId);
       await this.getFreeBoardDetail(boardId);
     },
     /**
-     * 공지사항 목록 페이지로 이동하는 함수입니다.
+     * 공지사항 목록 페이지로 이동하는 함수
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
     moveToFreeBoardList() {

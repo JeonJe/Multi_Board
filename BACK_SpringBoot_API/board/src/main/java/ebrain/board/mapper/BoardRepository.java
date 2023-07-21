@@ -6,6 +6,10 @@ import ebrain.board.dto.SearchConditionDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
+/**
+ * BoardRepository 인터페이스
+ * 게시글에 대한 데이터베이스 액세스를 담당하는 매퍼 인터페이스입니다.
+ */
 
 @Mapper
 public interface BoardRepository {
@@ -105,11 +109,26 @@ public interface BoardRepository {
      * @return
      */
     int saveFreeBoardInfo(BoardDTO boardDTO);
-
+    /**
+     * 특정 자유게시판에 대해 사용자가 수정 권한을 가지고 있는지 확인하는 메서드입니다.
+     *
+     * @param userId  사용자 ID
+     * @param boardId 자유게시판의 ID
+     * @return 수정 권한이 있을 경우 1, 없을 경우 0을 반환
+     */
     int hasFreeBoardEditPermission(String userId, int boardId);
-
+    /**
+     * 특정 자유게시판을 삭제하는 메서드입니다.
+     *
+     * @param userId  사용자 ID
+     * @param boardId 자유게시판의 ID
+     */
     void deleteFreeBoard(String userId, int boardId);
-
+    /**
+     * 자유게시판 정보를 업데이트하는 메서드입니다.
+     *
+     * @param boardDTO 업데이트할 자유게시판 정보를 담은 BoardDTO 객체
+     */
     void updateFreeBoardInfo(BoardDTO boardDTO);
 
 }

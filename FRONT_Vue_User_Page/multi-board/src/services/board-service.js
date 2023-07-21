@@ -10,12 +10,8 @@ const api = axios.create({
   },
 });
 
-api.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem(
-  "jwt"
-)}`;
-
 /**
- * JSON 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
+ * multipart 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
  */
 const multipartApi = axios.create({
   baseURL: "http://localhost:8080",
@@ -23,9 +19,22 @@ const multipartApi = axios.create({
     "Content-Type": "multipart/form-data",
   },
 });
-multipartApi.defaults.headers.common[
-  "Authorization"
-] = `Bearer ${localStorage.getItem("jwt")}`;
+
+/**
+ * API 요청 시 인증 토큰을 헤더에 추가합니다.
+ * 이 함수는 사용자 로그인 시 인증 토큰을 헤더에 설정하는 역할을 합니다.
+ * @param {string} token - 사용자의 JWT 토큰
+ */
+const setAuthorizationHeader = (token) => {
+  const authHeader = `Bearer ${token}`;
+  api.defaults.headers.common["Authorization"] = authHeader;
+  multipartApi.defaults.headers.common["Authorization"] = authHeader;
+};
+
+const jwtToken = localStorage.getItem("jwt");
+if (jwtToken) {
+  setAuthorizationHeader(jwtToken);
+}
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -62,7 +71,7 @@ api.interceptors.response.use(
 );
 
 /**
- * 알림 표시된 공지사항 목록을 가져오는 함수입니다.
+ * 알림 표시된 공지사항 목록을 가져오는 함수
  *
  * @returns {Promise} - 알림 표시된 공지사항 목록을 담은 Promise 객체
  * @throws {Error} API 요청 중 발생한 오류
@@ -79,7 +88,7 @@ const getMarkNoticedBoardList = async () => {
 };
 
 /**
- * 게시판의 카테고리 목록을 가져오는 함수입니다.
+ * 게시판의 카테고리 목록을 가져오는 함수
  *
  * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
  * @returns {Promise} - 게시판의 카테고리 목록을 담은 Promise 객체
@@ -99,7 +108,7 @@ const getBoardList = async (boardType, searchCondtion) => {
 };
 
 /**
- * 게시판의 카테고리 목록을 가져오는 함수입니다.
+ * 게시판의 카테고리 목록을 가져오는 함수
  *
  * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
  * @returns {Promise} - 게시판의 카테고리 목록을 담은 Promise 객체
@@ -117,7 +126,7 @@ const getBoardCategories = async (boardType) => {
 };
 
 /**
- * 게시판의 상세 정보를 가져오는 함수입니다.
+ * 게시판의 상세 정보를 가져오는 함수
  *
  * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
  * @param {number} boardId - 게시글 ID
@@ -136,7 +145,7 @@ const getBoardDetail = async (boardType, boardId) => {
 };
 
 /**
- * saveBoardInfo 메소드는 주어진 게시판 타입과 새로운 게시글 정보를 받아와 저장하는 기능을 제공합니다.
+ * saveBoardInfo 메소드는 주어진 게시판 타입과 새로운 게시글 정보를 받아와 저장하는 기능을 제공
  *
  * @param boardType     게시판 타입 (예: "free", "notice" 등)
  * @param newBoardInfo  새로운 게시글 정보
@@ -152,6 +161,13 @@ const saveBoardInfo = async (boardType, newBoardInfo) => {
   }
 };
 
+/**
+ * 게시판의 편집 권한을 확인하는 함수
+ *
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise} - 게시글 편집 권한 여부를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const hasBoardEditPermission = async (boardId) => {
   try {
     const response = await api.get(
@@ -163,7 +179,14 @@ const hasBoardEditPermission = async (boardId) => {
     return false;
   }
 };
-
+/**
+ * 게시글을 삭제하는 함수
+ *
+ * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise} - 게시글 삭제 결과를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const deleteBoardInfo = async (boardType, boardId) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
@@ -175,7 +198,15 @@ const deleteBoardInfo = async (boardType, boardId) => {
     return false;
   }
 };
-
+/**
+ * 게시글을 수정하는 함수
+ *
+ * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
+ * @param {number} boardId - 게시글 ID
+ * @param {Object} newBoardInfo - 수정할 게시글 정보
+ * @returns {Promise} - 게시글 수정 결과를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
@@ -190,7 +221,14 @@ const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
     return false;
   }
 };
-
+/**
+ * 자유 게시판에 댓글을 작성하는 함수
+ *
+ * @param {string} newComment - 작성할 댓글 내용
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise} - 댓글 작성 결과를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const addFreeBoardComment = async (newComment, boardId) => {
   try {
     const response = await api.post(
@@ -203,7 +241,14 @@ const addFreeBoardComment = async (newComment, boardId) => {
     alert(error.response.data.message);
   }
 };
-
+/**
+ * 자유 게시판의 댓글을 삭제하는 함수
+ *
+ * @param {Object} comment - 삭제할 댓글 정보
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise} - 댓글 삭제 결과를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const deleteFreeBoardComment = async (comment, boardId) => {
   try {
     const response = await api.delete(
@@ -216,7 +261,12 @@ const deleteFreeBoardComment = async (comment, boardId) => {
     alert(error.response.data.message);
   }
 };
-
+/**
+ * 자유 게시판 목록 페이지로 라우터를 변경하는 함수
+ *
+ * @param {Object} router - Vue Router 객체
+ * @param {Object} route - 현재 라우트 정보
+ */
 const replaceRouterToFreeBoardList = (router, route) => {
   router.replace({
     path: process.env.VUE_APP_BOARD_FREE_LIST,
@@ -224,7 +274,7 @@ const replaceRouterToFreeBoardList = (router, route) => {
   });
 };
 /**
- * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수입니다.
+ * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수
  *
  * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
  * @returns {Promise} - 게시판 종류에 따른 API URL을 담은 Promise 객체

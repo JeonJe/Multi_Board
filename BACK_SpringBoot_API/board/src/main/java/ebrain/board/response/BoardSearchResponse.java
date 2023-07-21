@@ -7,6 +7,9 @@ import lombok.Data;
 import java.util.List;
 
 
+/**
+ * 검색조건에 검색결과를 나타내는 클래스입니다.
+ */
 @Data
 @Builder
 public class BoardSearchResponse {

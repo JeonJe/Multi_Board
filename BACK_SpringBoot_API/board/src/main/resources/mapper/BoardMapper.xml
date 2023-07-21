@@ -8,17 +8,21 @@
 -->
 <mapper namespace="ebrain.board.mapper.BoardRepository">
     <sql id = "searchQuery">
+        <!-- 검색어가 존재하는 경우, 제목 또는 내용에 검색어가 포함된 게시글을 검색합니다. -->
         <if test="searchText != null and searchText != ''">
             AND (title LIKE concat('%', #{searchText}, '%')
             OR content LIKE concat('%', #{searchText}, '%'))
         </if>
         <if test="categoryValue != null and categoryValue != ''">
+            <!-- 카테고리값이 존재하는 경우, 해당 카테고리로 필터링합니다. -->
             AND target_board.child_code_value = #{categoryValue}
         </if>
+        <!-- 생성일자 범위로 필터링합니다. -->
         AND created_at BETWEEN #{startDate} AND DATE_ADD(#{endDate}, INTERVAL 1 DAY)
     </sql>
 
     <sql id="orderQuery">
+        <!-- 정렬 기준에 따라 결과를 정렬합니다. -->
         ORDER BY
         <choose>
             <when test="sortCriteria == 'createdAt'">
@@ -34,6 +38,7 @@
                 created_at
             </otherwise>
         </choose>
+        <!-- 정렬 순서에 따라 오름차순 또는 내림차순으로 정렬합니다. -->
         <if test="orderBy == 'desc'">
             DESC
         </if>
@@ -151,20 +156,20 @@
         VALUES(#{title}, #{content},#{userId},now(),0,#{categoryValue})
     </insert>
 
-    <!-- boardId 게시글에 대한 작성자가 userId인지 확인합니다.-->
+    <!-- boardId 게시글에 대한 작성자가 userId인지 확인.-->
     <select id="hasFreeBoardEditPermission" resultType="int">
         SELECT COUNT(*) > 0
         FROM free_board
         WHERE board_id = #{boardId}
           AND user_id = #{userId}
     </select>
-
+    <!-- 자유게시글 삭제 -->
     <delete id="deleteFreeBoard">
         DELETE FROM free_board
         WHERE board_id = #{boardId}
         AND user_id = #{userId}
     </delete>
-
+    <!-- 자유 게시글 수정 -->
     <update id="updateFreeBoardInfo" parameterType="BoardDTO">
         UPDATE free_board
         SET title = #{title}, content = #{content}, user_id = #{userId}, child_code_value = #{categoryValue}

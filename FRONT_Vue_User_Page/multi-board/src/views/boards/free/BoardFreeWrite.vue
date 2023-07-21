@@ -119,41 +119,39 @@ export default {
     validateContent,
     validateFiles,
     /**
-     * 파일 선택 이벤트 핸들러입니다. 선택한 파일을 boardInfo.uploadAttachments 배열에 추가합니다.
+     * 파일 선택 이벤트 핸들러
+     *  선택한 파일을 boardInfo.uploadAttachments 배열에 추가
      * @param {Event} event - 파일 선택 이벤트 객체
      */
     handleFileChange(event) {
       const file = event.target.files[0];
       this.uploadAttachments.push(file);
-      this.uploadAttachments.forEach((file) => {
-        console.log("파일 정보 : ", file);
-      });
     },
     /**
-     * 첨부 파일 입력 양식을 추가하는 함수입니다.
+     * 첨부 파일 입력 양식을 추가하는 함수
      */
     clickAddAttachmentForm() {
       this.fileInputBoxes.push({});
     },
     /**
-     * 빈 입력 양식을 제거하는 함수입니다.
+     * 빈 입력 양식을 제거하는 함수
      * @param {number} index - 제거할 입력 양식의 인덱스
      */
     clickRemoveEmptyInput(index) {
       this.fileInputBoxes.splice(index, 1);
     },
     /**
-     * 첨부 파일을 삭제하는 함수입니다.
+     * 첨부 파일을 삭제하는 함수
      * @param {number} index - 삭제할 첨부 파일의 인덱스
      * @param {string} attachmentId - 삭제할 첨부 파일의 ID
      */
-    //TODO : 삭제 정상 작동 확인 필요
+
     clickDeleteAttachment(index, attachmentId) {
       this.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
     },
     /**
-     * 자유 게시판 카테고리를 가져옵니다.
+     * 자유 게시판 카테고리를 조회
      */
     async getFreeBoardCategories() {
       try {
@@ -168,7 +166,7 @@ export default {
       }
     },
     /**
-     * 게시판 정보를 초기화하는 함수입니다.
+     * 게시판 정보를 초기화
      */
     async initBoardInfo() {
       this.boardInfo.userId = await userService.getUserIDByJWT();
@@ -187,11 +185,10 @@ export default {
       const response = await boardService.getBoardDetail("free", boardId);
       if (response.data != "") {
         this.boardInfo = response.data;
-        console.log(this.boardInfo);
       }
     },
     /**
-     * 게시판 정보를 서버에 저장하는 함수입니다.
+     * 게시판 정보를 서버에 저장하는 함수
      */
     async clickBoardInfoSubmit() {
       if (!(await this.validateTitle(this.boardInfo.title))) {
@@ -207,19 +204,23 @@ export default {
         return;
       }
 
-      const getNewBoardInfo = this.getFormDataToSumbit();
+      const getNewBoardInfo = this.createFormDataToSumbit();
 
       await boardService.saveBoardInfo("free", getNewBoardInfo);
       boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
     },
+    /**
+     * 게시글 수정 폼을 제출하는 함수
+     * @param {number} boardId - 수정할 게시글의 ID
+     * @returns {void}
+     */
     async clickBoardUpdateSubmit(boardId) {
-      //Multipart FormData 전송을 위해 FormData 사용
-      const getNewBoardInfo = this.getFormDataToSumbit();
+      const getNewBoardInfo = this.createFormDataToSumbit();
       await boardService.updateBoardInfo("free", boardId, getNewBoardInfo);
       this.getOriginFreeBoardDetail(boardId);
     },
     /**
-     * 자유 게시판 목록으로 이동하는 함수입니다.
+     * 자유 게시판 목록으로 이동하는 함수
      * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
      */
     moveToFreeBoardList() {
@@ -228,7 +229,11 @@ export default {
         query: this.$route.query,
       };
     },
-    getFormDataToSumbit() {
+    /**
+     * 게시글을 수정하기 위해 제출할 FormData를 생성하는 함수
+     * @returns {FormData} - 게시글 수정에 사용될 FormData 객체
+     */
+    createFormDataToSumbit() {
       const newBoardInfo = new FormData();
 
       newBoardInfo.append("categoryValue", this.boardInfo.categoryValue);

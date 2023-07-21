@@ -10,8 +10,20 @@ const api = axios.create({
   },
 });
 
-const newLocal = "Authorization";
-api.defaults.headers.common[newLocal] = `Bearer ${localStorage.getItem("jwt")}`;
+/**
+ * API 요청 시 인증 토큰을 헤더에 추가합니다.
+ * 이 함수는 사용자 로그인 시 인증 토큰을 헤더에 설정하는 역할을 합니다.
+ * @param {string} token - 사용자의 JWT 토큰
+ */
+const setAuthorizationHeader = (token) => {
+  const authHeader = `Bearer ${token}`;
+  api.defaults.headers.common["Authorization"] = authHeader;
+};
+
+const jwtToken = localStorage.getItem("jwt");
+if (jwtToken) {
+  setAuthorizationHeader(jwtToken);
+}
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -48,7 +60,7 @@ api.interceptors.response.use(
 /**
  * 사용자 회원가입을 위한 함수
  * @param {Object} userData - 사용자 데이터
- * @returns {Promise<void>}
+ * @returns {Promise<Object|false>} - 회원가입 성공 시 사용자 정보, 실패 시 false
  */
 const signupUser = async (userData) => {
   try {
@@ -83,7 +95,7 @@ const checkDuplicateId = async (userId) => {
 /**
  * 사용자 로그인을 위한 함수
  * @param {Object} userData - 사용자 데이터
- * @returns {Promise<void>}
+ * @returns {Promise<Object|false>} - 로그인 성공 시 사용자 정보, 실패 시 false
  */
 const loginUser = async (userData) => {
   try {
@@ -102,19 +114,19 @@ const loginUser = async (userData) => {
 
 /**
  * JWT 토큰 확인을 위한 함수
- * @returns {Promise<void>}
+ * @returns {Promise<Object|false>} - JWT 토큰 확인 성공 시 응답 데이터, 실패 시 false
  */
 const getJWTAuthStatus = async () => {
   try {
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
     return response.data;
   } catch (error) {
-    // 만료된토큰 400에러
+    // 400 : 만료된토큰
     if (error.response.status === 400) {
       alert("로그인 시간이 만료되었습니다. 재로그인하세요.");
       localStorage.removeItem("jwt");
     }
-    //미인증 401에러
+    // 401 : 미인증
     return false;
   }
 };
