@@ -58,9 +58,14 @@
       >
         첨부파일 추가
       </button>
-      <button type="button" @click="clickBoardInfoSubmit">
-        {{ isUpdate ? "수정" : "등록" }}
+      <button
+        type="button"
+        @click="clickBoardUpdateSubmit(boardId)"
+        v-if="isUpdate"
+      >
+        수정
       </button>
+      <button type="button" @click="clickBoardInfoSubmit" v-else>등록</button>
       <router-link :to="moveToFreeBoardList()"> 목록으로 </router-link>
     </div>
   </div>
@@ -76,16 +81,10 @@ export default {
       isUpdate: false,
       boardId: null,
       categories: [],
-      boardInfo: {
-        category: "",
-        userId: "",
-        title: "",
-        content: "",
-        boardAttachments: [],
-        uploadAttachments: [],
-        deletedAttachmentIDs: [],
-      },
+      boardInfo: {},
       fileInputBoxes: [],
+      uploadAttachments: [],
+      deletedAttachmentIDs: [],
       maxAttachments: 5,
     };
   },
@@ -104,15 +103,16 @@ export default {
 
   mounted() {
     const boardId = this.$route.params.boardId;
+    this.initBoardInfo();
+
     //글 수정
     if (boardId) {
-      // TODO : 토큰 권한이 있는지 확인, 없으면 유효한 접근이 아님,값 가져오기
       this.isUpdate = true;
       this.boardId = boardId;
+      this.getOriginFreeBoardDetail(boardId);
     } else {
       // 글 작성
       this.isUpdate = false;
-      this.initBoardInfo();
     }
   },
   methods: {
@@ -122,7 +122,7 @@ export default {
      */
     handleFileChange(event) {
       const file = event.target.files[0];
-      this.boardInfo.uploadAttachments.push(file);
+      this.uploadAttachments.push(file);
     },
     /**
      * 첨부 파일 입력 양식을 추가하는 함수입니다.
@@ -144,7 +144,7 @@ export default {
      */
     //TODO : 삭제 정상 작동 확인 필요
     clickDeleteAttachment(index, attachmentId) {
-      this.boardInfo.deletedAttachmentIDs.push(attachmentId);
+      this.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
     },
     /**
@@ -168,34 +168,40 @@ export default {
      * 게시판 정보를 초기화하는 함수입니다.
      */
     async initBoardInfo() {
-      await this.getFreeBoardCategories();
       this.boardInfo.userId = await userService.getUserIDByJWT();
       if (this.boardInfo.userId === null) {
         alert("작성자 정보를 가져오지 못했습니다.");
 
-        this.$router.replace({
-          path: process.env.VUE_APP_BOARD_FREE_LIST,
-          query: this.$route.query,
-        });
+        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+      }
+      await this.getFreeBoardCategories();
+    },
+    async getOriginFreeBoardDetail(boardId) {
+      if (!(await boardService.hasBoardEditPermission(boardId))) {
+        alert("수정 권한이 없습니다");
+        return;
+      }
+
+      const response = await boardService.getBoardDetail("free", boardId);
+      if (response.data != "") {
+        this.boardInfo = response.data;
       }
     },
     /**
      * 게시판 정보를 서버에 저장하는 함수입니다.
      */
-    clickBoardInfoSubmit() {
+    async clickBoardInfoSubmit() {
       //Multipart FormData 전송을 위해 FormData 사용
-      const newBoardInfo = new FormData();
+      const getNewBoardInfo = this.getFormDataToSumbit();
 
-      newBoardInfo.append("categoryValue", this.boardInfo.category);
-      newBoardInfo.append("userId", this.boardInfo.userId);
-      newBoardInfo.append("title", this.boardInfo.title);
-      newBoardInfo.append("content", this.boardInfo.content);
-
-      this.boardInfo.uploadAttachments.forEach((file) => {
-        newBoardInfo.append(`uploadAttachments`, file);
-      });
-      boardService.saveBoardInfo("free", newBoardInfo);
-      this.moveToFreeBoardList();
+      await boardService.saveBoardInfo("free", getNewBoardInfo);
+      boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+    },
+    async clickBoardUpdateSubmit(boardId) {
+      //Multipart FormData 전송을 위해 FormData 사용
+      const getNewBoardInfo = this.getFormDataToSumbit();
+      // TODO : 업데이트 & 새로고침
+      await boardService.updateBoardInfo("free", boardId, getNewBoardInfo);
     },
     /**
      * 자유 게시판 목록으로 이동하는 함수입니다.
@@ -206,6 +212,19 @@ export default {
         path: process.env.VUE_APP_BOARD_FREE_LIST,
         query: this.$route.query,
       };
+    },
+    getFormDataToSumbit() {
+      const newBoardInfo = new FormData();
+
+      newBoardInfo.append("categoryValue", this.boardInfo.category);
+      newBoardInfo.append("userId", this.boardInfo.userId);
+      newBoardInfo.append("title", this.boardInfo.title);
+      newBoardInfo.append("content", this.boardInfo.content);
+
+      this.uploadAttachments.forEach((file) => {
+        newBoardInfo.append(`uploadAttachments`, file);
+      });
+      return newBoardInfo;
     },
   },
 };

@@ -144,7 +144,7 @@ const saveBoardInfo = async (boardType, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
     const response = await multipartApi.post(apiURL, newBoardInfo);
-    return response.data;
+    alert(response.data.message);
   } catch (error) {
     alert(error);
   }
@@ -167,20 +167,25 @@ const deleteBoardInfo = async (boardType, boardId) => {
     const apiURL = await getAPIUrlByBoardType(boardType);
     const response = await api.delete(`${apiURL}/${boardId}`);
     alert(response.data.message);
+    return true;
   } catch (error) {
     console.error(error);
-    alert(error);
+    return false;
   }
 };
 
-const updateBoardInfo = async (boardType, newBoardInfo) => {
+const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
-    const response = await multipartApi.put(apiURL, newBoardInfo);
-    return response.data;
+    const response = await multipartApi.put(
+      `${apiURL}/${boardId}`,
+      newBoardInfo
+    );
+    alert(response.data.message);
+    return true;
   } catch (error) {
     console.error(error);
-    alert(error);
+    return false;
   }
 };
 
@@ -198,6 +203,12 @@ const addFreeBoardComment = async (newComment, boardId) => {
   }
 };
 
+const replaceRouterToFreeBoardList = (router, route) => {
+  router.replace({
+    path: process.env.VUE_APP_BOARD_FREE_LIST,
+    query: route.query,
+  });
+};
 /**
  * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수입니다.
  *
@@ -230,4 +241,5 @@ export default {
   updateBoardInfo,
   hasBoardEditPermission,
   addFreeBoardComment,
+  replaceRouterToFreeBoardList,
 };

@@ -165,4 +165,10 @@
         AND user_id = #{userId}
     </delete>
 
+    <update id="updateFreeBoardInfo" parameterType="BoardDTO">
+        UPDATE free_board
+        SET title = #{title}, content = #{content}, user_id = #{userId}, child_code_value = #{categoryValue}
+        WHERE board_id = #{boardId}
+    </update>
+
 </mapper>

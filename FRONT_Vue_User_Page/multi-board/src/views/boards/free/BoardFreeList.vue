@@ -107,7 +107,6 @@ export default {
           "free",
           this.searchCondition
         );
-        console.log(response);
         if (response === "") {
           alert("표시 할 자유게시글이 없습니다.");
         } else {

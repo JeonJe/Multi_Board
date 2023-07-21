@@ -23,6 +23,7 @@
         <button @click="clickSumbitCommentBtn(newComment, boardId)">
           댓글 등록
         </button>
+        <!-- TODO : 댓글삭제 -->
       </div>
       <div v-for="comment in boardInfo.boardComments" :key="comment.commentId">
         <p>작성자: {{ comment.userId }}</p>
@@ -90,15 +91,17 @@ export default {
       }
     },
     async clickEditBtn(boardId) {
-      console.log(boardId);
-      console.log("수정");
-    },
-    async clickDeleteBtn(boardId) {
-      await boardService.deleteBoardInfo("free", boardId);
-      this.$router.replace({
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
+      this.$router.push({
+        path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/${boardId}`,
         query: this.$route.query,
       });
+    },
+    async clickDeleteBtn(boardId) {
+      if (await boardService.deleteBoardInfo("free", boardId)) {
+        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+      } else {
+        alert("삭제가 불가합니다. 댓글이 남아있는지 확인해주세요.");
+      }
     },
     async clickSumbitCommentBtn(newComment, boardId) {
       await boardService.addFreeBoardComment(newComment, boardId);

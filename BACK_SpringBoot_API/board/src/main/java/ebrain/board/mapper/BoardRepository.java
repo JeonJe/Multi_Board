@@ -110,4 +110,6 @@ public interface BoardRepository {
 
     void deleteFreeBoard(String userId, int boardId);
 
+    void updateFreeBoardInfo(BoardDTO boardDTO);
+
 }

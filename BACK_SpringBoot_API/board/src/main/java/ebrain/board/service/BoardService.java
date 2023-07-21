@@ -1,15 +1,19 @@
 package ebrain.board.service;
 
 import ebrain.board.dto.*;
+import ebrain.board.exception.AppException;
+import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.BoardRepository;
 import ebrain.board.mapper.CommentRepository;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @Service
@@ -149,9 +153,59 @@ public class BoardService {
      * @param boardDTO 저장할 게시글 정보
      * @throws Exception 예외 발생 시
      */
-    public void saveFreeBoardInfo(BoardDTO boardDTO) throws Exception {
+    public void saveFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
+
+        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
 
         boardRepository.saveFreeBoardInfo(boardDTO);
+        List<MultipartFile> newFiles = boardDTO.getUploadAttachments();
+
+        if (newFiles != null) {
+            for (MultipartFile file : newFiles) {
+                if (!file.isEmpty()) {
+                    String originName = file.getOriginalFilename();
+                    String numberedFileName = FileUtil.uploadFile(file, UPLOAD_PATH).getName();
+                    AttachmentDTO attachmentDTO = AttachmentDTO.builder()
+                            .boardId(boardDTO.getBoardId())
+                            .fileName(numberedFileName)
+                            .originFileName(originName)
+                            .build();
+                    attachmentRepository.saveAttachment(attachmentDTO);
+                }
+            }
+        }
+    }
+
+    public void updateFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
+        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
+
+        //게시글 수정
+        boardRepository.updateFreeBoardInfo(boardDTO);
+
+        //첨부파일 수정
+        List<Integer> deletedAttachmentIds = boardDTO.getDeletedAttachmentIDs();
+        if (deletedAttachmentIds != null){
+            for (Integer deletedId : deletedAttachmentIds) {
+                String deletedFileName = attachmentRepository.
+                        getAttachmentByAttachmentId(deletedId).getFileName();
+
+                //업로드 폴더에서 파일 삭제
+                if (deletedFileName != null) {
+                    File file = new File(UPLOAD_PATH + '/' + deletedFileName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                }
+                //데이터베이스서 첨부파일 정보 삭제
+                attachmentRepository.deleteAttachmentByAttachmentId(deletedId);
+            }
+        }
+
+        //첨부파일 신규 추가
         List<MultipartFile> newFiles = boardDTO.getUploadAttachments();
 
         if (newFiles != null) {
@@ -177,5 +231,7 @@ public class BoardService {
     public void deleteFreeBoard(String userId, int boardId) {
         boardRepository.deleteFreeBoard(userId, boardId);
     }
+
+
 
 }

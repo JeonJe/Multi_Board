@@ -126,7 +126,7 @@ const getJWTAuthStatus = async () => {
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
-    console.log(response);
+    console.log(response.message);
     return response.data;
   } catch (error) {
     // 권한없으면 401

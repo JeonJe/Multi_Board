@@ -29,10 +29,10 @@
     </select>
 
 <!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 삭제 &ndash;&gt;-->
-<!--    <delete id="deleteAttachmentByAttachmentId" parameterType="int">-->
-<!--        DELETE FROM attachment-->
-<!--        WHERE attachment_id = #{attachmentId}-->
-<!--    </delete>-->
+    <delete id="deleteAttachmentByAttachmentId" parameterType="int">
+        DELETE FROM attachments
+        WHERE attachment_id = #{attachmentId}
+    </delete>
     <delete id="deleteAttachmentsByBoardId">
         DELETE FROM attachments
         WHERE board_id = ${board_id}

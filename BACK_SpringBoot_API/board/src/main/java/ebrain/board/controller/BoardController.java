@@ -1,8 +1,6 @@
 package ebrain.board.controller;
 
 import ebrain.board.dto.*;
-import ebrain.board.exception.AppException;
-import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.BoardSearchResponse;
 import ebrain.board.response.APIResponse;
 import ebrain.board.service.AttachmentService;
@@ -15,7 +13,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -66,8 +63,7 @@ public class BoardController {
         List<BoardDTO> markedNoticedBoards = boardService.getMarkedNoticedBoards();
         int countMarkedNoticedBoards = boardService.countMarkedNoticedBoards();
 
-        BoardSearchResponse boardSearchResponse = BoardSearchResponse
-                .builder()
+        BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
                 .searchBoards(searchResult)
                 .countSearchBoards(countNoticeBoards)
                 .markNoticedBoards(markedNoticedBoards)
@@ -144,8 +140,7 @@ public class BoardController {
         List<BoardDTO> searchResult = boardService.searchFreeBoards(searchCondition);
         int countFreeBoards = boardService.countFreeBoards(searchCondition);
 
-        BoardSearchResponse boardSearchResponse = BoardSearchResponse
-                .builder()
+        BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
                 .searchBoards(searchResult)
                 .countSearchBoards(countFreeBoards)
                 .build();
@@ -207,10 +202,7 @@ public class BoardController {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
 
-        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
-        }
-        boardService.saveFreeBoardInfo(boardDTO);
+        boardService.saveFreeBoardInfo(userId, boardDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
@@ -270,18 +262,25 @@ public class BoardController {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
+        commentDTO.setUserId(userId);
 
-        CommentDTO newComment = CommentDTO.builder()
-                .boardId(boardId)
-                .content(commentDTO.getContent())
-                .userId(userId)
-                .build();
-
-        commentService.addFreeBoardComment(newComment);
+        commentService.addFreeBoardComment(commentDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
-    
+
+    @PutMapping("/api/boards/free/{boardId}")
+    public ResponseEntity<APIResponse> updateFreeBoardInfo(HttpServletRequest request, @PathVariable int boardId,
+                                                           @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
+                //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        boardDTO.setBoardId(boardId);
+        boardService.updateFreeBoardInfo(userId, boardDTO);
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
 
 }
