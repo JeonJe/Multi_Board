@@ -22,6 +22,7 @@
     </form>
     <button @click="clickSignup">회원가입</button>
     <button @click="clickCheckToken">Jwt토큰확인</button>
+    <button @click="clickRemoveToken">Jwt토큰제거</button>
   </div>
 </template>
 
@@ -62,6 +63,9 @@ export default {
      */
     clickCheckToken() {
       userService.getUserIDByJWT();
+    },
+    clickRemoveToken() {
+      localStorage.removeItem("jwt");
     },
   },
 };

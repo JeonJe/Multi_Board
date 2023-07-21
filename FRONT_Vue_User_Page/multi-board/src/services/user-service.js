@@ -73,8 +73,7 @@ const checkDuplicateId = async (userId) => {
     await api.get(URL);
     alert("사용 가능한 ID입니다.");
   } catch (error) {
-    const res = error.response.data;
-    alert(res.data);
+    alert(error.response.data.data);
   }
 };
 
@@ -93,8 +92,7 @@ const loginUser = async (userData) => {
     alert("로그인이 성공하였습니다.");
     //TODO : vuex로 상태관리가 되어야 함.
   } catch (error) {
-    const res = error.response.data;
-    alert(res.data);
+    alert(error.response.data.data);
   }
 };
 
@@ -110,8 +108,7 @@ const getUserIDByJWT = async () => {
     const response = await api.get(process.env.VUE_APP_API_GET_USER_BY_TOKEN);
     return response.data.data;
   } catch (error) {
-    const res = error.response;
-    console.log(res.data);
+    console.log(error.response);
     return null;
   }
 };
@@ -126,10 +123,14 @@ const getJWTAuthStatus = async () => {
       "Authorization"
     ] = `Bearer ${localStorage.getItem("jwt")}`;
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
-    console.log(response.message);
     return response.data;
   } catch (error) {
-    // 권한없으면 401
+    // 만료된토큰 400에러
+    if (error.response.status === 400) {
+      alert("로그인 시간이 만료되었습니다. 재로그인하세요.");
+      localStorage.removeItem("jwt");
+    }
+    //미인증 401에러
     return false;
   }
 };

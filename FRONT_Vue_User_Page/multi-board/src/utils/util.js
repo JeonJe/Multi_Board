@@ -42,9 +42,40 @@ const downloadAttachment = (attachmentId) => {
   return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_FILE_DOWNLOAD}/${attachmentId}`;
 };
 
+const validateTitle = async (title) => {
+  if (title.length >= 100) {
+    return false;
+  }
+  return true;
+};
+
+const validateContent = async (content) => {
+  if (content.length >= 4000) {
+    return false;
+  }
+  return true;
+};
+const validateFiles = async (files) => {
+  const allowedExtensions = ["jpg", "jif", "png", "zip"];
+  const maxFileSize = 2 * 1024 * 1024;
+
+  for (const file of files) {
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension) || file.size > maxFileSize) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export {
   getQueryParamOrDefault,
   getFormattedDate,
   IsNewBoard,
   downloadAttachment,
+  validateTitle,
+  validateContent,
+  validateFiles,
 };

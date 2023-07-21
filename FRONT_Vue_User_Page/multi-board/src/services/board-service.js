@@ -93,7 +93,8 @@ const getBoardList = async (boardType, searchCondtion) => {
     });
     return response.data;
   } catch (error) {
-    alert(error.data);
+    alert("리스트를 가져오지 못했습니다.");
+    return false;
   }
 };
 
@@ -110,7 +111,8 @@ const getBoardCategories = async (boardType) => {
     const response = await api.get(`${apiURL}/categories`);
     return response.data;
   } catch (error) {
-    alert(error);
+    alert("카테고리를 가져오지 못했습니다.");
+    return false;
   }
 };
 
@@ -195,7 +197,7 @@ const addFreeBoardComment = async (newComment, boardId) => {
       `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
       { content: newComment }
     );
-    console.log(response);
+    alert(response.data.message);
   } catch (error) {
     console.error(error);
     alert(error);
@@ -204,13 +206,11 @@ const addFreeBoardComment = async (newComment, boardId) => {
 
 const deleteFreeBoardComment = async (comment, boardId) => {
   try {
-    console.log(JSON.parse(JSON.stringify(comment)));
     const response = await api.delete(
       `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
       { data: comment }
     );
-    console.log(response);
-    alert("댓글 삭제가 성공하였습니다.");
+    alert(response.data.message);
   } catch (error) {
     console.error(error);
     alert(error);

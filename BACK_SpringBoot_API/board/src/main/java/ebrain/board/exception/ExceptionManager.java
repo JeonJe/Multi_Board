@@ -43,7 +43,7 @@ public class ExceptionManager {
 
         APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다", errorMessages);
 
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
     /**
@@ -64,7 +64,7 @@ public class ExceptionManager {
 
         APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다.", errorMessages.get(0));
 
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
     @ExceptionHandler(SQLException.class)
@@ -83,10 +83,8 @@ public class ExceptionManager {
      */
     @ExceptionHandler(AppException.class)
     public ResponseEntity<APIResponse> handleAppException(AppException e) {
-
         APIResponse apiResponse = ResponseUtil.ErrorWithData("에러가 발생하였습니다", e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(apiResponse);
-
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -94,7 +92,6 @@ public class ExceptionManager {
 
         APIResponse apiResponse = ResponseUtil.ErrorWithData("유효하지 않는 요청입니다.", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
-
     }
 
     /**

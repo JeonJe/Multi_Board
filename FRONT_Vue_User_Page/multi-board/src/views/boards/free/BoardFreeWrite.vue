@@ -74,7 +74,7 @@
 <script>
 import userService from "@/services/user-service";
 import boardService from "@/services/board-service";
-
+import { validateTitle, validateContent, validateFiles } from "@/utils/util";
 export default {
   data() {
     return {
@@ -115,6 +115,9 @@ export default {
     }
   },
   methods: {
+    validateTitle,
+    validateContent,
+    validateFiles,
     /**
      * 파일 선택 이벤트 핸들러입니다. 선택한 파일을 boardInfo.uploadAttachments 배열에 추가합니다.
      * @param {Event} event - 파일 선택 이벤트 객체
@@ -122,6 +125,9 @@ export default {
     handleFileChange(event) {
       const file = event.target.files[0];
       this.uploadAttachments.push(file);
+      this.uploadAttachments.forEach((file) => {
+        console.log("파일 정보 : ", file);
+      });
     },
     /**
      * 첨부 파일 입력 양식을 추가하는 함수입니다.
@@ -188,7 +194,19 @@ export default {
      * 게시판 정보를 서버에 저장하는 함수입니다.
      */
     async clickBoardInfoSubmit() {
-      //Multipart FormData 전송을 위해 FormData 사용
+      if (!(await this.validateTitle(this.boardInfo.title))) {
+        alert("제목은 100자 이하로 작성해주세요.");
+        return;
+      }
+      if (!(await this.validateContent(this.boardInfo.content))) {
+        alert("내용은 4000자 이하로 작성해주세요.");
+        return;
+      }
+      if (!(await this.validateFiles(this.uploadAttachments))) {
+        alert("파일은 2MB이하, jpg,gif,png,zip 파일만 올려주세요.");
+        return;
+      }
+
       const getNewBoardInfo = this.getFormDataToSumbit();
 
       await boardService.saveBoardInfo("free", getNewBoardInfo);

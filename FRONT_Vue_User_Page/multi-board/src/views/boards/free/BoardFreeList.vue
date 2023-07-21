@@ -74,12 +74,11 @@ export default {
       showRegisterButton: false,
     };
   },
-  mounted() {
-    /**
-     * 게시판 카테고리를 가져옵니다.
-     */
-    this.getFreeBoardCategories();
-    this.checkJWTAuth();
+  async mounted() {
+    if (!(await this.checkJWTAuth())) {
+      return;
+    }
+    await this.getFreeBoardCategories();
   },
   methods: {
     /**
@@ -94,7 +93,7 @@ export default {
      * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
-    updateSearchCondition(searchCondition) {
+    async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
       this.getFreeBoardList();
     },
@@ -107,14 +106,16 @@ export default {
           "free",
           this.searchCondition
         );
-        if (response === "") {
-          alert("표시 할 자유게시글이 없습니다.");
-        } else {
-          this.searchBoardList = response.data.searchBoards;
-          this.totalPosts = response.data.countSearchBoards;
-          this.totalPages = Math.ceil(
-            this.totalPosts / this.searchCondition.pageSize
-          );
+        if (response.status === "success") {
+          if (response === "") {
+            alert("표시 할 자유게시글이 없습니다.");
+          } else {
+            this.searchBoardList = response.data.searchBoards;
+            this.totalPosts = response.data.countSearchBoards;
+            this.totalPages = Math.ceil(
+              this.totalPosts / this.searchCondition.pageSize
+            );
+          }
         }
       } catch (error) {
         console.log(error);
@@ -162,9 +163,10 @@ export default {
       try {
         const hasPermission = await userService.getJWTAuthStatus();
         this.showRegisterButton = hasPermission;
+        return true;
       } catch (error) {
         this.showRegisterButton = false;
-        console.log(error);
+        return false;
       }
     },
     /**
