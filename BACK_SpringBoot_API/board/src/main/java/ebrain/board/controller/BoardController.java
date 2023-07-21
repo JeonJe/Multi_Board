@@ -265,7 +265,7 @@ public class BoardController {
         commentDTO.setUserId(userId);
         commentDTO.setBoardId(boardId);
 
-        commentService.addFreeBoardComment(commentDTO);
+        commentService.addFreeBoardComment(userId, commentDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);

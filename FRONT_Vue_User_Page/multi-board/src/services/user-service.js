@@ -10,6 +10,9 @@ const api = axios.create({
   },
 });
 
+const newLocal = "Authorization";
+api.defaults.headers.common[newLocal] = `Bearer ${localStorage.getItem("jwt")}`;
+
 /**
  * 요청 전에 실행될 인터셉터
  * @param {Object} config - 요청 설정 객체
@@ -53,12 +56,12 @@ const signupUser = async (userData) => {
       process.env.VUE_APP_API_USER_SIGNUP,
       JSON.stringify(userData)
     );
-    localStorage.setItem("jwt", response.data.data);
-    alert(response.data.data);
-    this.$router.push({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
+    localStorage.setItem("jwt", response.data.data.jwt);
+    alert(response.data.message);
+    return response.data.data;
   } catch (error) {
-    const res = error.response.data;
-    alert(res.data[0]);
+    alert(error.response.data.data);
+    return false;
   }
 };
 
@@ -70,8 +73,8 @@ const signupUser = async (userData) => {
 const checkDuplicateId = async (userId) => {
   try {
     const URL = process.env.VUE_APP_API_CHECK_DUPLICATED_ID + userId;
-    await api.get(URL);
-    alert("사용 가능한 ID입니다.");
+    const response = await api.get(URL);
+    alert(response.data.message);
   } catch (error) {
     alert(error.response.data.data);
   }
@@ -88,28 +91,12 @@ const loginUser = async (userData) => {
       process.env.VUE_APP_API_USER_LOGIN,
       JSON.stringify(userData)
     );
-    localStorage.setItem("jwt", response.data.data);
-    alert("로그인이 성공하였습니다.");
-    //TODO : vuex로 상태관리가 되어야 함.
-  } catch (error) {
-    alert(error.response.data.data);
-  }
-};
-
-/**
- * JWT 토큰 확인을 위한 함수
- * @returns {Promise<void>}
- */
-const getUserIDByJWT = async () => {
-  try {
-    api.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${localStorage.getItem("jwt")}`;
-    const response = await api.get(process.env.VUE_APP_API_GET_USER_BY_TOKEN);
+    localStorage.setItem("jwt", response.data.data.jwt);
+    alert(response.data.message);
     return response.data.data;
   } catch (error) {
-    console.log(error.response);
-    return null;
+    alert(error.response.data.data);
+    return false;
   }
 };
 
@@ -119,9 +106,6 @@ const getUserIDByJWT = async () => {
  */
 const getJWTAuthStatus = async () => {
   try {
-    api.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${localStorage.getItem("jwt")}`;
     const response = await api.get(process.env.VUE_APP_API_CHECK_JWT_STATUS);
     return response.data;
   } catch (error) {
@@ -139,6 +123,5 @@ export default {
   signupUser,
   loginUser,
   checkDuplicateId,
-  getUserIDByJWT,
   getJWTAuthStatus,
 };

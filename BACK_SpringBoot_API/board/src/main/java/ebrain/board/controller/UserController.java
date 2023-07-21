@@ -5,6 +5,7 @@ import ebrain.board.dto.UserSignupDTO;
 import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.APIResponse;
+import ebrain.board.response.UserLoginResponse;
 import ebrain.board.service.UserService;
 import ebrain.board.utils.ResponseUtil;
 
@@ -47,11 +48,18 @@ public class UserController {
     @PostMapping("/api/auth/signup")
     public ResponseEntity<APIResponse> signupUser(@Valid @RequestBody UserSignupDTO userSignupDTO) {
 
-        userService.saveUser(userSignupDTO);
 
         //회원가입 성공 후 JWT 토큰발행
         String jwtToken = userService.createJwtToken(userSignupDTO.getUserId());
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("회원가입에 성공하였습니다", jwtToken);
+        System.out.println("userSignupDTO.getUserId() = " + userSignupDTO.getUserId());
+        System.out.println("userSignupDTO = " + userSignupDTO.getName());
+        UserLoginResponse userLoginInfo = UserLoginResponse.builder()
+                .userId(userSignupDTO.getUserId())
+                .name(userSignupDTO.getName())
+                .jwt(jwtToken)
+                .build();
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithData("회원가입에 성공하였습니다", userLoginInfo);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 
@@ -91,9 +99,19 @@ public class UserController {
         boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1)  ? true : false;
 
         if (isValidUser) {
+            String userId = userLoginDTO.getUserId();
+            String name = userService.findUserByUserId(userId).getName();
             //JWT 토큰 생성
             String jwtToken = userService.createJwtToken(userLoginDTO.getUserId());
-            APIResponse apiResponse = ResponseUtil.SuccessWithData("로그인 성공", jwtToken);
+            //아이디, 네임, jwt 토큰과 함꼐 전달
+
+            UserLoginResponse userLoginInfo = UserLoginResponse.builder()
+                    .userId(userId)
+                    .name(name)
+                    .jwt(jwtToken)
+                    .build();
+
+            APIResponse apiResponse = ResponseUtil.SuccessWithData("로그인 성공", userLoginInfo);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
 
         } else {

@@ -6,8 +6,9 @@ import lombok.Data;
 
 import java.util.List;
 
-@Builder
+
 @Data
+@Builder
 public class BoardSearchResponse {
 
     /**
@@ -23,8 +24,5 @@ public class BoardSearchResponse {
      * 알림 표시된 게시글 목록
      */
     private List<BoardDTO> markNoticedBoards;
-
-
-
 
 }

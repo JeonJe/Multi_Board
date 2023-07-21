@@ -4,9 +4,28 @@
     <router-link to="/boards/free/list">자유 게시판</router-link>
     <router-link to="/auth/login">로그인</router-link>
   </nav>
+  <span v-if="isLoggedIn">{{ getUser.name }}님 로그인 중입니다.</span>
+  <button v-if="isLoggedIn" @click="clickLogout">로그아웃</button>
+
   <router-view />
 </template>
 
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  computed: {
+    ...mapGetters(["isLoggedIn", "getUser"]),
+  },
+  methods: {
+    ...mapActions(["clearLoginUser"]),
+    async clickLogout() {
+      await this.clearLoginUser();
+      this.$router.replace("/boards/notice/list");
+    },
+  },
+};
+</script>
 <style>
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;

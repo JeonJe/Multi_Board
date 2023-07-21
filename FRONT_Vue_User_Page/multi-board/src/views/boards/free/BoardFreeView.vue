@@ -18,7 +18,7 @@
         {{ attachment.originFileName }}<br />
       </a>
       <!-- 댓글 -->
-      <div>
+      <div v-if="isLoggedIn">
         <textarea v-model="newComment" rows="4" cols="50"></textarea>
         <button @click="clickSumbitCommentBtn(newComment, boardId)">
           댓글 등록
@@ -28,7 +28,10 @@
         <p>작성자: {{ comment.userId }}</p>
         <p>작성시간: {{ getFormattedDate(comment.createdAt) }}</p>
         <p>{{ comment.content }}</p>
-        <button @click="clickCommentDeleteBtn(comment, boardId)">
+        <button
+          v-if="isLoggedIn && comment.userId === getUser.userId"
+          @click="clickCommentDeleteBtn(comment, boardId)"
+        >
           댓글 삭제
         </button>
       </div>
@@ -48,6 +51,7 @@
 import boardService from "@/services/board-service";
 import { getFormattedDate, downloadAttachment } from "@/utils/util";
 import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
+import { mapGetters } from "vuex";
 
 export default {
   components: {
@@ -67,6 +71,9 @@ export default {
      */
     this.boardId = this.$route.params.boardId;
     this.getFreeBoardDetail(this.boardId);
+  },
+  computed: {
+    ...mapGetters(["isLoggedIn", "getUser"]),
   },
   methods: {
     /**

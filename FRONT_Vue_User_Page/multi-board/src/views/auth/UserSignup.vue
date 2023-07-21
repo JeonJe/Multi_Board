@@ -43,6 +43,7 @@
 
 <script>
 import userService from "@/services/user-service";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   data() {
@@ -56,6 +57,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["isLoggedIn"]),
     passwordPlaceholder() {
       return this.password ? "" : "비밀번호";
     },
@@ -64,12 +66,17 @@ export default {
     },
   },
   methods: {
+    ...mapActions(["setLoginUser", "getUser"]),
     /**
      * 회원가입 버튼 클릭 이벤트 핸들러 함수입니다.
      * userService를 사용하여 사용자 회원가입을 처리합니다.
      */
-    clickSignup() {
-      userService.signupUser(this.userData);
+    async clickSignup() {
+      const response = await userService.signupUser(this.userData);
+      if (response) {
+        await this.setLoginUser(response);
+        this.$router.push({ path: process.env.VUE_APP_BOARD_FREE_LIST });
+      }
     },
     /**
      * 로그인 페이지로 이동하는 버튼 클릭 이벤트 핸들러 함수입니다.

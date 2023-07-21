@@ -24,10 +24,15 @@ public class CommentService {
         return commentRepository.countCommentByFreeBoardId(boardId);
     }
 
-    public void addFreeBoardComment(CommentDTO commentDTO){
-        commentRepository.addFreeBoardComment(commentDTO);
+    // 권한 확인
+    public void addFreeBoardComment(String userId, CommentDTO commentDTO){
+        if (StringUtils.isEmpty(userId) || !userId.equals(commentDTO.getUserId())) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
+            commentRepository.addFreeBoardComment(commentDTO);
     }
 
+    //권한 확인
     public void deleteFreeBoardComment(String userId, CommentDTO commentDTO) {
         if (StringUtils.isEmpty(userId) || !userId.equals(commentDTO.getUserId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");

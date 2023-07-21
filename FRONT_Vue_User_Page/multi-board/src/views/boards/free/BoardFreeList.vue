@@ -58,6 +58,7 @@ import BoardPagination from "@/components/BoardPagination.vue";
 import boardService from "@/services/board-service";
 import userService from "@/services/user-service";
 import { getFormattedDate, IsNewBoard } from "@/utils/util";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: {
@@ -80,7 +81,11 @@ export default {
     }
     await this.getFreeBoardCategories();
   },
+  computed: {
+    ...mapGetters(["isLoggedIn", "getUser"]),
+  },
   methods: {
+    ...mapActions(["clearLoginUser"]),
     /**
      * util의 날짜 포맷을 변환하는 함수입니다.
      */

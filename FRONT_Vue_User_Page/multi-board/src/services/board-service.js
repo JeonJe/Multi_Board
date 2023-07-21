@@ -159,7 +159,7 @@ const hasBoardEditPermission = async (boardId) => {
     );
     return response.data.data;
   } catch (error) {
-    console.error("수정 권한이 없는 사용자입니다");
+    console.log(error.response.data.message);
     return false;
   }
 };
@@ -171,7 +171,7 @@ const deleteBoardInfo = async (boardType, boardId) => {
     alert(response.data.message);
     return true;
   } catch (error) {
-    console.error(error);
+    console.log(error.response.data.message);
     return false;
   }
 };
@@ -186,7 +186,7 @@ const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
     alert(response.data.message);
     return true;
   } catch (error) {
-    console.error(error);
+    console.log(error.response.data.message);
     return false;
   }
 };
@@ -199,8 +199,8 @@ const addFreeBoardComment = async (newComment, boardId) => {
     );
     alert(response.data.message);
   } catch (error) {
-    console.error(error);
-    alert(error);
+    console.log(error.response.data.message);
+    alert(error.response.data.message);
   }
 };
 
@@ -212,8 +212,8 @@ const deleteFreeBoardComment = async (comment, boardId) => {
     );
     alert(response.data.message);
   } catch (error) {
-    console.error(error);
-    alert(error);
+    console.log(error.response.data.message);
+    alert(error.response.data.message);
   }
 };
 
