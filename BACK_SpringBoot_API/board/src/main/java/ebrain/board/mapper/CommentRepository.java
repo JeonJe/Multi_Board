@@ -14,4 +14,7 @@ public interface CommentRepository {
 
     List<CommentDTO> getCommentsByBoardId(int boardId);
 
+    void deleteFreeBoardComment(CommentDTO commentDTO);
+
+
 }

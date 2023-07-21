@@ -191,12 +191,26 @@ const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
 
 const addFreeBoardComment = async (newComment, boardId) => {
   try {
-    console.log(boardId, newComment);
     const response = await api.post(
       `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
       { content: newComment }
     );
     console.log(response);
+  } catch (error) {
+    console.error(error);
+    alert(error);
+  }
+};
+
+const deleteFreeBoardComment = async (comment, boardId) => {
+  try {
+    console.log(JSON.parse(JSON.stringify(comment)));
+    const response = await api.delete(
+      `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
+      { data: comment }
+    );
+    console.log(response);
+    alert("댓글 삭제가 성공하였습니다.");
   } catch (error) {
     console.error(error);
     alert(error);
@@ -241,5 +255,6 @@ export default {
   updateBoardInfo,
   hasBoardEditPermission,
   addFreeBoardComment,
+  deleteFreeBoardComment,
   replaceRouterToFreeBoardList,
 };

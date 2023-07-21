@@ -26,6 +26,11 @@
         WHERE board_id = #{boardId}
     </select>
 
+    <delete id="deleteFreeBoardComment" parameterType="CommentDTO">
+        DELETE FROM comments
+        WHERE comment_id = #{commentId}
+    </delete>
+
 
 
 

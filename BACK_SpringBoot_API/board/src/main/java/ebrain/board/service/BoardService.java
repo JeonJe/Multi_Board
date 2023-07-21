@@ -129,7 +129,6 @@ public class BoardService {
         List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
         List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
 
-        //TODO : builder 패턴으로 바꿀 수 있을까?
         BoardDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
         boardDTO.setBoardAttachments(attachments);
         boardDTO.setBoardComments(comments);

@@ -263,10 +263,23 @@ public class BoardController {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         String userId = (String) request.getAttribute("userId");
         commentDTO.setUserId(userId);
+        commentDTO.setBoardId(boardId);
 
         commentService.addFreeBoardComment(commentDTO);
 
         APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @DeleteMapping("/api/boards/free/{boardId}/comments")
+    public ResponseEntity<APIResponse> deleteFreeBoardComment(HttpServletRequest request, @RequestBody CommentDTO commentDTO) {
+
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        String userId = (String) request.getAttribute("userId");
+
+        commentService.deleteFreeBoardComment(userId, commentDTO);
+
+        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 

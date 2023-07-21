@@ -23,12 +23,14 @@
         <button @click="clickSumbitCommentBtn(newComment, boardId)">
           댓글 등록
         </button>
-        <!-- TODO : 댓글삭제 -->
       </div>
       <div v-for="comment in boardInfo.boardComments" :key="comment.commentId">
         <p>작성자: {{ comment.userId }}</p>
         <p>작성시간: {{ getFormattedDate(comment.createdAt) }}</p>
         <p>{{ comment.content }}</p>
+        <button @click="clickCommentDeleteBtn(comment, boardId)">
+          댓글 삭제
+        </button>
       </div>
     </div>
     <div v-else>
@@ -105,6 +107,10 @@ export default {
     },
     async clickSumbitCommentBtn(newComment, boardId) {
       await boardService.addFreeBoardComment(newComment, boardId);
+      await this.getFreeBoardDetail(boardId);
+    },
+    async clickCommentDeleteBtn(comment, boardId) {
+      await boardService.deleteFreeBoardComment(comment, boardId);
       await this.getFreeBoardDetail(boardId);
     },
     /**

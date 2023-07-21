@@ -5,7 +5,7 @@
 
       <form enctype="multipart/form-data">
         <!-- 카테고리 -->
-        <select v-model="boardInfo.category" class="form-control">
+        <select v-model="boardInfo.categoryValue" required class="form-control">
           <option
             v-for="categoryOption in categoryOptions"
             :key="categoryOption.value"
@@ -93,11 +93,10 @@ export default {
      * 카테고리 select-option 목록을 생성합니다.
      */
     categoryOptions() {
-      const options = this.categories.map((category) => ({
+      return this.categories.map((category) => ({
         value: category.categoryValue,
         label: category.categoryName,
       }));
-      return [...options];
     },
   },
 
@@ -157,8 +156,6 @@ export default {
           alert("카테고리 목록이 없습니다.");
         } else {
           this.categories = response.data;
-          this.boardInfo.category =
-            this.categories.length > 0 ? this.categories[0].categoryValue : "";
         }
       } catch (error) {
         console.log(error);
@@ -171,7 +168,6 @@ export default {
       this.boardInfo.userId = await userService.getUserIDByJWT();
       if (this.boardInfo.userId === null) {
         alert("작성자 정보를 가져오지 못했습니다.");
-
         boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
       }
       await this.getFreeBoardCategories();
@@ -185,6 +181,7 @@ export default {
       const response = await boardService.getBoardDetail("free", boardId);
       if (response.data != "") {
         this.boardInfo = response.data;
+        console.log(this.boardInfo);
       }
     },
     /**
@@ -200,8 +197,8 @@ export default {
     async clickBoardUpdateSubmit(boardId) {
       //Multipart FormData 전송을 위해 FormData 사용
       const getNewBoardInfo = this.getFormDataToSumbit();
-      // TODO : 업데이트 & 새로고침
       await boardService.updateBoardInfo("free", boardId, getNewBoardInfo);
+      this.getOriginFreeBoardDetail(boardId);
     },
     /**
      * 자유 게시판 목록으로 이동하는 함수입니다.
@@ -216,7 +213,7 @@ export default {
     getFormDataToSumbit() {
       const newBoardInfo = new FormData();
 
-      newBoardInfo.append("categoryValue", this.boardInfo.category);
+      newBoardInfo.append("categoryValue", this.boardInfo.categoryValue);
       newBoardInfo.append("userId", this.boardInfo.userId);
       newBoardInfo.append("title", this.boardInfo.title);
       newBoardInfo.append("content", this.boardInfo.content);

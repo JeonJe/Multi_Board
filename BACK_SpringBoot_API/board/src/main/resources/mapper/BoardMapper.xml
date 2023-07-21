@@ -80,7 +80,7 @@
 
     <!-- 공지사항의 상세 내용을 조회 -->
     <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName
+        SELECT target_board.*,target_board.child_code_value as categoryValue, cc.child_code_name AS categoryName
         FROM notice_board AS target_board
                  JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         WHERE target_board.board_id = #{boardId}
@@ -123,7 +123,7 @@
 
     <!-- 공지사항의 상세 내용을 조회 -->
     <select id="getFreeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName
+        SELECT target_board.*, target_board.child_code_value as categoryValue, cc.child_code_name AS categoryName
         FROM free_board AS target_board
                  JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         WHERE target_board.board_id = #{boardId}
