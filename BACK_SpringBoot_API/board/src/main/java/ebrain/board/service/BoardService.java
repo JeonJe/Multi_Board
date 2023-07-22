@@ -187,6 +187,7 @@ public class BoardService {
      * @throws AppException 사용자 정보가 유효하지 않을 경우 예외 발생
      */
     public void updateFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
+        //TODO : 유저시퀀스
         if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }

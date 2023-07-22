@@ -124,7 +124,6 @@ const getJWTAuthStatus = async () => {
     // 400 : 만료된토큰
     if (error.response.status === 400) {
       alert("로그인 시간이 만료되었습니다. 재로그인하세요.");
-      localStorage.removeItem("jwt");
     }
     // 401 : 미인증
     return false;

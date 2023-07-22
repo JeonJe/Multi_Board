@@ -160,25 +160,6 @@ const saveBoardInfo = async (boardType, newBoardInfo) => {
     alert(error);
   }
 };
-
-/**
- * 게시판의 편집 권한을 확인하는 함수
- *
- * @param {number} boardId - 게시글 ID
- * @returns {Promise} - 게시글 편집 권한 여부를 담은 Promise 객체
- * @throws {Error} API 요청 중 발생한 오류
- */
-const hasBoardEditPermission = async (boardId) => {
-  try {
-    const response = await api.get(
-      `${process.env.VUE_APP_API_BOARD_FREE_EDIT_PERMISSION}/${boardId}`
-    );
-    return response.data.data;
-  } catch (error) {
-    console.log(error.response.data.message);
-    return false;
-  }
-};
 /**
  * 게시글을 삭제하는 함수
  *
@@ -221,6 +202,26 @@ const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
     return false;
   }
 };
+
+/**
+ * 게시판의 편집 권한을 확인하는 함수
+ *
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise} - 게시글 편집 권한 여부를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
+const hasBoardEditPermission = async (boardId) => {
+  try {
+    const response = await api.get(
+      `${process.env.VUE_APP_API_BOARD_FREE_EDIT_PERMISSION}/${boardId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log(error.response.data.message);
+    return false;
+  }
+};
+
 /**
  * 자유 게시판에 댓글을 작성하는 함수
  *

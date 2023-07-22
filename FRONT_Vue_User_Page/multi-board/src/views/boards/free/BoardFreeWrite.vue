@@ -72,9 +72,10 @@
 </template>
 
 <script>
-import userService from "@/services/user-service";
 import boardService from "@/services/board-service";
 import { validateTitle, validateContent, validateFiles } from "@/utils/util";
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -89,6 +90,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["isLoggedIn", "getUser"]),
     /**
      * 카테고리 select-option 목록을 생성합니다.
      */
@@ -119,36 +121,25 @@ export default {
     validateContent,
     validateFiles,
     /**
-     * 파일 선택 이벤트 핸들러
-     *  선택한 파일을 boardInfo.uploadAttachments 배열에 추가
-     * @param {Event} event - 파일 선택 이벤트 객체
+     * 게시판 정보를 초기화
      */
-    handleFileChange(event) {
-      const file = event.target.files[0];
-      this.uploadAttachments.push(file);
+    async initBoardInfo() {
+      this.boardInfo.userId = this.getUser.userId;
+      if (this.boardInfo.userId === null) {
+        alert("작성자 정보를 가져오지 못했습니다.");
+        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+      }
+      await this.getFreeBoardCategories();
     },
-    /**
-     * 첨부 파일 입력 양식을 추가하는 함수
-     */
-    clickAddAttachmentForm() {
-      this.fileInputBoxes.push({});
-    },
-    /**
-     * 빈 입력 양식을 제거하는 함수
-     * @param {number} index - 제거할 입력 양식의 인덱스
-     */
-    clickRemoveEmptyInput(index) {
-      this.fileInputBoxes.splice(index, 1);
-    },
-    /**
-     * 첨부 파일을 삭제하는 함수
-     * @param {number} index - 삭제할 첨부 파일의 인덱스
-     * @param {string} attachmentId - 삭제할 첨부 파일의 ID
-     */
-
-    clickDeleteAttachment(index, attachmentId) {
-      this.deletedAttachmentIDs.push(attachmentId);
-      this.boardInfo.boardAttachments.splice(index, 1);
+    async getOriginFreeBoardDetail(boardId) {
+      if (!(await boardService.hasBoardEditPermission(boardId))) {
+        alert("수정 권한이 없습니다");
+        return;
+      }
+      const response = await boardService.getBoardDetail("free", boardId);
+      if (response.data != "") {
+        this.boardInfo = response.data;
+      }
     },
     /**
      * 자유 게시판 카테고리를 조회
@@ -163,28 +154,6 @@ export default {
         }
       } catch (error) {
         console.log(error);
-      }
-    },
-    /**
-     * 게시판 정보를 초기화
-     */
-    async initBoardInfo() {
-      this.boardInfo.userId = await userService.getUserIDByJWT();
-      if (this.boardInfo.userId === null) {
-        alert("작성자 정보를 가져오지 못했습니다.");
-        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
-      }
-      await this.getFreeBoardCategories();
-    },
-    async getOriginFreeBoardDetail(boardId) {
-      if (!(await boardService.hasBoardEditPermission(boardId))) {
-        alert("수정 권한이 없습니다");
-        return;
-      }
-
-      const response = await boardService.getBoardDetail("free", boardId);
-      if (response.data != "") {
-        this.boardInfo = response.data;
       }
     },
     /**
@@ -220,16 +189,6 @@ export default {
       this.getOriginFreeBoardDetail(boardId);
     },
     /**
-     * 자유 게시판 목록으로 이동하는 함수
-     * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
-     */
-    moveToFreeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
-        query: this.$route.query,
-      };
-    },
-    /**
      * 게시글을 수정하기 위해 제출할 FormData를 생성하는 함수
      * @returns {FormData} - 게시글 수정에 사용될 FormData 객체
      */
@@ -245,6 +204,48 @@ export default {
         newBoardInfo.append(`uploadAttachments`, file);
       });
       return newBoardInfo;
+    },
+    /**
+     * 파일 선택 이벤트 핸들러
+     *  선택한 파일을 boardInfo.uploadAttachments 배열에 추가
+     * @param {Event} event - 파일 선택 이벤트 객체
+     */
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      this.uploadAttachments.push(file);
+    },
+    /**
+     * 첨부 파일 입력 양식을 추가하는 함수
+     */
+    clickAddAttachmentForm() {
+      this.fileInputBoxes.push({});
+    },
+    /**
+     * 빈 입력 양식을 제거하는 함수
+     * @param {number} index - 제거할 입력 양식의 인덱스
+     */
+    clickRemoveEmptyInput(index) {
+      this.fileInputBoxes.splice(index, 1);
+    },
+    /**
+     * 첨부 파일을 삭제하는 함수
+     * @param {number} index - 삭제할 첨부 파일의 인덱스
+     * @param {string} attachmentId - 삭제할 첨부 파일의 ID
+     */
+
+    clickDeleteAttachment(index, attachmentId) {
+      this.deletedAttachmentIDs.push(attachmentId);
+      this.boardInfo.boardAttachments.splice(index, 1);
+    },
+    /**
+     * 자유 게시판 목록으로 이동하는 함수
+     * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
+     */
+    moveToFreeBoardList() {
+      return {
+        path: process.env.VUE_APP_BOARD_FREE_LIST,
+        query: this.$route.query,
+      };
     },
   },
 };

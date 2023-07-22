@@ -77,11 +77,11 @@ export default {
       totalPages: 0,
     };
   },
-  mounted() {
+  async mounted() {
     /**
      * 게시판 카테고리 조회
      */
-    this.getNoticeBoardCategories();
+    await this.getNoticeBoardCategories();
   },
   methods: {
     /**
@@ -96,9 +96,9 @@ export default {
      * 검색 조건을 업데이트하고 공지사항 목록을 가져오는 함수
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
-    updateSearchCondition(searchCondition) {
+    async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
-      this.getNoticeBoardList();
+      await this.getNoticeBoardList();
     },
     /**
      * 공지사항 목록을 가져오는 비동기 함수
@@ -109,17 +109,33 @@ export default {
           "notice",
           this.searchCondition
         );
+        if (response.status === "success") {
+          if (response === "") {
+            alert("표시 할 공지사항이 없습니다.");
+          } else {
+            this.searchBoardList = response.data.searchBoards;
+            this.markNoticedBoardList = response.data.markNoticedBoards;
+            this.countMarkNoticedBoards = response.data.countMarkNoticedBoards;
+            this.totalPosts = response.data.countSearchBoards;
+            this.totalPages = Math.ceil(
+              this.totalPosts / this.searchCondition.pageSize
+            );
+          }
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    /**
+     * 공지 게시판 카테고리 조회
+     */
+    async getNoticeBoardCategories() {
+      try {
+        const response = await boardService.getBoardCategories("notice");
         if (response === "") {
-          alert("표시 할 공지사항이 없습니다.");
+          alert("카테고리 목록이 없습니다.");
         } else {
-          console.log(response);
-          this.searchBoardList = response.data.searchBoards;
-          this.markNoticedBoardList = response.data.markNoticedBoards;
-          this.countMarkNoticedBoards = response.data.countMarkNoticedBoards;
-          this.totalPosts = response.data.countSearchBoards;
-          this.totalPages = Math.ceil(
-            this.totalPosts / this.searchCondition.pageSize
-          );
+          this.categories = response.data;
         }
       } catch (error) {
         console.log(error);
@@ -144,22 +160,6 @@ export default {
         path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
-    },
-    /**
-     * 공지 게시판 카테고리 조회
-     */
-    async getNoticeBoardCategories() {
-      try {
-        const response = await boardService.getBoardCategories("notice");
-        if (response === "") {
-          alert("카테고리 목록이 없습니다.");
-        } else {
-          this.categories = response.data;
-          this.getNoticeBoardList();
-        }
-      } catch (error) {
-        console.log(error);
-      }
     },
   },
 };

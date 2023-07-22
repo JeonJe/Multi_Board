@@ -100,7 +100,7 @@ export default {
      */
     async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
-      this.getFreeBoardList();
+      await this.getFreeBoardList();
     },
     /**
      * 자유게시글 목록을 가져오는 비동기 함수
@@ -127,26 +127,6 @@ export default {
       }
     },
     /**
-     * 페이지네이션을 업데이트하는 함수
-     * @param {number} page - 업데이트할 페이지 번호
-     */
-    updatePagination(page) {
-      this.searchCondition.currentPage = page;
-      this.searchCondition.offset = (page - 1) * this.searchCondition.pageSize;
-      this.getFreeBoardList();
-    },
-    /**
-     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
-     * @param {number} boardId - 게시글 ID
-     * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
-     */
-    getBoardDetail(boardId) {
-      return {
-        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
-        query: this.searchCondition,
-      };
-    },
-    /**
      * 자유 게시판 카테고리를 가져오는 함수
      */
     async getFreeBoardCategories() {
@@ -161,6 +141,7 @@ export default {
         console.log(error);
       }
     },
+
     /**
      * 사용자 인증 상태를 확인하는 함수
      */
@@ -183,6 +164,26 @@ export default {
       return {
         path: process.env.VUE_APP_BOARD_FREE_WRITE,
         query: searchCondition,
+      };
+    },
+    /**
+     * 페이지네이션을 업데이트하는 함수
+     * @param {number} page - 업데이트할 페이지 번호
+     */
+    updatePagination(page) {
+      this.searchCondition.currentPage = page;
+      this.searchCondition.offset = (page - 1) * this.searchCondition.pageSize;
+      this.getFreeBoardList();
+    },
+    /**
+     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
+     */
+    getBoardDetail(boardId) {
+      return {
+        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
+        query: this.searchCondition,
       };
     },
   },

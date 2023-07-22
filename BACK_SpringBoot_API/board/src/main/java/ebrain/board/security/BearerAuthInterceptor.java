@@ -51,6 +51,7 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
         }
 
         //추출한 토큰의 사용자 ID를 요청 속성에 저장
+        //AOP, resolver , 권장은 rerquest 가공하지마라 , TODO 로 코멘트 남겨놓기 , 고민
         String userId = jwtTokenProvider.getSubject(token);
         request.setAttribute("userId", userId);
         return true;
