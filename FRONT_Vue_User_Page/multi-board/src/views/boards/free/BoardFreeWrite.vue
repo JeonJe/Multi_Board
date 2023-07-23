@@ -39,7 +39,7 @@
           삭제
         </button>
         <!-- 다운로드 버튼  -->
-        <a href="downloadAttachment(attachment.attachmentId)">
+        <a :href="downloadAttachment(attachment.attachmentId)">
           {{ attachment.originFileName }}
         </a>
       </div>
