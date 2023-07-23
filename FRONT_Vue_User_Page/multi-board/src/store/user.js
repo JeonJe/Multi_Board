@@ -1,5 +1,8 @@
 import { createStore } from "vuex";
-
+import {
+  setAuthorizationHeader,
+  clearAuthorizationHeader,
+} from "../services/axiosInstance";
 /**
  * Vuex Store를 생성
  *
@@ -59,6 +62,8 @@ export default createStore({
      * @param {Object|null} user - 설정할 사용자 정보
      */
     setLoginUser({ commit }, user) {
+      localStorage.setItem("jwt", user.jwt);
+      setAuthorizationHeader(user.jwt);
       commit("setUser", user);
     },
     /**
@@ -68,6 +73,7 @@ export default createStore({
      */
     clearLoginUser({ commit }) {
       localStorage.removeItem("jwt");
+      clearAuthorizationHeader();
       commit("clearUser");
     },
   },

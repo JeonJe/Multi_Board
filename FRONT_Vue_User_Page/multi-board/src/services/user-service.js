@@ -1,29 +1,4 @@
-import axios from "axios";
-
-/**
- * JSON 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
- */
-const api = axios.create({
-  baseURL: "http://localhost:8080",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-/**
- * API 요청 시 인증 토큰을 헤더에 추가합니다.
- * 이 함수는 사용자 로그인 시 인증 토큰을 헤더에 설정하는 역할을 합니다.
- * @param {string} token - 사용자의 JWT 토큰
- */
-const setAuthorizationHeader = (token) => {
-  const authHeader = `Bearer ${token}`;
-  api.defaults.headers.common["Authorization"] = authHeader;
-};
-
-const jwtToken = localStorage.getItem("jwt");
-if (jwtToken) {
-  setAuthorizationHeader(jwtToken);
-}
+import { api } from "./axiosInstance";
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -68,7 +43,6 @@ const signupUser = async (userData) => {
       process.env.VUE_APP_API_USER_SIGNUP,
       JSON.stringify(userData)
     );
-    localStorage.setItem("jwt", response.data.data.jwt);
     alert(response.data.message);
     return response.data.data;
   } catch (error) {
@@ -84,8 +58,13 @@ const signupUser = async (userData) => {
  */
 const checkDuplicateId = async (userId) => {
   try {
-    const URL = process.env.VUE_APP_API_CHECK_DUPLICATED_ID + userId;
-    const response = await api.get(URL);
+    if (userId == "") {
+      alert("아이디를 입려하세요.");
+      return;
+    }
+    const response = await api.get(
+      process.env.VUE_APP_API_CHECK_DUPLICATED_ID + userId
+    );
     alert(response.data.message);
   } catch (error) {
     alert(error.response.data.data);
@@ -103,7 +82,7 @@ const loginUser = async (userData) => {
       process.env.VUE_APP_API_USER_LOGIN,
       JSON.stringify(userData)
     );
-    localStorage.setItem("jwt", response.data.data.jwt);
+
     alert(response.data.message);
     return response.data.data;
   } catch (error) {

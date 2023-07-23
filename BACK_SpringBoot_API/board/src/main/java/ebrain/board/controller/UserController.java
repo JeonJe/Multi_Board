@@ -48,6 +48,7 @@ public class UserController {
     @PostMapping("/api/auth/signup")
     public ResponseEntity<APIResponse> signupUser(@Valid @RequestBody UserSignupDTO userSignupDTO) {
 
+        userService.saveUser(userSignupDTO);
 
         //회원가입 성공 후 JWT 토큰발행
         String jwtToken = userService.createJwtToken(userSignupDTO.getUserId());

@@ -38,6 +38,10 @@
         >
           삭제
         </button>
+        <!-- 다운로드 버튼  -->
+        <a href="downloadAttachment(attachment.attachmentId)">
+          {{ attachment.originFileName }}
+        </a>
       </div>
       <!-- 새로 첨부파일 추가할 수 있는 input -->
       <div v-for="(file, index) in fileInputBoxes" :key="index">
@@ -73,7 +77,12 @@
 
 <script>
 import boardService from "@/services/board-service";
-import { validateTitle, validateContent, validateFiles } from "@/utils/util";
+import {
+  validateTitle,
+  validateContent,
+  validateFiles,
+  downloadAttachment,
+} from "@/utils/util";
 import { mapGetters } from "vuex";
 
 export default {
@@ -120,6 +129,7 @@ export default {
     validateTitle,
     validateContent,
     validateFiles,
+    downloadAttachment,
     /**
      * 게시판 정보를 초기화
      */

@@ -25,7 +25,7 @@ export default {
      */
     async clickLogout() {
       await this.clearLoginUser();
-      this.$router.replace("/boards/notice/list");
+      this.$router.replace("/auth/login");
     },
   },
 };

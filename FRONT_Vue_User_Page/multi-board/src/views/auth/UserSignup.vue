@@ -8,6 +8,7 @@
           id="id"
           v-model="userData.userId"
           placeholder="아이디"
+          requred="true"
         />
         <button @click="clickIsIdDuplicate">중복확인</button>
       </div>
@@ -17,6 +18,7 @@
           id="password"
           v-model="userData.password"
           :placeholder="passwordPlaceholder"
+          requred="true"
         />
       </div>
       <div>

@@ -1,40 +1,4 @@
-import axios from "axios";
-
-/**
- * JSON 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
- */
-const api = axios.create({
-  baseURL: "http://localhost:8080",
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-/**
- * multipart 콘텐츠를 위한 서버 URL과 헤더를 사용하여 axios 인스턴스 생성합니다.
- */
-const multipartApi = axios.create({
-  baseURL: "http://localhost:8080",
-  headers: {
-    "Content-Type": "multipart/form-data",
-  },
-});
-
-/**
- * API 요청 시 인증 토큰을 헤더에 추가합니다.
- * 이 함수는 사용자 로그인 시 인증 토큰을 헤더에 설정하는 역할을 합니다.
- * @param {string} token - 사용자의 JWT 토큰
- */
-const setAuthorizationHeader = (token) => {
-  const authHeader = `Bearer ${token}`;
-  api.defaults.headers.common["Authorization"] = authHeader;
-  multipartApi.defaults.headers.common["Authorization"] = authHeader;
-};
-
-const jwtToken = localStorage.getItem("jwt");
-if (jwtToken) {
-  setAuthorizationHeader(jwtToken);
-}
+import { api, multipartApi } from "./axiosInstance";
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -238,7 +202,6 @@ const addFreeBoardComment = async (newComment, boardId) => {
     );
     alert(response.data.message);
   } catch (error) {
-    console.log(error.response.data.message);
     alert(error.response.data.message);
   }
 };
@@ -258,7 +221,6 @@ const deleteFreeBoardComment = async (comment, boardId) => {
     );
     alert(response.data.message);
   } catch (error) {
-    console.log(error.response.data.message);
     alert(error.response.data.message);
   }
 };
