@@ -1,26 +1,38 @@
 <template>
-  <div>
-    <h1>로그인</h1>
-    <form @submit.prevent>
-      <div>
-        <input
-          type="text"
-          id="id"
-          v-model="userData.userId"
-          placeholder="아이디"
-        />
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <h1 class="text-center">로그인</h1>
+        <form @submit.prevent>
+          <div class="form-outline mb-4">
+            <input
+              type="text"
+              id="id"
+              v-model="userData.userId"
+              class="form-control"
+              placeholder="아이디"
+            />
+          </div>
+          <div class="form-outline mb-4">
+            <input
+              type="password"
+              id="password"
+              v-model="userData.password"
+              class="form-control"
+              :placeholder="passwordPlaceholder"
+            />
+          </div>
+          <div class="d-flex justify-content-center">
+            <button @click="clickLogin" class="btn btn-primary mx-2">
+              로그인
+            </button>
+            <button @click="clickSignup" class="btn btn-secondary mx-2">
+              회원가입
+            </button>
+          </div>
+        </form>
       </div>
-      <div>
-        <input
-          type="password"
-          id="password"
-          v-model="userData.password"
-          :placeholder="passwordPlaceholder"
-        />
-      </div>
-      <button @click="clickLogin">로그인</button>
-    </form>
-    <button @click="clickSignup">회원가입</button>
+    </div>
   </div>
 </template>
 

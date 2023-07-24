@@ -1,45 +1,65 @@
 <template>
-  <div>
-    <h1>회원가입</h1>
-    <form @submit.prevent>
-      <div>
-        <input
-          type="text"
-          id="id"
-          v-model="userData.userId"
-          placeholder="아이디"
-          requred="true"
-        />
-        <button @click="clickIsIdDuplicate">중복확인</button>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-4">
+        <h1 class="text-center">회원가입</h1>
+        <form @submit.prevent>
+          <div class="form-outline mb-4 d-flex align-items-center">
+            <input
+              type="text"
+              id="id"
+              v-model="userData.userId"
+              class="form-control col-md-2"
+              placeholder="아이디"
+              required
+            />
+            <button
+              @click="clickIsIdDuplicate"
+              class="btn btn-primary btn-sm ml-2 col-md-2"
+            >
+              중복확인
+            </button>
+          </div>
+          <div class="form-outline mb-4">
+            <input
+              type="password"
+              id="password"
+              v-model="userData.password"
+              class="form-control"
+              :placeholder="passwordPlaceholder"
+              required
+            />
+          </div>
+          <div class="form-outline mb-4">
+            <input
+              type="password"
+              id="confirmPassword"
+              v-model="userData.confirmPassword"
+              class="form-control"
+              :placeholder="confirmPasswordPlaceholder"
+              required
+            />
+          </div>
+          <div class="form-outline mb-4">
+            <input
+              type="text"
+              id="name"
+              v-model="userData.name"
+              class="form-control"
+              placeholder="이름"
+            />
+          </div>
+          <div class="d-flex justify-content-center">
+            <button @click="clickSignup" class="btn btn-primary mx-2">
+              회원가입
+            </button>
+            <button @click="clickMoveToLogin" class="btn btn-danger mx-2">
+              취소
+            </button>
+          </div>
+        </form>
       </div>
-      <div>
-        <input
-          type="password"
-          id="password"
-          v-model="userData.password"
-          :placeholder="passwordPlaceholder"
-          requred="true"
-        />
-      </div>
-      <div>
-        <input
-          type="password"
-          id="confirmPassword"
-          v-model="userData.confirmPassword"
-          :placeholder="confirmPasswordPlaceholder"
-        />
-      </div>
-      <div>
-        <input
-          type="text"
-          id="name"
-          v-model="userData.name"
-          placeholder="이름"
-        />
-      </div>
-      <button @click="clickSignup">회원가입</button>
-    </form>
-    <button @click="clickMoveToLogin">취소</button>
+    </div>
   </div>
 </template>
 

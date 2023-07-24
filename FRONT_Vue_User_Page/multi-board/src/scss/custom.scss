@@ -1,0 +1,47 @@
+/* 검색 조건 입력 스타일*/
+.search-form {
+  background-color: #f0f0f0;
+}
+
+.search-form .form-group {
+  margin-right: 10px;
+}
+
+/* 페이지네이션 스타일*/
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.page-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+
+.page-link:hover {
+  text-decoration: underline;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+}
+
+nav {
+  padding: 30px;
+}
+
+nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+nav a.router-link-exact-active {
+  color: #42b983;
+}

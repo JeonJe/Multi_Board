@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <h1>자유게시판</h1>
-
     <!-- 게시판 카테고리를 pros로 전달 -->
     <SearchForm
       :categories="categories"
@@ -9,40 +8,44 @@
     />
 
     <!-- 게시글 리스트 -->
-    <div>
-      <router-link
-        v-if="showRegisterButton"
-        :to="clickBoardWriteBtn(this.searchCondition)"
-      >
-        <button>글 등록</button>
-      </router-link>
+    <div class="container">
+      <div class="d-flex justify-content-end mb-2 mr-2">
+        <router-link
+          v-if="showRegisterButton"
+          :to="clickBoardWriteBtn(this.searchCondition)"
+        >
+          <b-button>글 등록</b-button>
+        </router-link>
+      </div>
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark text-center">
+          <tr>
+            <th style="width: 5%">번호</th>
+            <th style="width: 5%">분류</th>
+            <th style="width: 30%">제목</th>
+            <th style="width: 5%">조회</th>
+            <th style="width: 10%">등록일시</th>
+            <th style="width: 5%">등록자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 자유게시글 -->
+          <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
+            <td class="text-center">{{ index + 1 }}</td>
+            <td class="text-center">{{ item.categoryName }}</td>
+            <td class="text-left">
+              <router-link :to="getBoardDetail(item.boardId)">
+                {{ item.title }}
+                <span v-if="IsNewBoard(item.createdAt)"> New </span>
+              </router-link>
+            </td>
+            <td class="text-center">{{ item.visitCount }}</td>
+            <td class="text-center">{{ getFormattedDate(item.createdAt) }}</td>
+            <td class="text-center">{{ item.userId }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>번호</th>
-          <th>분류</th>
-          <th>제목</th>
-          <th>조회</th>
-          <th>등록일시</th>
-          <th>등록자</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- 자유게시글 -->
-        <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
-          <td>{{ index + 1 }}</td>
-          <td>{{ item.categoryName }}</td>
-          <router-link :to="getBoardDetail(item.boardId)">
-            {{ item.title }}
-            <span v-if="IsNewBoard(item.createdAt)">New</span>
-          </router-link>
-          <td>{{ item.visitCount }}</td>
-          <td>{{ getFormattedDate(item.createdAt) }}</td>
-          <td>{{ item.userId }}</td>
-        </tr>
-      </tbody>
-    </table>
     <!-- 페이지네이션 -->
     <BoardPagination
       :currentPage="searchCondition.currentPage"

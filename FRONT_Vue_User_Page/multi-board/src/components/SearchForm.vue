@@ -1,73 +1,95 @@
 <template>
-  <form class="form-inline mb-4" @submit.prevent="clickSearch">
-    <!-- 시작일 -->
-    <input
-      type="date"
-      id="startDate"
-      name="startDate"
-      class="form-control mr-2"
-      v-model="searchCondition.startDate"
-    />
-    <!-- 종료일 -->
-    <input
-      type="date"
-      id="endDate"
-      name="endDate"
-      class="form-control mr-2"
-      v-model="searchCondition.endDate"
-    />
-    <!-- 카테고리 -->
-    <select v-model="searchCondition.categoryValue" class="form-control">
-      <option
-        v-for="categoryOption in categoryOptions"
-        :key="categoryOption.value"
-        :value="categoryOption.value"
-      >
-        {{ categoryOption.label }}
-      </option>
-    </select>
-    <!-- 검색어 -->
-    <input
-      type="text"
-      id="searchText"
-      name="searchText"
-      class="form-control mr-2"
-      placeholder="제목 or 내용"
-      v-model="searchCondition.searchText"
-    />
-    <!-- 페이지 크기 -->
-    <select
-      class="from-control mr-2"
-      v-model="searchCondition.pageSize"
-      @change="changeListViewCondition"
-    >
-      <option value="10">10개씩 보기</option>
-      <option value="20">20개씩 보기</option>
-      <option value="30">30개씩 보기</option>
-      <option value="40">40개씩 보기</option>
-      <option value="50">50개씩 보기</option>
-    </select>
-    <!-- 정렬 기준 -->
-    <select
-      class="from-control mr-2"
-      v-model="searchCondition.sortCriteria"
-      @change="changeListViewCondition"
-    >
-      <option value="createdAt">등록일시</option>
-      <option value="title">제목</option>
-      <option value="visitCount">조회수</option>
-    </select>
-    <!-- 정렬 순서 -->
-    <select
-      class="from-control mr-2"
-      v-model="searchCondition.orderBy"
-      @change="changeListViewCondition"
-    >
-      <option value="desc">내림차순</option>
-      <option value="asc">오름차순</option>
-    </select>
+  <form class="search-form mb-4" @submit.prevent="clickSearch">
+    <div class="d-flex flex-wrap align-items-center justify-content-center">
+      <!-- 시작일 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <input
+          type="date"
+          id="startDate"
+          name="startDate"
+          class="form-control"
+          v-model="searchCondition.startDate"
+        />
+      </div>
 
-    <button type="submit" class="btn btn-primary">검색</button>
+      <!-- 종료일 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <input
+          type="date"
+          id="endDate"
+          name="endDate"
+          class="form-control"
+          v-model="searchCondition.endDate"
+        />
+      </div>
+
+      <!-- 카테고리 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <select v-model="searchCondition.categoryValue" class="form-control">
+          <option
+            v-for="categoryOption in categoryOptions"
+            :key="categoryOption.value"
+            :value="categoryOption.value"
+          >
+            {{ categoryOption.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- 검색어 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <input
+          type="text"
+          id="searchText"
+          name="searchText"
+          class="form-control"
+          placeholder="제목 or 내용"
+          v-model="searchCondition.searchText"
+        />
+      </div>
+
+      <!-- 페이지 크기 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <select
+          class="form-control"
+          v-model="searchCondition.pageSize"
+          @change="changeListViewCondition"
+        >
+          <option value="10">10개씩 보기</option>
+          <option value="20">20개씩 보기</option>
+          <option value="30">30개씩 보기</option>
+          <option value="40">40개씩 보기</option>
+          <option value="50">50개씩 보기</option>
+        </select>
+      </div>
+
+      <!-- 정렬 기준 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <select
+          class="form-control"
+          v-model="searchCondition.sortCriteria"
+          @change="changeListViewCondition"
+        >
+          <option value="createdAt">등록일시</option>
+          <option value="title">제목</option>
+          <option value="visitCount">조회수</option>
+        </select>
+      </div>
+
+      <!-- 정렬 순서 -->
+      <div class="form-group mr-2 mt-2 mb-2">
+        <select
+          class="form-control"
+          v-model="searchCondition.orderBy"
+          @change="changeListViewCondition"
+        >
+          <option value="desc">내림차순</option>
+          <option value="asc">오름차순</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-primary">검색</button>
+    </div>
   </form>
 </template>
 

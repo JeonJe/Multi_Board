@@ -1,57 +1,121 @@
 <template>
   <div>
-    <div v-if="boardInfo">
-      <h1>공지사항</h1>
+    <div class="container">
+      <h1>자유 게시판</h1>
+      <br />
       <!-- 게시판 내용 -->
-      <p>분류 : {{ boardInfo.categoryName }}</p>
-      <p>제목 : {{ boardInfo.title }}</p>
-      <p>생성일시 : {{ getFormattedDate(boardInfo.createdAt) }}</p>
-      <p>작성자 : {{ boardInfo.userId }}</p>
-      <p>조회수 : {{ boardInfo.visitCount }}</p>
-      <p>내용 : {{ boardInfo.content }}</p>
-      <!-- 첨부파일 -->
-      <a
-        v-for="(attachment, index) in boardInfo.boardAttachments"
-        :key="index"
-        :href="downloadAttachment(attachment.attachmentId)"
-      >
-        {{ attachment.originFileName }}<br />
-      </a>
-      <!-- 댓글 -->
-      <div v-if="isLoggedIn">
-        <textarea v-model="newComment" rows="4" cols="50"></textarea>
-        <button @click="clickSumbitCommentBtn(newComment, boardId)">
-          댓글 등록
-        </button>
-      </div>
-      <div v-for="comment in boardInfo.boardComments" :key="comment.commentId">
-        <p>작성자: {{ comment.userId }}</p>
-        <p>작성시간: {{ getFormattedDate(comment.createdAt) }}</p>
-        <p>{{ comment.content }}</p>
-        <button
-          v-if="isLoggedIn && comment.userId === getUser.userId"
-          @click="clickCommentDeleteBtn(comment, boardId)"
+      <div v-if="boardInfo">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="d-flex">
+              <div class="col-md-1">
+                <p class="font-weight-bold text-dark">
+                  {{ boardInfo.categoryName }}
+                </p>
+              </div>
+              <div class="col-md-8 text-left">
+                {{ boardInfo.title }}
+              </div>
+              <div class="col-md-2">
+                {{ getFormattedDate(boardInfo.createdAt) }}
+              </div>
+              <div class="col-md-1">{{ boardInfo.userId }}</div>
+            </div>
+          </div>
+          <hr />
+          <div class="d-flex justify-content-end">
+            <p>조회수: {{ boardInfo.visitCount }}</p>
+          </div>
+        </div>
+        <div
+          class="mt-4 ml-2 mb-4 border p-3 text-left"
+          style="overflow: auto; word-wrap: break-word"
         >
-          댓글 삭제
-        </button>
+          <p>
+            {{ boardInfo.content }}
+          </p>
+        </div>
+
+        <!-- 첨부파일 -->
+        <div v-if="boardInfo.boardAttachments.length > 0">
+          <table>
+            <tr
+              v-for="(attachment, index) in boardInfo.boardAttachments"
+              :key="index"
+            >
+              <td>
+                <a :href="downloadAttachment(attachment.attachmentId)">
+                  {{ attachment.originFileName }}
+                </a>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <!-- 댓글 -->
+        <br />
+        <div v-if="isLoggedIn">
+          <div class="row">
+            <div class="col-md-11">
+              <textarea
+                v-model="newComment"
+                rows="2"
+                class="w-100 d-block"
+              ></textarea>
+            </div>
+            <div class="col-md-1">
+              <button
+                @click="clickSumbitCommentBtn(newComment, boardId)"
+                class="btn btn-primary w-100 h-100 d-block mb-2"
+              >
+                댓글등록
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="bg-light">
+          <div
+            v-for="comment in boardInfo.boardComments"
+            :key="comment.commentId"
+            class="mb-4"
+          >
+            <div class="d-flex justify-content-between mb-2">
+              <div class="mx-2">
+                <strong> {{ comment.userId }} </strong>
+                {{ getFormattedDate(comment.createdAt) }}
+              </div>
+              <div v-if="isLoggedIn && comment.userId === getUser.userId">
+                <button
+                  @click="clickCommentDeleteBtn(comment, boardId)"
+                  class="btn btn-danger"
+                >
+                  댓글 삭제
+                </button>
+              </div>
+            </div>
+            <div class="m-2" style="overflow: auto; word-wrap: break-word">
+              <p>{{ comment.content }}</p>
+            </div>
+            <hr />
+          </div>
+        </div>
       </div>
+      <div v-else>
+        <p>내용을 가져올 수 없습니다.</p>
+      </div>
+      <BoardEditBtnGroup
+        :editPermission="editPermission"
+        @emitUpdateBoard="clickEditBtn(boardId)"
+        @emitDeleteBoard="clickDeleteBtn(boardId)"
+      />
     </div>
-    <div v-else>
-      <p>내용을 가져올 수 없습니다.</p>
-    </div>
-    <BoardEditBtnGroup
-      :editPermission="editPermission"
-      @emitUpdateBoard="clickEditBtn(boardId)"
-      @emitDeleteBoard="clickDeleteBtn(boardId)"
-    />
   </div>
 </template>
 
 <script>
-import boardService from "@/services/board-service";
 import { getFormattedDate, downloadAttachment } from "@/utils/util";
-import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
 import { mapGetters } from "vuex";
+import boardService from "@/services/board-service";
+import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
 
 export default {
   components: {

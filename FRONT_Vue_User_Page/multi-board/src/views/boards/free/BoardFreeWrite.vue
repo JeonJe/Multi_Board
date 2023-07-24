@@ -1,76 +1,136 @@
 <template>
   <div>
     <div class="container">
-      <div>자유게시판</div>
+      <h1>자유게시판</h1>
 
       <form enctype="multipart/form-data">
         <!-- 카테고리 -->
-        <select v-model="boardInfo.categoryValue" required class="form-control">
-          <option
-            v-for="categoryOption in categoryOptions"
-            :key="categoryOption.value"
-            :value="categoryOption.value"
-          >
-            {{ categoryOption.label }}
-          </option>
-        </select>
+        <div class="form-group row">
+          <hr />
+          <label class="col-sm-1 col-form-label">분류</label>
+          <div class="col-sm-4">
+            <select
+              v-model="boardInfo.categoryValue"
+              required
+              class="form-control"
+            >
+              <option
+                v-for="categoryOption in categoryOptions"
+                :key="categoryOption.value"
+                :value="categoryOption.value"
+              >
+                {{ categoryOption.label }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <hr />
         <!-- 제목 -->
-        <input
-          v-model="boardInfo.title"
-          type="text"
-          placeholder="제목"
-          required
-        />
-        <br />
+        <div class="form-group row">
+          <label class="col-sm-1 col-form-label">제목</label>
+          <div class="col-sm-10">
+            <input
+              v-model="boardInfo.title"
+              type="text"
+              class="form-control"
+              placeholder="제목"
+              required
+            />
+          </div>
+        </div>
+        <hr />
         <!-- 내용 -->
-        <textarea
-          v-model="boardInfo.content"
-          placeholder="내용"
-          required
-        ></textarea>
+        <div class="form-group row">
+          <label class="col-sm-1 col-form-label">내용</label>
+          <div class="col-sm-10">
+            <textarea
+              v-model="boardInfo.content"
+              class="form-control"
+              placeholder="내용"
+              rows="6"
+              required
+            ></textarea>
+          </div>
+        </div>
       </form>
-      <!-- 기존 첨부파일 리스트  -->
-      <div v-for="attachment in boardInfo.boardAttachments" :key="attachment">
-        <span> {{ attachment.originFileName }}</span>
+      <hr />
+      <div>
+        <!-- 기존 첨부파일 리스트  -->
+        <div
+          v-for="(attachment, index) in boardInfo.boardAttachments"
+          :key="attachment.attachmentId"
+        >
+          <div class="d-flex justify-content-between">
+            <span>{{ attachment.originFileName }}</span>
+            <div>
+              <button
+                type="button"
+                @click="clickDeleteAttachment(index, attachment.attachmentId)"
+                class="btn btn-sm btn-danger mx-2"
+              >
+                삭제
+              </button>
+              <a
+                :href="downloadAttachment(attachment.attachmentId)"
+                class="btn btn-sm btn-primary"
+              >
+                다운로드
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 새로 첨부파일 추가할 수 있는 input -->
+        <div class="mt-3" v-for="(file, index) in fileInputBoxes" :key="index">
+          <div class="d-flex justify-content-between align-items-center">
+            <input
+              type="file"
+              :id="'attachment' + (index + 1)"
+              :name="files"
+              @change="handleFileChange($event)"
+              class="form-control-file"
+            />
+            <button
+              type="button"
+              @click="clickRemoveEmptyInput(index)"
+              class="btn btn-sm btn-danger mx-2"
+            >
+              삭제
+            </button>
+          </div>
+        </div>
+
         <button
           type="button"
-          @click="clickDeleteAttachment(attachment.attachmentId)"
+          @click="clickAddAttachmentForm"
+          v-show="fileInputBoxes.length < 5"
+          class="btn btn-secondary mt-3"
         >
-          삭제
-        </button>
-        <!-- 다운로드 버튼  -->
-        <a :href="downloadAttachment(attachment.attachmentId)">
-          {{ attachment.originFileName }}
-        </a>
-      </div>
-      <!-- 새로 첨부파일 추가할 수 있는 input -->
-      <div v-for="(file, index) in fileInputBoxes" :key="index">
-        <input
-          type="file"
-          :id="'attachment' + (index + 1)"
-          :name="files"
-          @change="handleFileChange($event)"
-        />
-        <button type="button" @click="clickRemoveEmptyInput(index)">
-          삭제
+          첨부파일 추가
         </button>
       </div>
-      <button
-        type="button"
-        @click="clickAddAttachmentForm"
-        v-show="fileInputBoxes.length < 5"
-      >
-        첨부파일 추가
-      </button>
-      <button
-        type="button"
-        @click="clickBoardUpdateSubmit(boardId)"
-        v-if="isUpdate"
-      >
-        수정
-      </button>
-      <button type="button" @click="clickBoardInfoSubmit" v-else>등록</button>
-      <router-link :to="moveToFreeBoardList()"> 목록으로 </router-link>
+      <!-- 버튼 그룹 -->
+      <div class="d-flex justify-content-center my-2">
+        <button
+          type="button"
+          @click="clickBoardUpdateSubmit(boardId)"
+          v-if="isUpdate"
+          class="btn btn-primary mx-2"
+        >
+          수정
+        </button>
+        <button
+          type="button"
+          @click="clickBoardInfoSubmit"
+          v-else
+          class="btn btn-primary mx-2"
+        >
+          등록
+        </button>
+        <router-link :to="moveToFreeBoardList()" class="btn btn-secondary"
+          >목록으로</router-link
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -144,6 +204,7 @@ export default {
     async getOriginFreeBoardDetail(boardId) {
       if (!(await boardService.hasBoardEditPermission(boardId))) {
         alert("수정 권한이 없습니다");
+        this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
         return;
       }
       const response = await boardService.getBoardDetail("free", boardId);
@@ -243,7 +304,8 @@ export default {
      * @param {string} attachmentId - 삭제할 첨부 파일의 ID
      */
 
-    clickDeleteAttachment(index, attachmentId) {
+    async clickDeleteAttachment(index, attachmentId) {
+      console.log("asdf");
       this.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
     },

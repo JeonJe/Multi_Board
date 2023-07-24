@@ -1,26 +1,57 @@
 <template>
-  <div>
+  <div class="container">
+    <h1>공지사항</h1>
+    <br />
     <div v-if="boardInfo">
-      <h1>공지사항</h1>
-      <p>분류 : {{ boardInfo.categoryName }}</p>
-      <p>제목 : {{ boardInfo.title }}</p>
-      <p>생성일시 : {{ getFormattedDate(boardInfo.createdAt) }}</p>
-      <p>작성자 : {{ boardInfo.userId }}</p>
-      <p>조회수 : {{ boardInfo.visitCount }}</p>
-      <p>내용 : {{ boardInfo.content }}</p>
-      <router-link :to="moveToNoticeBoardList()"> 목록 </router-link>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex">
+            <div class="col-md-1">
+              <p class="font-weight-bold text-dark">
+                {{ boardInfo.categoryName }}
+              </p>
+            </div>
+            <div class="col-md-8 text-left">
+              {{ boardInfo.title }}
+            </div>
+            <div class="col-md-2">
+              {{ getFormattedDate(boardInfo.createdAt) }}
+            </div>
+            <div class="col-md-1">{{ boardInfo.userId }}</div>
+          </div>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-end">
+          <p>조회수: {{ boardInfo.visitCount }}</p>
+        </div>
+      </div>
+      <div
+        class="mt-4 ml-2 mb-4 border p-3 text-left"
+        style="overflow: auto; word-wrap: break-word"
+      >
+        <p>{{ boardInfo.content }}</p>
+      </div>
     </div>
     <div v-else>
       <p>내용을 가져오는 중입니다.</p>
     </div>
+    <BoardEditBtnGroup
+      :editPermission="false"
+      @emitUpdateBoard="clickEditBtn(boardId)"
+      @emitDeleteBoard="clickDeleteBtn(boardId)"
+    />
   </div>
 </template>
 
 <script>
+import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
 import boardService from "@/services/board-service";
 import { getFormattedDate } from "@/utils/util";
 
 export default {
+  components: {
+    BoardEditBtnGroup,
+  },
   data() {
     return {
       /**

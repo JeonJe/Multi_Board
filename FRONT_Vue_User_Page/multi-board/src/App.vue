@@ -1,19 +1,50 @@
 <template>
-  <nav>
-    <router-link to="/boards/notice/list">공지사항</router-link>
-    <router-link to="/boards/free/list">자유 게시판</router-link>
-    <router-link to="/auth/login">로그인</router-link>
-  </nav>
-  <span v-if="isLoggedIn">{{ getUser.name }}님 로그인 중입니다.</span>
-  <button v-if="isLoggedIn" @click="clickLogout">로그아웃</button>
+  <div class="container">
+    <nav class="row justify-content-center">
+      <div class="d-flex">
+        <router-link
+          v-for="(link, index) in navLinks"
+          :key="index"
+          :to="link.to"
+          class=""
+          style="margin-right: 10px"
+          >{{ link.text }}
+        </router-link>
+      </div>
+    </nav>
 
-  <router-view />
+    <div class="row justify-content-end">
+      <div class="col-md-auto">
+        <span v-if="isLoggedIn">{{ getUser.name }}님 로그인 중입니다.</span>
+      </div>
+      <div class="col-md-2">
+        <button
+          v-if="isLoggedIn"
+          @click="clickLogout"
+          class="btn btn-danger btn-sm"
+        >
+          로그아웃
+        </button>
+      </div>
+    </div>
+
+    <router-view />
+  </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from "vuex";
 
 export default {
+  data() {
+    return {
+      navLinks: [
+        { to: "/boards/notice/list", text: "공지사항" },
+        { to: "/boards/free/list", text: "자유 게시판" },
+        { to: "/auth/login", text: "로그인" },
+      ],
+    };
+  },
   computed: {
     ...mapGetters(["isLoggedIn", "getUser"]),
   },
@@ -30,25 +61,3 @@ export default {
   },
 };
 </script>
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-nav {
-  padding: 30px;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
