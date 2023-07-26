@@ -15,9 +15,14 @@
 
     <div class="row justify-content-end">
       <div class="col-md-auto">
-        <span v-if="isLoggedIn">{{ getUser.name }}님 로그인 중입니다.</span>
+        <span v-if="isLoggedIn">
+          <strong>{{ getUser.name }}</strong>
+          님 로그인 중입니다.
+        </span>
       </div>
-      <div class="col-md-2">
+    </div>
+    <div class="row justify-content-end mt-2">
+      <div class="col-md-auto">
         <button
           v-if="isLoggedIn"
           @click="clickLogout"

@@ -1,13 +1,17 @@
 package ebrain.board.controller;
 
 import ebrain.board.dto.*;
+import ebrain.board.exception.AppException;
+import ebrain.board.exception.ErrorCode;
 import ebrain.board.response.BoardSearchResponse;
 import ebrain.board.response.APIResponse;
 import ebrain.board.service.AttachmentService;
 import ebrain.board.service.BoardService;
 import ebrain.board.service.CommentService;
+import ebrain.board.service.UserService;
 import ebrain.board.utils.FileUtil;
-import ebrain.board.utils.ResponseUtil;
+import ebrain.board.utils.ResponseBuilder;
+import ebrain.board.vo.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -41,6 +45,11 @@ public class BoardController {
      */
     private final CommentService commentService;
 
+    /**
+     * 유저 서비스
+     */
+    private final UserService userService;
+
 
     /**
      * 파일 업로드 경로
@@ -69,7 +78,7 @@ public class BoardController {
                 .markNoticedBoards(markedNoticedBoards)
                 .build();
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("검색조건에 해당하는 공지 게시글 목록입니다.", boardSearchResponse);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("검색조건에 해당하는 공지 게시글 목록입니다.", boardSearchResponse);
 
         if (countNoticeBoards == 0 && countMarkedNoticedBoards == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
@@ -86,7 +95,7 @@ public class BoardController {
     @GetMapping("/api/boards/notice/cnt/noticed")
     ResponseEntity<APIResponse> getMarkNoticedBoards() {
         int countMarkedNoticedBoards = boardService.countMarkedNoticedBoards();
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("알림 표시된 게시글 목록 개수입니다.", countMarkedNoticedBoards);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("알림 표시된 게시글 목록 개수입니다.", countMarkedNoticedBoards);
         if (countMarkedNoticedBoards == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         } else {
@@ -104,7 +113,7 @@ public class BoardController {
     ResponseEntity<APIResponse> getNoticeBoardDetail(@PathVariable @NotEmpty int boardId) {
         BoardDTO noticeBoard = boardService.getNoticeBoardDetail(boardId);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 상세 내용입니다.", noticeBoard);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("공지사항 상세 내용입니다.", noticeBoard);
         if (ObjectUtils.isEmpty(noticeBoard)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         } else {
@@ -121,7 +130,7 @@ public class BoardController {
     ResponseEntity<APIResponse> getNoticeBoardCategories() {
         List<CategoryDTO> categories = boardService.getNoticeBoardCategories();
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("공지사항 카테고리 목록입니다.", categories);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("공지사항 카테고리 목록입니다.", categories);
         if (ObjectUtils.isEmpty(categories)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         } else {
@@ -145,7 +154,7 @@ public class BoardController {
                 .countSearchBoards(countFreeBoards)
                 .build();
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("검색조건에 해당하는 자유 게시글 목록입니다.", boardSearchResponse);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("검색조건에 해당하는 자유 게시글 목록입니다.", boardSearchResponse);
 
         if (countFreeBoards == 0) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
@@ -164,10 +173,12 @@ public class BoardController {
     ResponseEntity<APIResponse> getFreeBoardDetail(@PathVariable @NotEmpty int boardId) {
         BoardDTO noticeBoard = boardService.getFreeBoardDetail(boardId);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("자유게시글 상세 내용입니다.", noticeBoard);
+        APIResponse apiResponse;
         if (ObjectUtils.isEmpty(noticeBoard)) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+            apiResponse = ResponseBuilder.ErrorWithoutData("해당 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         } else {
+            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", noticeBoard);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
     }
@@ -181,7 +192,7 @@ public class BoardController {
     ResponseEntity<APIResponse> getFreeBoardCategories() {
         List<CategoryDTO> categories = boardService.getFreeBoardCategories();
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithData("자유게시판 카테고리 목록입니다.", categories);
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("자유게시판 카테고리 목록입니다.", categories);
         if (ObjectUtils.isEmpty(categories)) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
         } else {
@@ -200,11 +211,11 @@ public class BoardController {
     ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
 
-        boardService.saveFreeBoardInfo(userId, boardDTO);
+        boardService.saveFreeBoardInfo(seqId, boardDTO);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -233,16 +244,16 @@ public class BoardController {
     public ResponseEntity<APIResponse> hasFreeBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
 
         //boardId 작성자와 userId가 동일하면 true
-        boolean hasPermission = (boardService.hasFreeBoardEditPermission(userId, boardId) == 1) ? true : false;
+        boolean hasPermission = boardService.hasFreeBoardEditPermission(seqId, boardId) == 1;
 
         if (hasPermission) {
-            APIResponse apiResponse = ResponseUtil.SuccessWithData("게시글 작성자와 동일합니다.", true);
+            APIResponse apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         } else{
-            APIResponse apiResponse = ResponseUtil.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
+            APIResponse apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
@@ -256,19 +267,19 @@ public class BoardController {
     @DeleteMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> deleteFreeBoard(HttpServletRequest request, @PathVariable int boardId) {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
 
         // 댓글이 남아있는지 확인
         int countBoardComment = commentService.countCommentByFreeBoardId(boardId);
         if (countBoardComment > 0){
-            APIResponse apiResponse = ResponseUtil.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
+            APIResponse apiResponse = ResponseBuilder.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         }
         // 첨부파일 삭제 후 게시글 삭제
-        attachmentService.deleteAttachmentsByBoardId(boardId);
-        boardService.deleteFreeBoard(userId, boardId);
+        attachmentService.deleteAttachmentsByBoardId(seqId, boardId);
+        boardService.deleteFreeBoard(seqId, boardId);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
+        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -282,14 +293,18 @@ public class BoardController {
     @PostMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request,@PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
 
-        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
-        commentDTO.setUserId(userId);
-        commentDTO.setBoardId(boardId);
-        // 댓글 추가
-        commentService.addFreeBoardComment(userId, commentDTO);
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        User user = userService.findUserBySeqId(seqId);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 추가에 성공하였습니다.");
+        if (ObjectUtils.isEmpty(user)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
+
+        commentDTO.setUserSeqId(user.getSeqId());
+        commentDTO.setBoardId(boardId);
+        commentService.addFreeBoardComment(commentDTO);
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -302,12 +317,13 @@ public class BoardController {
     @DeleteMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> deleteFreeBoardComment(HttpServletRequest request, @RequestBody CommentDTO commentDTO) {
 
-        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
-        // 댓글 삭제
-        commentService.deleteFreeBoardComment(userId, commentDTO);
+        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
+        // 댓글 삭제
+        commentService.deleteFreeBoardComment(seqId, commentDTO);
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -322,13 +338,13 @@ public class BoardController {
     @PutMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> updateFreeBoardInfo(HttpServletRequest request, @PathVariable int boardId,
                                                            @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
-                //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        String userId = (String) request.getAttribute("userId");
-
+        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
+        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
         boardDTO.setBoardId(boardId);
-        boardService.updateFreeBoardInfo(userId, boardDTO);
 
-        APIResponse apiResponse = ResponseUtil.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        boardService.updateFreeBoardInfo(seqId, boardDTO);
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 

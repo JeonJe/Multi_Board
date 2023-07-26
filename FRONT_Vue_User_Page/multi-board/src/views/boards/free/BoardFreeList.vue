@@ -79,9 +79,7 @@ export default {
     };
   },
   async mounted() {
-    if (!(await this.checkJWTAuth())) {
-      return;
-    }
+    await this.checkJWTAuth();
     await this.getFreeBoardCategories();
   },
   computed: {

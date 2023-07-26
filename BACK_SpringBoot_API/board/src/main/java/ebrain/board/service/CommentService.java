@@ -6,6 +6,7 @@ import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.CommentRepository;
+import ebrain.board.vo.User;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -30,29 +31,16 @@ public class CommentService {
     public int countCommentByFreeBoardId(int boardId){
         return commentRepository.countCommentByFreeBoardId(boardId);
     }
-    /**
-     * 자유게시판에 댓글을 추가합니다.
-     *
-     * @param userId     사용자 ID
-     * @param commentDTO 댓글 정보를 담은 DTO 객체
-     * @throws AppException 사용자 정보가 유효하지 않을 경우 예외 발생
-     */
-    public void addFreeBoardComment(String userId, CommentDTO commentDTO){
-        if (StringUtils.isEmpty(userId) || !userId.equals(commentDTO.getUserId())) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
-        }
+
+    public void addFreeBoardComment(CommentDTO commentDTO){
             commentRepository.addFreeBoardComment(commentDTO);
     }
-    /**
-     * 자유게시판의 댓글을 삭제합니다.
-     *
-     * @param userId     사용자 ID
-     * @param commentDTO 댓글 정보를 담은 DTO 객체
-     * @throws AppException 사용자 정보가 유효하지 않을 경우 예외 발생
-     */
-    public void deleteFreeBoardComment(String userId, CommentDTO commentDTO) {
-        if (StringUtils.isEmpty(userId) || !userId.equals(commentDTO.getUserId())) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+
+    public void deleteFreeBoardComment(int seqId, CommentDTO commentDTO) {
+        //현재 userSeqId와 댓글 userSeqId와 비교
+        CommentDTO comment = commentRepository.getCommentByCommentId(commentDTO.getCommentId());
+        if (seqId != comment.getUserSeqId()) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
         }
 
         commentRepository.deleteFreeBoardComment(commentDTO);

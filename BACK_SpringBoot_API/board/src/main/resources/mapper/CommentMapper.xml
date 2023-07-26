@@ -16,19 +16,26 @@
     </select>
     <!-- 댓글 추가 -->
     <insert id="addFreeBoardComment" parameterType="CommentDTO">
-        INSERT INTO comments (user_id,content,created_at, board_id)
-        VALUES(#{userId},#{content},now(),#{boardId})
+        INSERT INTO comments (user_seq_id, content, created_at, board_id)
+        VALUES(#{userSeqId},#{content},now(),#{boardId})
     </insert>
     <!-- 게시글에 달린 모든 댓글 조회 -->
     <select id="getCommentsByBoardId" resultType="CommentDTO">
-        SELECT *
-        FROM comments
-        WHERE board_id = #{boardId}
+        SELECT c.*, u.user_id AS userId
+        FROM comments AS c
+        JOIN users u on c.user_seq_id = u.seq_id
+        WHERE c.board_id = #{boardId}
     </select>
     <!-- 댓글 삭제 -->
     <delete id="deleteFreeBoardComment" parameterType="CommentDTO">
         DELETE FROM comments
         WHERE comment_id = #{commentId}
     </delete>
+
+    <select id="getCommentByCommentId" resultType="CommentDTO">
+        SELECT *
+        FROM comments
+        WHERE comment_id = #{commentId}
+    </select>
 
 </mapper>

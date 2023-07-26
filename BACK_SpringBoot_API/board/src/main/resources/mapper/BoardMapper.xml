@@ -126,7 +126,7 @@
         <include refid="searchQuery" />
     </select>
 
-    <!-- 공지사항의 상세 내용을 조회 -->
+    <!-- 자유게시판 상세 내용을 조회 -->
     <select id="getFreeBoardDetail" parameterType="java.lang.Integer" resultType="BoardDTO">
         SELECT target_board.*, target_board.child_code_value as categoryValue, cc.child_code_name AS categoryName
         FROM free_board AS target_board
@@ -134,7 +134,7 @@
         WHERE target_board.board_id = #{boardId}
     </select>
 
-    <!--  공지사항의 카테고리 목록을 조회  -->
+    <!--  자유게시판 카테고리 목록을 조회  -->
     <select id="getFreeBoardCategories" resultType="CategoryDTO">
         SELECT cc.child_code_name as categoryName ,cc.child_code_value as categoryValue
         FROM category_child_code cc
@@ -142,7 +142,7 @@
         WHERE cp.parent_code_name LIKE '%자유%'
     </select>
 
-    <!-- 공지 게시글의 방문수를 1 증가    -->
+    <!-- 자유 게시글의 방문수를 1 증가    -->
     <update id="updateFreeBoardVisitCount" parameterType="java.lang.Integer">
         UPDATE free_board
         SET visit_count = visit_count + 1
@@ -152,27 +152,39 @@
     <!-- 자유 게시글 저장   -->
     <insert id="saveFreeBoardInfo" parameterType="BoardDTO" useGeneratedKeys="true" keyProperty="boardId" >
         INSERT INTO free_board
-            (title, content, user_id, created_at, visit_count, child_code_value)
-        VALUES(#{title}, #{content},#{userId},now(),0,#{categoryValue})
+            (title, content, user_seq_id, created_at, visit_count, child_code_value)
+        VALUES (
+                #{title},
+                #{content},
+               (
+                   SELECT seq_id FROM users WHERE user_id = #{userId}
+               ),
+                now(),
+                0,
+                #{categoryValue}
+                )
     </insert>
 
-    <!-- boardId 게시글에 대한 작성자가 userId인지 확인.-->
+
     <select id="hasFreeBoardEditPermission" resultType="int">
         SELECT COUNT(*) > 0
         FROM free_board
         WHERE board_id = #{boardId}
-          AND user_id = #{userId}
+          AND user_seq_id = #{seqId}
     </select>
+
     <!-- 자유게시글 삭제 -->
     <delete id="deleteFreeBoard">
         DELETE FROM free_board
         WHERE board_id = #{boardId}
-        AND user_id = #{userId}
     </delete>
+
     <!-- 자유 게시글 수정 -->
     <update id="updateFreeBoardInfo" parameterType="BoardDTO">
         UPDATE free_board
-        SET title = #{title}, content = #{content}, user_id = #{userId}, child_code_value = #{categoryValue}
+        SET title = #{title},
+            content = #{content},
+            child_code_value = #{categoryValue}
         WHERE board_id = #{boardId}
     </update>
 

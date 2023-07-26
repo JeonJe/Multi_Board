@@ -20,7 +20,7 @@ public class CommentDTO {
     /**
      * 댓글 작성자의 사용자 ID
      */
-    private String userId;
+    private int userSeqId;
 
     /**
      * 댓글 내용
@@ -36,4 +36,6 @@ public class CommentDTO {
      * 댓글이 속한 게시글의 ID
      */
     private int boardId;
+
+    private String userId;
 }

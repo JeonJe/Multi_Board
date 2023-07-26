@@ -8,7 +8,7 @@ import ebrain.board.mapper.BoardRepository;
 import ebrain.board.mapper.CommentRepository;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -129,15 +129,18 @@ public class BoardService {
      */
     public BoardDTO getFreeBoardDetail(int boardId) {
         boardRepository.updateFreeBoardVisitCount(boardId);
+
         List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
         List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
 
         BoardDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
+        if(ObjectUtils.isEmpty(boardDTO)) {
+            return null;
+        }
         boardDTO.setBoardAttachments(attachments);
         boardDTO.setBoardComments(comments);
 
         return boardDTO;
-
     }
 
     /**
@@ -155,9 +158,9 @@ public class BoardService {
      * @param boardDTO 저장할 게시글 정보
      * @throws Exception 예외 발생 시
      */
-    public void saveFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
+    public void saveFreeBoardInfo(int seqId, BoardDTO boardDTO) throws Exception {
 
-        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
+        if (seqId <= 0) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }
 
@@ -179,17 +182,12 @@ public class BoardService {
             }
         }
     }
-    /**
-     * 자유게시판 정보를 수정합니다.
-     *
-     * @param userId   사용자 ID
-     * @param boardDTO 수정할 게시글 정보를 담은 DTO 객체
-     * @throws AppException 사용자 정보가 유효하지 않을 경우 예외 발생
-     */
-    public void updateFreeBoardInfo(String userId, BoardDTO boardDTO) throws Exception {
-        //TODO : 유저시퀀스
-        if (StringUtils.isEmpty(userId) || !userId.equals(boardDTO.getUserId())) {
-            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+
+    public void updateFreeBoardInfo(int seqId, BoardDTO boardDTO) throws Exception {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+        int getUserSeqId = boardRepository.getFreeBoardDetail(boardDTO.getBoardId()).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "수정 권한이 없습니다.");
         }
 
         //게시글 수정
@@ -232,24 +230,18 @@ public class BoardService {
             }
         }
     }
-    /**
-     * 자유게시판 수정 권한을 확인합니다.
-     *
-     * @param userId  사용자 ID
-     * @param boardId 게시글 ID
-     * @return 권한 여부를 나타내는 정수값 (1: 권한 있음, 0: 권한 없음)
-     */
-    public int hasFreeBoardEditPermission(String userId, int boardId) {
-        return boardRepository.hasFreeBoardEditPermission(userId, boardId);
+
+    public int hasFreeBoardEditPermission(int seqId, int boardId) {
+        return boardRepository.hasFreeBoardEditPermission(seqId, boardId);
     }
-    /**
-     * 자유게시판을 삭제합니다.
-     *
-     * @param userId  사용자 ID
-     * @param boardId 게시글 ID
-     */
-    public void deleteFreeBoard(String userId, int boardId) {
-        boardRepository.deleteFreeBoard(userId, boardId);
+
+    public void deleteFreeBoard(int seqId, int boardId) {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+        int getUserSeqId = boardRepository.getFreeBoardDetail(boardId).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
+        }
+        boardRepository.deleteFreeBoard(boardId);
     }
 
 

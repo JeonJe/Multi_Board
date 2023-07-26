@@ -37,5 +37,7 @@ public interface CommentRepository {
      */
     void deleteFreeBoardComment(CommentDTO commentDTO);
 
+    CommentDTO getCommentByCommentId(int commentId);
+
 
 }

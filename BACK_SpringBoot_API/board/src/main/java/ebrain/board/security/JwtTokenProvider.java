@@ -35,13 +35,8 @@ public class JwtTokenProvider {
         this.validityInMilliseconds = validityInMilliseconds;
     }
 
-    /**
-     * 주어진 subject를 기반으로 JWT 토큰을 생성합니다.
-     *
-     * @param subject 토큰의 subject
-     * @return 생성된 JWT 토큰
-     */
-    public String createToken(String subject) {
+    public String createToken(int seqId) {
+        String subject = String.valueOf(seqId);
         Claims claims = Jwts.claims().setSubject(subject);
 
         Date now = new Date();

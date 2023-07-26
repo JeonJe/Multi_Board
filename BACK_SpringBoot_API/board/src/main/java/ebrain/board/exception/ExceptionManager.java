@@ -1,7 +1,7 @@
 package ebrain.board.exception;
 
 import ebrain.board.response.APIResponse;
-import ebrain.board.utils.ResponseUtil;
+import ebrain.board.utils.ResponseBuilder;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class ExceptionManager {
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다", errorMessages);
+        APIResponse apiResponse = ResponseBuilder.ErrorWithData("잘못된 요청입니다", errorMessages);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
@@ -62,7 +62,7 @@ public class ExceptionManager {
                 .collect(Collectors.toList());
 
 
-        APIResponse apiResponse = ResponseUtil.ErrorWithData("잘못된 요청입니다.", errorMessages.get(0));
+        APIResponse apiResponse = ResponseBuilder.ErrorWithData("잘못된 요청입니다.", errorMessages.get(0));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
@@ -71,7 +71,7 @@ public class ExceptionManager {
     public ResponseEntity<APIResponse> handleSQLException(SQLException e) {
         String errorMessage = "서버 오류가 발생하였습니다.(SQL Exception)";
 
-        APIResponse apiResponse = ResponseUtil.ErrorWithoutData(errorMessage);
+        APIResponse apiResponse = ResponseBuilder.ErrorWithoutData(errorMessage);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
 
@@ -83,14 +83,14 @@ public class ExceptionManager {
      */
     @ExceptionHandler(AppException.class)
     public ResponseEntity<APIResponse> handleAppException(AppException e) {
-        APIResponse apiResponse = ResponseUtil.ErrorWithData("에러가 발생하였습니다", e.getMessage());
+        APIResponse apiResponse = ResponseBuilder.ErrorWithData("에러가 발생하였습니다", e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<APIResponse> handleIllegalArgumentException(IllegalArgumentException e) {
 
-        APIResponse apiResponse = ResponseUtil.ErrorWithData("유효하지 않는 요청입니다.", e.getMessage());
+        APIResponse apiResponse = ResponseBuilder.ErrorWithData("유효하지 않는 요청입니다.", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 

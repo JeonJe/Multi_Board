@@ -50,10 +50,12 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
             throw new IllegalArgumentException("요청이 정상적으로 실행되지 않았습니다. 유효하지 않는 토큰입니다.");
         }
 
-        //추출한 토큰의 사용자 ID를 요청 속성에 저장
-        //AOP, resolver , 권장은 rerquest 가공하지마라 , TODO 로 코멘트 남겨놓기 , 고민
-        String userId = jwtTokenProvider.getSubject(token);
-        request.setAttribute("userId", userId);
+        /**
+         * TODO : 프로젝트 범위 상 인터셉터를 통해 request에 seqId를 추가하여 권한을 확인하지만 이는 권고되는 방법은 아닙니다.
+         * TODO : AOP, Resolver, @RequestHeader 어노테이션 사용 등 다른방식으로 jwt 토큰을 확인하는 것이 좋습니다.
+         */
+        String seqId = jwtTokenProvider.getSubject(token);
+        request.setAttribute("seqId", seqId);
         return true;
     }
 }

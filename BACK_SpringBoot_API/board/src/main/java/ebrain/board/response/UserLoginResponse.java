@@ -10,6 +10,10 @@ import lombok.Data;
 @Builder
 public class UserLoginResponse {
     /**
+     * 사용자 식별번호
+     */
+    private Integer seqId;
+    /**
      * 사용자 아이디
      */
     private String userId;

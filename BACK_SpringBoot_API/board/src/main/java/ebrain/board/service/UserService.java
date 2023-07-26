@@ -28,12 +28,13 @@ public class UserService {
      * @param userSignupDTO 사용자 회원가입 정보를 담은 UserSignupDTO 객체
      * @throws AppException 회원가입 과정에서 발생하는 예외
      */
-    public void saveUser(UserSignupDTO userSignupDTO) {
+    public int saveUser(UserSignupDTO userSignupDTO) {
 
         //아이디 중복 확인
-        User user = userRepository.findUserByUserId(userSignupDTO.getUserId());
-        if (user != null) {
-            throw new AppException(ErrorCode.DUPLICATE_USERID, user.getUserId() + "는 이미 가입된 아이디입니다.");
+        User findUserIdInUser = userRepository.findUserByUserIdInUser(userSignupDTO.getUserId());
+        User findUserIdInAdmin = userRepository.findUserByUserIdInAdmin(userSignupDTO.getUserId());
+        if (findUserIdInUser != null || findUserIdInAdmin != null) {
+            throw new AppException(ErrorCode.DUPLICATE_USERID, findUserIdInUser.getUserId() + "는 사용중인 아이디입니다.");
         }
 
         String hashedPassword = AuthUtil.hashPassword(userSignupDTO.getPassword());
@@ -44,7 +45,7 @@ public class UserService {
                 .build();
 
         userRepository.saveUser(newUser);
-
+        return newUser.getSeqId();
     }
 
     /**
@@ -53,18 +54,23 @@ public class UserService {
      * @param userId 사용자 아이디
      * @return 사용자 객체
      */
-    public User findUserByUserId(String userId) {
-        return userRepository.findUserByUserId(userId);
+    public User findUserByUserIdInUser(String userId) {
+        return userRepository.findUserByUserIdInUser(userId);
     }
 
+    public User findUserBySeqId(int seqId) {
+        return userRepository.findUserBySeqIdInUser(seqId);
+    }
+
+
     /**
-     * 주어진 사용자 ID를 기반으로 JWT 토큰을 생성합니다.
+     * 주어진 사용자 식별 ID를 기반으로 JWT 토큰을 생성합니다.
      *
-     * @param userId 사용자 ID
+     * @param seqId 사용자 seq ID
      * @return 생성된 JWT 토큰
      */
-    public String createJwtToken(String userId) {
-        return jwtTokenProvider.createToken(userId);
+    public String createJwtToken(int seqId) {
+        return jwtTokenProvider.createToken(seqId);
 
     }
     /**

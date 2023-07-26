@@ -14,16 +14,18 @@ public interface UserRepository {
      * 사용자 정보 저장 메서드
      *
      * @param user 사용자 객체
+    * @return 사용자 식별 ID
      */
-    void saveUser(User user);
+    int saveUser(User user);
 
-    /**
-     * 사용자 아이디로 사용자 정보 조회 메서드
-     *
-     * @param userId 사용자 아이디
-     * @return 사용자 객체
-     */
-    User findUserByUserId(String userId);
+
+    User findUserByUserIdInUser(String userId);
+
+
+    User findUserByUserIdInAdmin(String userId);
+
+    User findUserBySeqIdInUser(int seqId);
+
 
     /**
      * 로그인 메서드

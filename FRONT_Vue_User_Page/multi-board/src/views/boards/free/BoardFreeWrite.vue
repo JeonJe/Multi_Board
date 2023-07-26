@@ -151,7 +151,10 @@ export default {
       isUpdate: false,
       boardId: null,
       categories: [],
-      boardInfo: {},
+      boardInfo: {
+        title: "",
+        content: "",
+      },
       fileInputBoxes: [],
       uploadAttachments: [],
       deletedAttachmentIDs: [],
@@ -231,6 +234,14 @@ export default {
      * 게시판 정보를 서버에 저장하는 함수
      */
     async clickBoardInfoSubmit() {
+      if (
+        !this.boardInfo ||
+        !this.boardInfo.title ||
+        this.boardInfo.title.trim().length === 0
+      ) {
+        alert("제목을 입력해주세요.");
+        return;
+      }
       if (!(await this.validateTitle(this.boardInfo.title))) {
         alert("제목은 100자 이하로 작성해주세요.");
         return;

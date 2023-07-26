@@ -11,6 +11,10 @@ import lombok.*;
 @Getter
 public class User {
     /**
+     * 사용자 식별 ID
+     */
+    private Integer seqId;
+    /**
      * 사용자 ID
      */
     private String userId;

@@ -3,12 +3,11 @@ package ebrain.board.utils;
 import ebrain.board.response.APIResponse;
 
 /**
- * ResponseUtil 클래스
+ * ResponseBuilder 클래스
  * API 응답을 생성하는 유틸리티 클래스입니다.
  */
 
-//TODO : builder로 이름 바꾸기
-public class ResponseUtil {
+public class ResponseBuilder {
 
     /**
      * 성공 상태 메시지

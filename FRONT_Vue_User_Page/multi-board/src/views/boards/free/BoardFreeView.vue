@@ -72,6 +72,7 @@
             </div>
           </div>
         </div>
+        <hr />
         <div class="bg-light">
           <div
             v-for="comment in boardInfo.boardComments"
