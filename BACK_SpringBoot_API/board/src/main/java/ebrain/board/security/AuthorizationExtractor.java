@@ -14,7 +14,7 @@ public class AuthorizationExtractor {
     public static final String AUTHORIZATION = "Authorization";
 
     /**
-     * 요청헤더에서 JWT 토큰을 추출합니다.
+     * 요청헤더에서 JWT 토큰을 추출
      *
      * @param request 요청을 나타내는 HttpServletRequest 객체
      * @param type    액세스 토큰 유형 ("Bearer")

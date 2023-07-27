@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.List;
 
 /**
- * 게시글 서비스 클래스입니다.
+ * 게시글 서비스 클래스
  */
 @Service
 @RequiredArgsConstructor
@@ -98,34 +98,38 @@ public class BoardService {
      * @return 공지사항의 카테고리 목록
      */
     public List<CategoryDTO> getNoticeBoardCategories() {
-        return boardRepository.getNoticeBoardCategories();
+
+        BoardCategory categoryParentCodeN = BoardCategory.NOTICE_BOARD;
+        return boardRepository.getNoticeBoardCategories(categoryParentCodeN.getCategoryParentCodeValue());
     }
 
     /**
-     * 검색 조건에 해당하는 자유 게시글 목록을 조회합니다.
+     * 자유 게시글을 검색하는 메서드입니다.
      *
      * @param searchParamsDTO 검색 조건 DTO
-     * @return 자유 게시글 목록
+     * @return 검색된 자유 게시글 목록
      */
     public List<BoardFreeDTO> searchFreeBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.searchFreeBoards(searchParamsDTO);
     }
 
     /**
-     * 검색 조건에 해당하는 자유 게시글의 개수를 조회합니다.
+     * 자유 게시글을 검색 조건에 맞춰 개수를 조회하는 메서드입니다.
      *
      * @param searchConditionDTO 검색 조건 DTO
-     * @return 공지 게시글의 개수
+     * @return 검색된 자유 게시글의 개수
      */
     public int countFreeBoards(SearchConditionDTO searchConditionDTO) {
         return boardRepository.countFreeBoards(searchConditionDTO);
     }
 
     /**
-     * 자유게시글의 상세 내용을 조회합니다.
+     * 자유 게시글의 상세 내용을 조회하는 메서드입니다.
+     * 조회할 때마다 해당 게시글의 조회수를 1 증가시킵니다.
+     * 또한, 해당 게시글과 연관된 첨부 파일과 댓글 목록을 함께 조회합니다.
      *
      * @param boardId 게시글 ID
-     * @return 자유게시글 상세 내용
+     * @return 자유 게시글 상세 내용
      */
     public BoardFreeDTO getFreeBoardDetail(int boardId) {
         boardRepository.updateFreeBoardVisitCount(boardId);
@@ -144,17 +148,20 @@ public class BoardService {
     }
 
     /**
-     * 공지사항의 카테고리 목록을 가져옵니다.
+     * 자유게시판 카테고리 목록을 가져옵니다.
      *
-     * @return 공지사항의 카테고리 목록
+     * @return 자유게시판 카테고리 목록
      */
     public List<CategoryDTO> getFreeBoardCategories() {
-        return boardRepository.getFreeBoardCategories();
+
+        BoardCategory categoryParentCode = BoardCategory.FREE_BOARD;
+        return boardRepository.getFreeBoardCategories(categoryParentCode.getCategoryParentCodeValue());
     }
 
     /**
-     * 자유 게시글 정보를 저장합니다.
+     * 자유 게시글 정보를 저장하는 메서드입니다.
      *
+     * @param seqId 사용자 식별 ID
      * @param boardDTO 저장할 게시글 정보
      * @throws Exception 예외 발생 시
      */
@@ -182,6 +189,13 @@ public class BoardService {
             }
         }
     }
+    /**
+     * 자유 게시글 정보를 수정하는 메서드입니다.
+     *
+     * @param seqId 사용자 식별 ID
+     * @param boardDTO 수정할 게시글 정보
+     * @throws Exception 예외 발생 시
+     */
 
     public void updateFreeBoardInfo(int seqId, BoardFreeDTO boardDTO) throws Exception {
         //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
@@ -230,11 +244,23 @@ public class BoardService {
             }
         }
     }
-
+    /**
+     * 자유 게시글 수정 권한이 있는지 확인하는 메서드입니다.
+     *
+     * @param seqId 사용자 식별 ID
+     * @param boardId 게시글 ID
+     * @return 수정 권한 여부 (1: 있음, 0: 없음)
+     */
     public int hasFreeBoardEditPermission(int seqId, int boardId) {
         return boardRepository.hasFreeBoardEditPermission(seqId, boardId);
     }
-
+    /**
+     * 자유 게시글을 삭제하는 메서드입니다.
+     *
+     * @param seqId 사용자 식별 ID
+     * @param boardId 게시글 ID
+     * @throws AppException 삭제 권한이 없을 경우 예외가 발생합니다.
+     */
     public void deleteFreeBoard(int seqId, int boardId) {
         //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
         int getUserSeqId = boardRepository.getFreeBoardDetail(boardId).getUserSeqId();

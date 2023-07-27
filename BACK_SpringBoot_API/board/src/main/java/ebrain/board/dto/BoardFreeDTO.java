@@ -9,7 +9,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
-
+/**
+ * 자유 게시글 정보를 담는 DTO
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,7 +40,6 @@ public class BoardFreeDTO {
      */
     private int userSeqId;
 
-
     /**
      * 작성일시
      */
@@ -48,43 +49,52 @@ public class BoardFreeDTO {
      * 방문 횟수
      */
     private int visitCount;
+
     /**
      * 카테고리 이름
      */
     @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
     private String categoryValue;
 
-
+    /**
+     * 카테고리 이름 (카테고리 목록 조회 시 사용)
+     */
     private String categoryName;
 
+    /**
+     * 사용자 아이디 (사용자 명으로 대체하는 것이 좋습니다.)
+     */
     private String userId;
-
 
     /**
      * 업로드된 첨부 파일 목록
      */
     private List<AttachmentDTO> boardAttachments;
 
+    /**
+     * 첨부 파일 개수
+     */
     private int countBoardAttachment;
 
     /**
-     * 업로드된 첨부 파일 목록
+     * 업로드된 첨부 파일 목록 (파일 업로드 시 사용)
      */
     private List<MultipartFile> uploadAttachments;
 
-
     /**
-     * 삭제할 첨부 파일의 ID 목록
+     * 삭제할 첨부 파일의 ID 목록 (파일 삭제 시 사용)
      */
     private List<Integer> deletedAttachmentIDs;
-
 
     /**
      * 댓글 목록
      */
     private List<CommentDTO> boardComments;
 
-    private  int countBoardComment;
+    /**
+     * 댓글 개수
+     */
+    private int countBoardComment;
 
 
 }

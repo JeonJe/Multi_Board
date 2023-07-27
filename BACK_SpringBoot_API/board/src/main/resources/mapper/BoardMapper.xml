@@ -7,7 +7,7 @@
     BoardRepository 인터페이스와 연결
 -->
 <mapper namespace="ebrain.board.mapper.BoardRepository">
-    <sql id = "searchQuery">
+    <sql id="searchQuery">
         <!-- 검색어가 존재하는 경우, 제목 또는 내용에 검색어가 포함된 게시글을 검색합니다. -->
         <if test="searchText != null and searchText != ''">
             AND (title LIKE concat('%', #{searchText}, '%')
@@ -55,8 +55,8 @@
         JOIN users AS u ON target_board.admin_seq_id = u.seq_id
         WHERE 1=1
         AND is_noticed = 0
-        <include refid="searchQuery" />
-        <include refid="orderQuery" />
+        <include refid="searchQuery"/>
+        <include refid="orderQuery"/>
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
@@ -66,15 +66,15 @@
         SELECT COUNT(*)
         FROM notice_board AS target_board
         WHERE 1=1
-        <include refid="searchQuery" />
+        <include refid="searchQuery"/>
     </select>
 
     <!-- 알림 표시된 공지 게시글 목록을 조회 -->
     <select id="getMarkedNoticedBoards" resultType="BoardNoticeDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id AS userId
         FROM notice_board AS target_board
-         JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-         JOIN users AS u ON target_board.admin_seq_id = u.seq_id
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.admin_seq_id = u.seq_id
         WHERE is_noticed = 1
     </select>
 
@@ -87,19 +87,22 @@
 
     <!-- 공지사항의 상세 내용을 조회 -->
     <select id="getNoticeBoardDetail" parameterType="java.lang.Integer" resultType="BoardNoticeDTO">
-        SELECT target_board.*, target_board.child_code_value as categoryValue, cc.child_code_name AS categoryName,user_id AS userId
+        SELECT target_board.*,
+               target_board.child_code_value as categoryValue,
+               cc.child_code_name            AS categoryName,
+               user_id                       AS userId
         FROM notice_board AS target_board
-         JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-         JOIN users AS u ON target_board.admin_seq_id = u.seq_id
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.admin_seq_id = u.seq_id
         WHERE target_board.board_id = #{boardId}
     </select>
 
     <!--  공지사항의 카테고리 목록을 조회  -->
-    <select id="getNoticeBoardCategories" resultType="CategoryDTO">
-        SELECT  cc.child_code_name as categoryName ,cc.child_code_value as categoryValue
+    <select id="getNoticeBoardCategories" parameterType="java.lang.String" resultType="CategoryDTO">
+        SELECT cc.child_code_name as categoryName, cc.child_code_value as categoryValue
         FROM category_child_code cc
                  JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
-        WHERE cp.parent_code_name LIKE '%공지사항%'
+        WHERE cp.parent_code_value = #{categoryParentCodeValue}
     </select>
 
     <!-- 공지 게시글의 방문수를 1 증가    -->
@@ -111,16 +114,17 @@
 
     <!-- 검색 조건에 해당하는 자유 게시글 리스트 조회  -->
     <select id="searchFreeBoards" parameterType="SearchConditionDTO" resultType="BoardFreeDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS countBoardComment,
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS
+        countBoardComment,
         COALESCE(cntAttachment, 0) AS countBoardAttachment
         FROM free_board AS target_board
 
         JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         JOIN users AS u ON target_board.user_seq_id = u.seq_id
         LEFT JOIN (
-            SELECT board_id, COUNT(*) AS cntComment
-            FROM comments
-            GROUP BY board_id
+        SELECT board_id, COUNT(*) AS cntComment
+        FROM comments
+        GROUP BY board_id
         ) AS countComments ON target_board.board_id = countComments.board_id
         LEFT JOIN (
         SELECT board_id, COUNT(*) AS cntAttachment
@@ -128,8 +132,8 @@
         GROUP BY board_id
         ) AS countAttachments ON target_board.board_id = countAttachments.board_id
         WHERE 1=1
-        <include refid="searchQuery" />
-        <include refid="orderQuery" />
+        <include refid="searchQuery"/>
+        <include refid="orderQuery"/>
         LIMIT #{pageSize}
         OFFSET #{offset}
     </select>
@@ -139,24 +143,27 @@
         SELECT COUNT(*)
         FROM free_board AS target_board
         WHERE 1=1
-        <include refid="searchQuery" />
+        <include refid="searchQuery"/>
     </select>
 
     <!-- 자유게시판 상세 내용을 조회 -->
     <select id="getFreeBoardDetail" parameterType="java.lang.Integer" resultType="BoardFreeDTO">
-        SELECT target_board.*, target_board.child_code_value as categoryValue, cc.child_code_name AS categoryName, u.user_id as userId
+        SELECT target_board.*,
+               target_board.child_code_value as categoryValue,
+               cc.child_code_name            AS categoryName,
+               u.user_id                     as userId
         FROM free_board AS target_board
-         JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-         JOIN users AS u ON target_board.user_seq_id = u.seq_id
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.user_seq_id = u.seq_id
         WHERE target_board.board_id = #{boardId}
     </select>
 
     <!--  자유게시판 카테고리 목록을 조회  -->
     <select id="getFreeBoardCategories" resultType="CategoryDTO">
-        SELECT cc.child_code_name as categoryName ,cc.child_code_value as categoryValue
+        SELECT cc.child_code_name as categoryName, cc.child_code_value as categoryValue
         FROM category_child_code cc
                  JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
-        WHERE cp.parent_code_name LIKE '%자유%'
+        WHERE cp.parent_code_value = #{categoryParentCodeValue}
     </select>
 
     <!-- 자유 게시글의 방문수를 1 증가    -->
@@ -167,20 +174,18 @@
     </update>
 
     <!-- 자유 게시글 저장   -->
-    <insert id="saveFreeBoardInfo" parameterType="BoardFreeDTO" useGeneratedKeys="true" keyProperty="boardId" >
+    <insert id="saveFreeBoardInfo" parameterType="BoardFreeDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO free_board
-            (title, content, user_seq_id, created_at, visit_count, child_code_value)
-        VALUES (
-                #{title},
+        (title, content, user_seq_id, created_at, visit_count, child_code_value)
+        VALUES (#{title},
                 #{content},
-               ( SELECT seq_id FROM users WHERE user_id = #{userId} ),
+                (SELECT seq_id FROM users WHERE user_id = #{userId}),
                 now(),
                 0,
-                #{categoryValue}
-                )
+                #{categoryValue})
     </insert>
 
-
+    <!-- 주어진 boardId의 작성자가 JWT에서 추출한 user_seq_id와 동일한지 확인 -->
     <select id="hasFreeBoardEditPermission" resultType="int">
         SELECT COUNT(*) > 0
         FROM free_board
@@ -190,15 +195,16 @@
 
     <!-- 자유게시글 삭제 -->
     <delete id="deleteFreeBoard">
-        DELETE FROM free_board
+        DELETE
+        FROM free_board
         WHERE board_id = #{boardId}
     </delete>
 
     <!-- 자유 게시글 수정 -->
     <update id="updateFreeBoardInfo" parameterType="BoardFreeDTO">
         UPDATE free_board
-        SET title = #{title},
-            content = #{content},
+        SET title            = #{title},
+            content          = #{content},
             child_code_value = #{categoryValue}
         WHERE board_id = #{boardId}
     </update>

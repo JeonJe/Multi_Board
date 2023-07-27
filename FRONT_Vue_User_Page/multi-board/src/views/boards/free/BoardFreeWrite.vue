@@ -15,9 +15,10 @@
               class="form-control"
             >
               <option
-                v-for="categoryOption in categoryOptions"
-                :key="categoryOption.value"
+                v-for="(categoryOption, index) in categoryOptions"
+                :key="index"
                 :value="categoryOption.value"
+                v-bind:selected="index === 0"
               >
                 {{ categoryOption.label }}
               </option>
@@ -62,6 +63,7 @@
         >
           <div class="d-flex justify-content-between">
             <span>{{ attachment.originFileName }}</span>
+            <i class="fas fa-paperclip"></i>
             <div>
               <button
                 type="button"
@@ -240,6 +242,11 @@ export default {
           alert("카테고리 목록이 없습니다.");
         } else {
           this.categories = response.data;
+          if (this.categories.length > 0) {
+            this.boardInfo.categoryValue = this.categories[0].categoryValue;
+          } else {
+            alert("카테고리가 없습니다.");
+          }
         }
       } catch (error) {
         console.log(error);
@@ -319,7 +326,6 @@ export default {
      * @param {number} index - 제거할 입력 양식의 인덱스
      */
     clickRemoveEmptyInput(index) {
-      // this.fileInputBoxes.splice(index, 1);
       if (this.inputFiles[index]) {
         const removedFile = this.inputFiles.splice(index, 1)[0];
         const removedFileIndex = this.uploadAttachments.indexOf(removedFile);

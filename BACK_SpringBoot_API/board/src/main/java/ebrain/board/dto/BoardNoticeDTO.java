@@ -7,7 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-
+/**
+ * 공지 게시글 정보를 담는 DTO
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

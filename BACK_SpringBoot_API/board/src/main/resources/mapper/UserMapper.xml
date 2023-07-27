@@ -9,7 +9,7 @@
 <mapper namespace="ebrain.board.mapper.UserRepository">
 
     <!-- 회원가입 정보를 users 테이블에 저장 -->
-    <insert id="saveUser" parameterType="User" useGeneratedKeys="true" keyProperty="seqId" >
+    <insert id="saveUser" parameterType="User" useGeneratedKeys="true" keyProperty="seqId">
         INSERT INTO users (user_id, password, name)
         VALUES (#{userId}, #{password}, #{name})
     </insert>
@@ -20,19 +20,18 @@
         FROM users
         WHERE user_id = #{userId}
     </select>
-
+    <!-- admin 테이블에서 userId에 해당하는 아이디가 있는지 조회   -->
     <select id="findUserByUserIdInAdmin" parameterType="String" resultType="User">
         SELECT *
         FROM admin
         WHERE admin_id = #{userId}
     </select>
-
+    <!-- users 테이블에서 userId에 해당하는 아이디가 있는지 조회   -->
     <select id="findUserBySeqIdInUser" parameterType="Integer" resultType="User">
         SELECT *
         FROM users
         WHERE seq_id = #{seqId}
     </select>
-
 
     <!-- user_id, password와 일치하는 사용자가 있는지 확인합니다.-->
     <select id="checkUserCredentials" parameterType="String" resultType="int">
@@ -41,7 +40,6 @@
         WHERE user_id = #{userId}
           AND password = #{password}
     </select>
-
 
 
 </mapper>

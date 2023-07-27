@@ -14,11 +14,24 @@ import java.util.List;
 @Data
 @Builder
 public class BoardSearchResponse {
-
-
+    /**
+     * 검색된 공지 게시글 목록
+     */
     private List<BoardNoticeDTO> searchNoticeBoards;
+
+    /**
+     * 검색된 자유 게시글 목록
+     */
     private List<BoardFreeDTO> searchFreeBoards;
+
+    /**
+     * 검색된 게시글의 총 개수
+     */
     private int countSearchBoards;
+
+    /**
+     * 알림 표시된 공지 게시글 목록
+     */
     private List<BoardNoticeDTO> markNoticedBoards;
 
 }

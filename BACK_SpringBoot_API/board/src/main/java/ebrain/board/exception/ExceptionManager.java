@@ -105,6 +105,7 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
+
     /**
      * IOException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
      *
@@ -117,6 +118,7 @@ public class ExceptionManager {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(e.getMessage());
     }
+
     /**
      * MultipartException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
      *

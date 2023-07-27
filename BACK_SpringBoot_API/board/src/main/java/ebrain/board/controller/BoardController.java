@@ -201,12 +201,13 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
     }
+
     /**
      * 자유 게시글을 저장합니다.
      *
-     * @param request   HttpServletRequest 객체
-     * @param boardDTO  저장할 게시글 정보
-     * @return          API 응답 객체
+     * @param request  HttpServletRequest 객체
+     * @param boardDTO 저장할 게시글 정보
+     * @return API 응답 객체
      * @throws Exception 예외 발생 시
      */
     @PostMapping("/api/boards/free")
@@ -220,23 +221,24 @@ public class BoardController {
         APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
     /**
      * 첨부 파일을 다운로드합니다.
      *
-     * @param attachmentId   다운로드할 첨부 파일의 ID
-     * @return               Resource 객체를 ResponseEntity로 래핑한 결과
-     * @throws Exception     예외 발생 시
+     * @param attachmentId 다운로드할 첨부 파일의 ID
+     * @return Resource 객체를 ResponseEntity로 래핑한 결과
+     * @throws Exception 예외 발생 시
      */
     @GetMapping("api/attachments/{attachmentId}")
     public ResponseEntity<Resource> downloadAttachment(@PathVariable @NotEmpty int attachmentId)
-            throws Exception{
+            throws Exception {
 
-            AttachmentDTO attachment = attachmentService.getAttachmentByAttachmentId(attachmentId);
-            return FileUtil.fileDownload(attachment, UPLOAD_PATH);
+        AttachmentDTO attachment = attachmentService.getAttachmentByAttachmentId(attachmentId);
+        return FileUtil.fileDownload(attachment, UPLOAD_PATH);
     }
 
     /**
-     * 게시글 수정 권한을 확인하고 결과를 반환하는 API 메서드입니다.
+     * 게시글 수정 권한을 확인하고 결과를 반환합니다.
      *
      * @param request HttpServletRequest 객체
      * @param boardId 수정할 게시글 ID
@@ -259,13 +261,14 @@ public class BoardController {
         if (hasPermission) {
             apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-        } else{
+        } else {
             apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
+
     /**
-     * 자유 게시글을 삭제하고 결과를 반환하는 API 메서드입니다.
+     * 자유 게시글을 삭제하고 결과를 반환합니다.
      *
      * @param request HttpServletRequest 객체
      * @param boardId 삭제할 게시글 ID
@@ -284,7 +287,7 @@ public class BoardController {
 
         // 댓글이 남아있는지 확인
         int countBoardComment = commentService.countCommentByFreeBoardId(boardId);
-        if (countBoardComment > 0){
+        if (countBoardComment > 0) {
             apiResponse = ResponseBuilder.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         }
@@ -295,16 +298,17 @@ public class BoardController {
         apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
     /**
-     * 자유 게시글에 댓글을 추가하고 결과를 반환하는 API 메서드입니다.
+     * 자유 게시글에 댓글을 추가하고 결과를 반환합니다.
      *
-     * @param request HttpServletRequest 객체
-     * @param boardId 게시글 ID
+     * @param request    HttpServletRequest 객체
+     * @param boardId    게시글 ID
      * @param commentDTO 추가할 댓글 정보
      * @return 댓글 추가 결과를 담은 API 응답 객체
      */
     @PostMapping("/api/boards/free/{boardId}/comments")
-    public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request,@PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request, @PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
 
         APIResponse apiResponse;
         int seqId = AuthUtil.getSeqIdFromRequest(request);
@@ -316,7 +320,7 @@ public class BoardController {
 
         User user = userService.findUserBySeqId(seqId);
 
-        if (ObjectUtils.isEmpty(user)){
+        if (ObjectUtils.isEmpty(user)) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }
 
@@ -327,10 +331,11 @@ public class BoardController {
         apiResponse = ResponseBuilder.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
     /**
-     * 자유 게시글의 댓글을 삭제하고 결과를 반환하는 API 메서드입니다.
+     * 자유 게시글의 댓글을 삭제하고 결과를 반환합니다.
      *
-     * @param request HttpServletRequest 객체
+     * @param request    HttpServletRequest 객체
      * @param commentDTO 삭제할 댓글 정보
      * @return 댓글 삭제 결과를 담은 API 응답 객체
      */
@@ -351,11 +356,12 @@ public class BoardController {
         apiResponse = ResponseBuilder.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
     /**
-     * 자유 게시글을 수정하고 결과를 반환하는 API 메서드입니다.
+     * 자유 게시글을 수정하고 결과를 반환합니다.
      *
-     * @param request HttpServletRequest 객체
-     * @param boardId 수정할 게시글 ID
+     * @param request  HttpServletRequest 객체
+     * @param boardId  수정할 게시글 ID
      * @param boardDTO 수정할 게시글 정보
      * @return 게시글 수정 결과를 담은 API 응답 객체
      * @throws Exception 예외 발생 시

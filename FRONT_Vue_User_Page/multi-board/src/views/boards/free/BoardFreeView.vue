@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container">
-      <h1>자유 게시판</h1>
+      <h1>자유게시판</h1>
       <br />
       <!-- 게시판 내용 -->
       <div v-if="boardInfo">
@@ -47,6 +47,7 @@
                 <a :href="downloadAttachment(attachment.attachmentId)">
                   {{ attachment.originFileName }}
                 </a>
+                <i class="fas fa-paperclip"></i>
               </td>
             </tr>
           </table>

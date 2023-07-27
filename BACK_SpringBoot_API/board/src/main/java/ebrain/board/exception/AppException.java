@@ -17,6 +17,5 @@ public class AppException extends RuntimeException {
     /**
      * 예외 메시지
      */
-    //TODO : message를 errorMessage로 바꾸어서 명확하게 변수명을 작성하는 것이 좋음.
     private String message;
 }

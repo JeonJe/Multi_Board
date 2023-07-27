@@ -18,7 +18,6 @@ public class AttachmentDTO {
     /**
      * 서버에 저장된 중복되지 않는 파일명
      */
-
     private String fileName;
     /**
      * 사용자가 업로드한 파일의 원본 이름

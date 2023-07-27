@@ -32,12 +32,24 @@ public class CommentService {
         return commentRepository.countCommentByFreeBoardId(boardId);
     }
 
-    public void addFreeBoardComment(CommentDTO commentDTO){
-            commentRepository.addFreeBoardComment(commentDTO);
+    /**
+     * 자유 게시글에 댓글을 추가하는 메서드입니다.
+     *
+     * @param commentDTO 추가할 댓글 정보를 담은 CommentDTO 객체
+     */
+    public void addFreeBoardComment(CommentDTO commentDTO) {
+        commentRepository.addFreeBoardComment(commentDTO);
     }
 
+    /**
+     * 자유 게시글에 달린 댓글을 삭제하는 메서드입니다.
+     *
+     * @param seqId 사용자 식별 ID
+     * @param commentDTO 삭제할 댓글 정보를 담은 CommentDTO 객체
+     * @throws AppException 삭제 권한이 없을 경우 예외가 발생합니다.
+     */
     public void deleteFreeBoardComment(int seqId, CommentDTO commentDTO) {
-        //현재 userSeqId와 댓글 userSeqId와 비교
+        // 현재 userSeqId와 댓글의 userSeqId와 비교
         int commentId = commentDTO.getCommentId();
         CommentDTO comment = commentRepository.getCommentByCommentId(commentId);
         if (seqId != comment.getUserSeqId()) {
@@ -46,7 +58,5 @@ public class CommentService {
 
         commentRepository.deleteFreeBoardComment(commentDTO);
     }
-
-
 
 }

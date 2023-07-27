@@ -22,7 +22,7 @@ public class UserLoginResponse {
      */
     private String name;
     /**
-     * 사용자 JWT토큰
+     * 사용자 JWT
      */
     private String jwt;
 

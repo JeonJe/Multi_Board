@@ -41,7 +41,7 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * 사용자 회원 가입
+     * 사용자 회원 가입을 처리합니다.
      *
      * @param userSignupDTO 사용자 회원 가입 정보를 담고 있는 DTO입니다.
      * @return 회원 가입 처리 결과를 담은 APIResponse를 포함하는 ResponseEntity입니다.
@@ -97,7 +97,7 @@ public class UserController {
     public ResponseEntity<APIResponse> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
 
         //아이디, 비밀번호 확인
-        boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1)  ? true : false;
+        boolean isValidUser = (userService.checkUserCredentials(userLoginDTO) == 1) ? true : false;
 
         if (isValidUser) {
             String userId = userLoginDTO.getUserId();
@@ -122,7 +122,12 @@ public class UserController {
         }
     }
 
-
+    /**
+     * 유효한 사용자인지 확인하고 사용자 이름을 반환합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @return API 응답 객체
+     */
     @GetMapping("/api/auth/check")
     public ResponseEntity<APIResponse> checkUserToken(HttpServletRequest request) {
 
@@ -136,6 +141,7 @@ public class UserController {
         APIResponse apiResponse = ResponseBuilder.SuccessWithData("유효한 사용자입니다.", user.getName());
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
     /**
      * JWT 토큰 인증 상태를 확인합니다.
      *

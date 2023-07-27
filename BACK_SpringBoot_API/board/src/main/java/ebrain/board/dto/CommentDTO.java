@@ -37,5 +37,8 @@ public class CommentDTO {
      */
     private int boardId;
 
+    /**
+     * 사용자명
+     */
     private String userId;
 }

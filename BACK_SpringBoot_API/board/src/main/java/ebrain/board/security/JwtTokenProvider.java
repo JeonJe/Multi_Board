@@ -24,7 +24,7 @@ public class JwtTokenProvider {
     private long validityInMilliseconds;
 
     /**
-     * JwtTokenProvider 생성자입니다.
+     * JwtTokenProvider 생성자
      *
      * @param secretKey              시크릿 키
      * @param validityInMilliseconds 토큰의 유효 기간(밀리초)
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 주어진 토큰에서 subject 값을 추출합니다.
+     * 주어진 토큰에서 subject 값을 추출
      *
      * @param token 추출할 토큰
      * @return 추출된 subject 값
@@ -62,7 +62,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 주어진 토큰이 유효한지 확인합니다.
+     * 주어진 토큰이 유효한지 확인
      *
      * @param token 확인할 토큰
      * @return 토큰의 유효성 여부

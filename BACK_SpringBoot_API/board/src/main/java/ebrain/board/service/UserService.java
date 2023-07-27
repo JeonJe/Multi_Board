@@ -23,9 +23,10 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
 
     /**
-     * 사용자 정보 저장 메서드
+     * 사용자 정보를 저장하는 메서드입니다.
      *
      * @param userSignupDTO 사용자 회원가입 정보를 담은 UserSignupDTO 객체
+     * @return 저장된 사용자의 식별 ID
      * @throws AppException 회원가입 과정에서 발생하는 예외
      */
     public int saveUser(UserSignupDTO userSignupDTO) {
@@ -49,24 +50,29 @@ public class UserService {
     }
 
     /**
-     * 사용자 아이디로 사용자 정보 조회 메서드
+     * 주어진 사용자 아이디로 사용자 정보를 조회하는 메서드입니다.
      *
      * @param userId 사용자 아이디
-     * @return 사용자 객체
+     * @return 조회된 사용자 객체
      */
     public User findUserByUserIdInUser(String userId) {
         return userRepository.findUserByUserIdInUser(userId);
     }
-
+    /**
+     * 주어진 사용자 식별 ID를 기반으로 사용자 정보를 조회하는 메서드입니다.
+     *
+     * @param seqId 사용자 식별 ID
+     * @return 조회된 사용자 객체
+     */
     public User findUserBySeqId(int seqId) {
         return userRepository.findUserBySeqIdInUser(seqId);
     }
 
 
     /**
-     * 주어진 사용자 식별 ID를 기반으로 JWT 토큰을 생성합니다.
+     * 주어진 사용자 식별 ID를 기반으로 JWT 토큰을 생성하는 메서드입니다.
      *
-     * @param seqId 사용자 seq ID
+     * @param seqId 사용자 식별 ID
      * @return 생성된 JWT 토큰
      */
     public String createJwtToken(int seqId) {
@@ -74,7 +80,7 @@ public class UserService {
 
     }
     /**
-     * 주어진 사용자 로그인 정보를 기반으로 사용자 인증을 확인합니다.
+     * 주어진 사용자 로그인 정보를 기반으로 사용자 인증을 확인하는 메서드입니다.
      *
      * @param userLoginDTO 사용자 로그인 정보 DTO
      * @return 사용자 인증 결과 (1: 인증 성공, 0: 인증 실패)
