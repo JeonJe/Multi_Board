@@ -107,6 +107,7 @@
         :editPermission="editPermission"
         @emitUpdateBoard="clickEditBtn(boardId)"
         @emitDeleteBoard="clickDeleteBtn(boardId)"
+        @emitBackToList="clickBackToListBtn()"
       />
     </div>
   </div>
@@ -182,7 +183,11 @@ export default {
      */
     async clickDeleteBtn(boardId) {
       if (await boardService.deleteBoardInfo("free", boardId)) {
-        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+        boardService.replaceRouterToBoardList(
+          this.$router,
+          this.$route,
+          "free"
+        );
       } else {
         alert("삭제가 불가합니다. 댓글이 남아있는지 확인해주세요.");
       }
@@ -211,11 +216,8 @@ export default {
      * 공지사항 목록 페이지로 이동하는 함수
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
-    moveToFreeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
-        query: this.$route.query,
-      };
+    clickBackToListBtn() {
+      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
     },
   },
 };

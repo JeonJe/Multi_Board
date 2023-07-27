@@ -1,8 +1,6 @@
 package ebrain.board.mapper;
 
-import ebrain.board.dto.BoardDTO;
-import ebrain.board.dto.CategoryDTO;
-import ebrain.board.dto.SearchConditionDTO;
+import ebrain.board.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -19,7 +17,7 @@ public interface BoardRepository {
      * @param searchConditionDTO 검색 조건 DTO
      * @return 검색 결과 공지 게시글 목록
      */
-    List<BoardDTO> searchNoticeBoards(SearchConditionDTO searchConditionDTO);
+    List<BoardNoticeDTO> searchNoticeBoards(SearchConditionDTO searchConditionDTO);
 
     /**
      * 검색 조건에 해당하는 공지 게시글의 개수를 조회합니다.
@@ -34,7 +32,7 @@ public interface BoardRepository {
      *
      * @return 알림 표시된 게시글 목록
      */
-    List<BoardDTO> getMarkedNoticedBoards();
+    List<BoardNoticeDTO> getMarkedNoticedBoards();
 
     /**
      * 알림 표시된 공지 게시글의 개수를 조회합니다.
@@ -51,7 +49,7 @@ public interface BoardRepository {
      * @param boardId 게시글 ID
      * @return 공지사항의 상세 내용
      */
-    BoardDTO getNoticeBoardDetail(int boardId);
+    BoardNoticeDTO getNoticeBoardDetail(int boardId);
 
     /**
      * 공지사항의 카테고리 목록을 가져옵니다.
@@ -72,7 +70,7 @@ public interface BoardRepository {
      * @param searchConditionDTO 검색 조건 DTO
      * @return 검색 결과 자유 게시글 목록
      */
-    List<BoardDTO> searchFreeBoards(SearchConditionDTO searchConditionDTO);
+    List<BoardFreeDTO> searchFreeBoards(SearchConditionDTO searchConditionDTO);
 
     /**
      * 검색 조건에 해당하는 자유 게시글의 개수를 조회합니다.
@@ -88,7 +86,7 @@ public interface BoardRepository {
      * @param boardId 게시글 ID
      * @return 자유게시글 상세 내용
      */
-    BoardDTO getFreeBoardDetail(int boardId);
+    BoardFreeDTO getFreeBoardDetail(int boardId);
 
     /**
      * 자유게시판의 카테고리 목록을 가져옵니다.
@@ -108,16 +106,13 @@ public interface BoardRepository {
      * @param boardDTO
      * @return
      */
-    int saveFreeBoardInfo(BoardDTO boardDTO);
+    int saveFreeBoardInfo(BoardFreeDTO boardDTO);
 
     int hasFreeBoardEditPermission(int seqId, int boardId);
 
     void deleteFreeBoard(int boardId);
-    /**
-     * 자유게시판 정보를 업데이트하는 메서드입니다.
-     *
-     * @param boardDTO 업데이트할 자유게시판 정보를 담은 BoardDTO 객체
-     */
-    void updateFreeBoardInfo(BoardDTO boardDTO);
+
+    void updateFreeBoardInfo(BoardFreeDTO boardDTO);
+
 
 }

@@ -31,13 +31,18 @@
         <tbody>
           <!-- 자유게시글 -->
           <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
-            <td class="text-center">{{ index + 1 }}</td>
+            <td class="text-center">{{ totalPosts - index }}</td>
             <td class="text-center">{{ item.categoryName }}</td>
             <td class="text-left">
               <router-link :to="getBoardDetail(item.boardId)">
                 {{ item.title }}
                 <span v-if="IsNewBoard(item.createdAt)"> New </span>
               </router-link>
+              ({{ item.countBoardComment }})
+              <i
+                v-if="item.countBoardAttachment > 0"
+                class="fas fa-paperclip"
+              ></i>
             </td>
             <td class="text-center">{{ item.visitCount }}</td>
             <td class="text-center">{{ getFormattedDate(item.createdAt) }}</td>
@@ -112,16 +117,14 @@ export default {
           "free",
           this.searchCondition
         );
-        if (response.status === "success") {
-          if (response === "") {
-            alert("표시 할 자유게시글이 없습니다.");
-          } else {
-            this.searchBoardList = response.data.searchBoards;
-            this.totalPosts = response.data.countSearchBoards;
-            this.totalPages = Math.ceil(
-              this.totalPosts / this.searchCondition.pageSize
-            );
-          }
+        if (response === "") {
+          alert("표시 할 자유게시글이 없습니다.");
+        } else {
+          this.searchBoardList = response.data.searchFreeBoards;
+          this.totalPosts = response.data.countSearchBoards;
+          this.totalPages = Math.ceil(
+            this.totalPosts / this.searchCondition.pageSize
+          );
         }
       } catch (error) {
         console.log(error);

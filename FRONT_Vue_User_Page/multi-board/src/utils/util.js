@@ -46,7 +46,7 @@ const downloadAttachment = (attachmentId) => {
  * @returns {Promise<boolean>} - 제목의 유효성 여부를 Promise로 반환 (true: 유효, false: 유효하지 않음)
  */
 const validateTitle = async (title) => {
-  if (title.length >= 100) {
+  if (title.length >= 100 || title.length <= 0) {
     return false;
   }
   return true;
@@ -57,7 +57,7 @@ const validateTitle = async (title) => {
  * @returns {Promise<boolean>} - 내용의 유효성 여부를 Promise로 반환 (true: 유효, false: 유효하지 않음)
  */
 const validateContent = async (content) => {
-  if (content.length >= 4000) {
+  if (content.length >= 4000 || content.length <= 0) {
     return false;
   }
   return true;

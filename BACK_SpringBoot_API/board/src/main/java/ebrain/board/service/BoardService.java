@@ -49,7 +49,7 @@ public class BoardService {
      * @param searchParamsDTO 검색 조건 DTO
      * @return 공지 게시글 목록
      */
-    public List<BoardDTO> searchNoticeBoards(SearchConditionDTO searchParamsDTO) {
+    public List<BoardNoticeDTO> searchNoticeBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.searchNoticeBoards(searchParamsDTO);
     }
 
@@ -68,7 +68,7 @@ public class BoardService {
      *
      * @return 알림 표시된 게시글 목록
      */
-    public List<BoardDTO> getMarkedNoticedBoards() {
+    public List<BoardNoticeDTO> getMarkedNoticedBoards() {
         return boardRepository.getMarkedNoticedBoards();
     }
 
@@ -87,7 +87,7 @@ public class BoardService {
      * @param boardId 게시글 ID
      * @return 공지사항의 상세 내용
      */
-    public BoardDTO getNoticeBoardDetail(int boardId) {
+    public BoardNoticeDTO getNoticeBoardDetail(int boardId) {
         boardRepository.updateNoticeBoardVisitCount(boardId);
         return boardRepository.getNoticeBoardDetail(boardId);
     }
@@ -107,7 +107,7 @@ public class BoardService {
      * @param searchParamsDTO 검색 조건 DTO
      * @return 자유 게시글 목록
      */
-    public List<BoardDTO> searchFreeBoards(SearchConditionDTO searchParamsDTO) {
+    public List<BoardFreeDTO> searchFreeBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.searchFreeBoards(searchParamsDTO);
     }
 
@@ -127,13 +127,13 @@ public class BoardService {
      * @param boardId 게시글 ID
      * @return 자유게시글 상세 내용
      */
-    public BoardDTO getFreeBoardDetail(int boardId) {
+    public BoardFreeDTO getFreeBoardDetail(int boardId) {
         boardRepository.updateFreeBoardVisitCount(boardId);
 
         List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
         List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
 
-        BoardDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
+        BoardFreeDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
         if(ObjectUtils.isEmpty(boardDTO)) {
             return null;
         }
@@ -158,7 +158,7 @@ public class BoardService {
      * @param boardDTO 저장할 게시글 정보
      * @throws Exception 예외 발생 시
      */
-    public void saveFreeBoardInfo(int seqId, BoardDTO boardDTO) throws Exception {
+    public void saveFreeBoardInfo(int seqId, BoardFreeDTO boardDTO) throws Exception {
 
         if (seqId <= 0) {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
@@ -183,7 +183,7 @@ public class BoardService {
         }
     }
 
-    public void updateFreeBoardInfo(int seqId, BoardDTO boardDTO) throws Exception {
+    public void updateFreeBoardInfo(int seqId, BoardFreeDTO boardDTO) throws Exception {
         //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
         int getUserSeqId = boardRepository.getFreeBoardDetail(boardDTO.getBoardId()).getUserSeqId();
         if (seqId != getUserSeqId) {

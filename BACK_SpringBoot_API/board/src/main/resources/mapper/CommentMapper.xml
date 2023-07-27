@@ -33,9 +33,10 @@
     </delete>
 
     <select id="getCommentByCommentId" resultType="CommentDTO">
-        SELECT *
-        FROM comments
-        WHERE comment_id = #{commentId}
+        SELECT c.*, u.user_id AS userId
+        FROM comments AS c
+                 JOIN users u on c.user_seq_id = u.seq_id
+        WHERE c.comment_id = #{commentId}
     </select>
 
 </mapper>

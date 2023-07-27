@@ -17,6 +17,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -143,17 +144,21 @@ public class UserController {
      */
     @GetMapping("/api/auth/status")
     public ResponseEntity<APIResponse> getAuthenticationStatus(HttpServletRequest request) {
+        APIResponse apiResponse;
+        String seqIdString = (String) request.getAttribute("seqId");
 
-        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        if (StringUtils.isEmpty(seqIdString)) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("JWT가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+        int seqId = Integer.parseInt(seqIdString);
         User user = userService.findUserBySeqId(seqId);
 
         if (ObjectUtils.isEmpty(user)) {
             throw new AppException(ErrorCode.INVALID_AUTH_TOKEN, "유효한 사용자가 아닙니다.");
         }
 
-
-        APIResponse apiResponse = ResponseBuilder.SuccessWithData("유효한 토큰입니다.", true);
+        apiResponse = ResponseBuilder.SuccessWithData("유효한 토큰입니다.", true);
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }

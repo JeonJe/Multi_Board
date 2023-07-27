@@ -39,6 +39,7 @@
       :editPermission="false"
       @emitUpdateBoard="clickEditBtn(boardId)"
       @emitDeleteBoard="clickDeleteBtn(boardId)"
+      @emitBackToList="clickBackToListBtn()"
     />
   </div>
 </template>
@@ -89,11 +90,12 @@ export default {
      * 공지사항 목록 페이지로 이동하는 함수
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
-    moveToNoticeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_NOTICE_LIST,
-        query: this.$route.query,
-      };
+    clickBackToListBtn() {
+      boardService.replaceRouterToBoardList(
+        this.$router,
+        this.$route,
+        "notice"
+      );
     },
   },
 };

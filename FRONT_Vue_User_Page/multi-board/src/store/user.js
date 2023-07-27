@@ -61,7 +61,7 @@ export default createStore({
      * @param {Object} context - Vuex context 객체
      * @param {Object|null} user - 설정할 사용자 정보
      */
-    setLoginUser({ commit }, user) {
+    async setLoginUser({ commit }, user) {
       localStorage.setItem("jwt", user.jwt);
       setAuthorizationHeader(user.jwt);
       commit("setUser", user);
@@ -71,7 +71,7 @@ export default createStore({
      * 로그아웃 시 localStorage에서 JWT를 제거하고 사용자 정보를 초기화합니다.
      * @param {Object} context - Vuex context 객체
      */
-    clearLoginUser({ commit }) {
+    async clearLoginUser({ commit }) {
       localStorage.removeItem("jwt");
       clearAuthorizationHeader();
       commit("clearUser");

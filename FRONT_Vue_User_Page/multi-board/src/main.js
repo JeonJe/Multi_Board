@@ -6,6 +6,7 @@ import BootstrapVue3 from "bootstrap-vue-3";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue-3/dist/bootstrap-vue-3.css";
 import "@/scss/custom.scss";
+import "@fortawesome/fontawesome-free/css/all.css";
 const app = createApp(App);
 // app.config.globalProperties.$CryptoJS = CryptoJS
 // app.use(router).mount("#app");

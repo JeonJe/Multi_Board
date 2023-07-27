@@ -9,6 +9,7 @@ import ebrain.board.service.AttachmentService;
 import ebrain.board.service.BoardService;
 import ebrain.board.service.CommentService;
 import ebrain.board.service.UserService;
+import ebrain.board.utils.AuthUtil;
 import ebrain.board.utils.FileUtil;
 import ebrain.board.utils.ResponseBuilder;
 import ebrain.board.vo.User;
@@ -17,6 +18,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -66,14 +68,14 @@ public class BoardController {
      */
     @GetMapping("/api/boards/notice")
     ResponseEntity<APIResponse> getNoticeBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
-        List<BoardDTO> searchResult = boardService.searchNoticeBoards(searchCondition);
+        List<BoardNoticeDTO> searchResult = boardService.searchNoticeBoards(searchCondition);
         int countNoticeBoards = boardService.countNoticeBoards(searchCondition);
 
-        List<BoardDTO> markedNoticedBoards = boardService.getMarkedNoticedBoards();
+        List<BoardNoticeDTO> markedNoticedBoards = boardService.getMarkedNoticedBoards();
         int countMarkedNoticedBoards = boardService.countMarkedNoticedBoards();
 
         BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
-                .searchBoards(searchResult)
+                .searchNoticeBoards(searchResult)
                 .countSearchBoards(countNoticeBoards)
                 .markNoticedBoards(markedNoticedBoards)
                 .build();
@@ -111,7 +113,7 @@ public class BoardController {
      */
     @GetMapping("/api/boards/notice/{boardId}")
     ResponseEntity<APIResponse> getNoticeBoardDetail(@PathVariable @NotEmpty int boardId) {
-        BoardDTO noticeBoard = boardService.getNoticeBoardDetail(boardId);
+        BoardNoticeDTO noticeBoard = boardService.getNoticeBoardDetail(boardId);
 
         APIResponse apiResponse = ResponseBuilder.SuccessWithData("공지사항 상세 내용입니다.", noticeBoard);
         if (ObjectUtils.isEmpty(noticeBoard)) {
@@ -146,11 +148,11 @@ public class BoardController {
      */
     @GetMapping("/api/boards/free")
     ResponseEntity<APIResponse> getFreeBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
-        List<BoardDTO> searchResult = boardService.searchFreeBoards(searchCondition);
+        List<BoardFreeDTO> searchResult = boardService.searchFreeBoards(searchCondition);
         int countFreeBoards = boardService.countFreeBoards(searchCondition);
 
         BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
-                .searchBoards(searchResult)
+                .searchFreeBoards(searchResult)
                 .countSearchBoards(countFreeBoards)
                 .build();
 
@@ -171,14 +173,14 @@ public class BoardController {
      */
     @GetMapping("/api/boards/free/{boardId}")
     ResponseEntity<APIResponse> getFreeBoardDetail(@PathVariable @NotEmpty int boardId) {
-        BoardDTO noticeBoard = boardService.getFreeBoardDetail(boardId);
+        BoardFreeDTO freeBoard = boardService.getFreeBoardDetail(boardId);
 
         APIResponse apiResponse;
-        if (ObjectUtils.isEmpty(noticeBoard)) {
+        if (ObjectUtils.isEmpty(freeBoard)) {
             apiResponse = ResponseBuilder.ErrorWithoutData("해당 정보를 찾을 수 없습니다.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         } else {
-            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", noticeBoard);
+            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", freeBoard);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
     }
@@ -208,7 +210,7 @@ public class BoardController {
      * @throws Exception 예외 발생 시
      */
     @PostMapping("/api/boards/free")
-    ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
+    ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardFreeDTO boardDTO) throws Exception {
 
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
         int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
@@ -243,17 +245,22 @@ public class BoardController {
     @GetMapping("/api/auth/boards/free/{boardId}")
     public ResponseEntity<APIResponse> hasFreeBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
 
-        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
 
         //boardId 작성자와 userId가 동일하면 true
         boolean hasPermission = boardService.hasFreeBoardEditPermission(seqId, boardId) == 1;
 
         if (hasPermission) {
-            APIResponse apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         } else{
-            APIResponse apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
     }
@@ -267,19 +274,25 @@ public class BoardController {
     @DeleteMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> deleteFreeBoard(HttpServletRequest request, @PathVariable int boardId) {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
 
         // 댓글이 남아있는지 확인
         int countBoardComment = commentService.countCommentByFreeBoardId(boardId);
         if (countBoardComment > 0){
-            APIResponse apiResponse = ResponseBuilder.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
+            apiResponse = ResponseBuilder.ErrorWithoutData("댓글이 남아있어서 삭제가 불가합니다.");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
         }
         // 첨부파일 삭제 후 게시글 삭제
         attachmentService.deleteAttachmentsByBoardId(seqId, boardId);
         boardService.deleteFreeBoard(seqId, boardId);
 
-        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -293,7 +306,14 @@ public class BoardController {
     @PostMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> addFreeBoardComment(HttpServletRequest request,@PathVariable int boardId, @RequestBody CommentDTO commentDTO) {
 
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
         User user = userService.findUserBySeqId(seqId);
 
         if (ObjectUtils.isEmpty(user)){
@@ -304,7 +324,7 @@ public class BoardController {
         commentDTO.setBoardId(boardId);
         commentService.addFreeBoardComment(commentDTO);
 
-        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("댓글 추가에 성공하였습니다.");
+        apiResponse = ResponseBuilder.SuccessWithoutData("댓글 추가에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -317,13 +337,18 @@ public class BoardController {
     @DeleteMapping("/api/boards/free/{boardId}/comments")
     public ResponseEntity<APIResponse> deleteFreeBoardComment(HttpServletRequest request, @RequestBody CommentDTO commentDTO) {
 
-        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        APIResponse apiResponse;
+        String seqIdString = (String) request.getAttribute("seqId");
 
+        if (StringUtils.isEmpty(seqIdString)) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("JWT가 없습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+        int seqId = Integer.parseInt(seqIdString);
         // 댓글 삭제
         commentService.deleteFreeBoardComment(seqId, commentDTO);
 
-        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
+        apiResponse = ResponseBuilder.SuccessWithoutData("댓글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
     /**
@@ -337,14 +362,20 @@ public class BoardController {
      */
     @PutMapping("/api/boards/free/{boardId}")
     public ResponseEntity<APIResponse> updateFreeBoardInfo(HttpServletRequest request, @PathVariable int boardId,
-                                                           @Valid @ModelAttribute BoardDTO boardDTO) throws Exception {
+                                                           @Valid @ModelAttribute BoardFreeDTO boardDTO) throws Exception {
         //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
-        boardDTO.setBoardId(boardId);
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
 
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        boardDTO.setBoardId(boardId);
         boardService.updateFreeBoardInfo(seqId, boardDTO);
 
-        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 

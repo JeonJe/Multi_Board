@@ -23,8 +23,8 @@ const setAuthorizationHeader = (token) => {
 };
 
 const clearAuthorizationHeader = () => {
-  delete api.defaults.headers.common["Authorization"];
-  delete multipartApi.defaults.headers.common["Authorization"];
+  api.defaults.headers.common["Authorization"] = null;
+  multipartApi.defaults.headers.common["Authorization"] = null;
 };
 
 // 생성한 인스턴스를 내보내기

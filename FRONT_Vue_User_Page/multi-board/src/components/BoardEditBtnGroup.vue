@@ -15,9 +15,9 @@
       >
         삭제
       </button>
-      <router-link :to="moveToFreeBoardList()" class="btn btn-secondary mx-2">
+      <button @click="emitBackToList" class="btn btn-secondary mx-2">
         목록으로
-      </router-link>
+      </button>
     </div>
   </div>
 </template>
@@ -36,11 +36,8 @@ export default {
     emitDeleteBoard() {
       this.$emit("emitDeleteBoard");
     },
-    moveToFreeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
-        query: this.$route.query,
-      };
+    emitBackToList() {
+      this.$emit("emitBackToList");
     },
   },
 };

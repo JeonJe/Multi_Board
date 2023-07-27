@@ -81,7 +81,11 @@
         </div>
 
         <!-- 새로 첨부파일 추가할 수 있는 input -->
-        <div class="mt-3" v-for="(file, index) in fileInputBoxes" :key="index">
+        <div
+          class="mt-3"
+          v-for="(file, index) in fileInputBoxes"
+          :key="file.id"
+        >
           <div class="d-flex justify-content-between align-items-center">
             <input
               type="file"
@@ -127,9 +131,13 @@
         >
           등록
         </button>
-        <router-link :to="moveToFreeBoardList()" class="btn btn-secondary"
-          >목록으로</router-link
+        <button
+          type="button"
+          @click="moveToFreeBoardList"
+          class="btn btn-secondary"
         >
+          목록으로
+        </button>
       </div>
     </div>
   </div>
@@ -158,7 +166,9 @@ export default {
       fileInputBoxes: [],
       uploadAttachments: [],
       deletedAttachmentIDs: [],
+      inputFiles: [],
       maxAttachments: 5,
+      nextInputId: 1,
     };
   },
   computed: {
@@ -197,10 +207,15 @@ export default {
      * 게시판 정보를 초기화
      */
     async initBoardInfo() {
-      this.boardInfo.userId = this.getUser.userId;
-      if (this.boardInfo.userId === null) {
+      if (this.getUser && this.getUser.userId !== null) {
+        this.boardInfo.userId = this.getUser.userId;
+      } else {
         alert("작성자 정보를 가져오지 못했습니다.");
-        boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+        boardService.replaceRouterToBoardList(
+          this.$router,
+          this.$route,
+          "free"
+        );
       }
       await this.getFreeBoardCategories();
     },
@@ -234,31 +249,13 @@ export default {
      * 게시판 정보를 서버에 저장하는 함수
      */
     async clickBoardInfoSubmit() {
-      if (
-        !this.boardInfo ||
-        !this.boardInfo.title ||
-        this.boardInfo.title.trim().length === 0
-      ) {
-        alert("제목을 입력해주세요.");
+      if (!(await this.validateForm(this.isUpdate))) {
         return;
       }
-      if (!(await this.validateTitle(this.boardInfo.title))) {
-        alert("제목은 100자 이하로 작성해주세요.");
-        return;
-      }
-      if (!(await this.validateContent(this.boardInfo.content))) {
-        alert("내용은 4000자 이하로 작성해주세요.");
-        return;
-      }
-      if (!(await this.validateFiles(this.uploadAttachments))) {
-        alert("파일은 2MB이하, jpg,gif,png,zip 파일만 올려주세요.");
-        return;
-      }
-
-      const getNewBoardInfo = this.createFormDataToSumbit();
+      const getNewBoardInfo = this.createFormDataToSumbit(this.isUpdate);
 
       await boardService.saveBoardInfo("free", getNewBoardInfo);
-      boardService.replaceRouterToFreeBoardList(this.$router, this.$route);
+      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
     },
     /**
      * 게시글 수정 폼을 제출하는 함수
@@ -266,15 +263,21 @@ export default {
      * @returns {void}
      */
     async clickBoardUpdateSubmit(boardId) {
-      const getNewBoardInfo = this.createFormDataToSumbit();
+      if (!(await this.validateForm(this.isUpdate))) {
+        return;
+      }
+      const getNewBoardInfo = this.createFormDataToSumbit(this.isUpdate);
       await boardService.updateBoardInfo("free", boardId, getNewBoardInfo);
-      this.getOriginFreeBoardDetail(boardId);
+      this.$router.replace({
+        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
+        query: { ...this.$route.query },
+      });
     },
     /**
      * 게시글을 수정하기 위해 제출할 FormData를 생성하는 함수
      * @returns {FormData} - 게시글 수정에 사용될 FormData 객체
      */
-    createFormDataToSumbit() {
+    createFormDataToSumbit(isUpdate) {
       const newBoardInfo = new FormData();
 
       newBoardInfo.append("categoryValue", this.boardInfo.categoryValue);
@@ -282,9 +285,16 @@ export default {
       newBoardInfo.append("title", this.boardInfo.title);
       newBoardInfo.append("content", this.boardInfo.content);
 
-      this.uploadAttachments.forEach((file) => {
+      for (const file of this.inputFiles) {
         newBoardInfo.append(`uploadAttachments`, file);
-      });
+      }
+
+      if (isUpdate) {
+        for (const file of this.deletedAttachmentIDs) {
+          newBoardInfo.append(`deletedAttachmentIDs`, file);
+        }
+      }
+
       return newBoardInfo;
     },
     /**
@@ -294,19 +304,29 @@ export default {
      */
     handleFileChange(event) {
       const file = event.target.files[0];
-      this.uploadAttachments.push(file);
+      const index = Number(event.target.id.replace("attachment", "")) - 1;
+      this.inputFiles[index] = file;
+      // this.uploadAttachments.push(file);
     },
     /**
      * 첨부 파일 입력 양식을 추가하는 함수
      */
     clickAddAttachmentForm() {
-      this.fileInputBoxes.push({});
+      this.fileInputBoxes.push({ id: this.nextInputId++ });
     },
     /**
      * 빈 입력 양식을 제거하는 함수
      * @param {number} index - 제거할 입력 양식의 인덱스
      */
     clickRemoveEmptyInput(index) {
+      // this.fileInputBoxes.splice(index, 1);
+      if (this.inputFiles[index]) {
+        const removedFile = this.inputFiles.splice(index, 1)[0];
+        const removedFileIndex = this.uploadAttachments.indexOf(removedFile);
+        if (removedFileIndex !== -1) {
+          this.uploadAttachments.splice(removedFileIndex, 1);
+        }
+      }
       this.fileInputBoxes.splice(index, 1);
     },
     /**
@@ -316,7 +336,6 @@ export default {
      */
 
     async clickDeleteAttachment(index, attachmentId) {
-      console.log("asdf");
       this.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
     },
@@ -325,10 +344,32 @@ export default {
      * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
      */
     moveToFreeBoardList() {
-      return {
-        path: process.env.VUE_APP_BOARD_FREE_LIST,
-        query: this.$route.query,
-      };
+      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
+    },
+    async validateForm(isUpdate) {
+      if (
+        !this.boardInfo ||
+        !this.boardInfo.title ||
+        this.boardInfo.title.trim().length === 0
+      ) {
+        alert("제목을 입력해주세요.");
+        return false;
+      }
+      if (!(await this.validateTitle(this.boardInfo.title))) {
+        alert("제목은 1자 이상 100자 이하로 작성해주세요.");
+        return false;
+      }
+      if (!(await this.validateContent(this.boardInfo.content))) {
+        alert("내용은 1자 이상 4000자 이하로 작성해주세요.");
+        return false;
+      }
+      if (isUpdate) {
+        if (!(await this.validateFiles(this.uploadAttachments))) {
+          alert("파일은 2MB이하, jpg,gif,png,zip 파일만 올려주세요.");
+          return false;
+        }
+      }
+      return true;
     },
   },
 };

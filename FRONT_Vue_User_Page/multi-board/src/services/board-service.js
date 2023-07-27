@@ -214,6 +214,7 @@ const addFreeBoardComment = async (newComment, boardId) => {
  * @throws {Error} API 요청 중 발생한 오류
  */
 const deleteFreeBoardComment = async (comment, boardId) => {
+  console.log(comment, boardId);
   try {
     const response = await api.delete(
       `${process.env.VUE_APP_API_BOARD_FREE}/${boardId}/comments`,
@@ -230,9 +231,25 @@ const deleteFreeBoardComment = async (comment, boardId) => {
  * @param {Object} router - Vue Router 객체
  * @param {Object} route - 현재 라우트 정보
  */
-const replaceRouterToFreeBoardList = (router, route) => {
+const replaceRouterToBoardList = (router, route, boardType) => {
+  let path;
+  switch (boardType) {
+    case "notice":
+      path = process.env.VUE_APP_BOARD_NOTICE_LIST;
+      break;
+    case "free":
+      path = process.env.VUE_APP_BOARD_FREE_LIST;
+      break;
+    // case "gallery":
+    //   return process.env.VUE_APP_API_BOARD_GALLARY;
+    // case "inquiry":
+    //   return process.env.VUE_APP_API_BOARD_INQUIRY;
+    default:
+      return new Error("지원하지 않는 보드타입입니다 :  ${boardType}");
+  }
+
   router.replace({
-    path: process.env.VUE_APP_BOARD_FREE_LIST,
+    path: path,
     query: route.query,
   });
 };
@@ -269,5 +286,5 @@ export default {
   hasBoardEditPermission,
   addFreeBoardComment,
   deleteFreeBoardComment,
-  replaceRouterToFreeBoardList,
+  replaceRouterToBoardList,
 };

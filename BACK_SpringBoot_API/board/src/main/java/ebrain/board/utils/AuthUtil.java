@@ -1,5 +1,8 @@
 package ebrain.board.utils;
 
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
@@ -29,5 +32,10 @@ public class AuthUtil {
         }
         return null;
     }
+
+    public static int getSeqIdFromRequest(HttpServletRequest request) {
+        String seqIdString = (String) request.getAttribute("seqId");
+        return StringUtils.isEmpty(seqIdString) ? 0 : Integer.parseInt(seqIdString);
+    };
 
 }

@@ -1,4 +1,5 @@
 import { api } from "./axiosInstance";
+import { clearAuthorizationHeader } from "../services/axiosInstance";
 
 /**
  * 요청 전에 실행될 인터셉터
@@ -101,8 +102,11 @@ const getJWTAuthStatus = async () => {
     return response.data;
   } catch (error) {
     // 400 : 만료된토큰
+    console.log(error);
     if (error.response.status === 400) {
       alert("로그인 시간이 만료되었습니다. 재로그인하세요.");
+      localStorage.removeItem("jwt");
+      clearAuthorizationHeader();
     }
     // 401 : 미인증
     return false;

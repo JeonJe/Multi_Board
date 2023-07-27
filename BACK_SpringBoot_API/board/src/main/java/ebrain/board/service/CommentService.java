@@ -38,7 +38,8 @@ public class CommentService {
 
     public void deleteFreeBoardComment(int seqId, CommentDTO commentDTO) {
         //현재 userSeqId와 댓글 userSeqId와 비교
-        CommentDTO comment = commentRepository.getCommentByCommentId(commentDTO.getCommentId());
+        int commentId = commentDTO.getCommentId();
+        CommentDTO comment = commentRepository.getCommentByCommentId(commentId);
         if (seqId != comment.getUserSeqId()) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
         }

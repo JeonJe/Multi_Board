@@ -115,18 +115,16 @@ export default {
           "notice",
           this.searchCondition
         );
-        if (response.status === "success") {
-          if (response === "") {
-            alert("표시 할 공지사항이 없습니다.");
-          } else {
-            this.searchBoardList = response.data.searchBoards;
-            this.markNoticedBoardList = response.data.markNoticedBoards;
-            this.countMarkNoticedBoards = response.data.countMarkNoticedBoards;
-            this.totalPosts = response.data.countSearchBoards;
-            this.totalPages = Math.ceil(
-              this.totalPosts / this.searchCondition.pageSize
-            );
-          }
+        if (response === "") {
+          alert("표시 할 공지사항이 없습니다.");
+        } else {
+          this.searchBoardList = response.data.searchNoticeBoards;
+          this.markNoticedBoardList = response.data.markNoticedBoards;
+          this.countMarkNoticedBoards = response.data.countMarkNoticedBoards;
+          this.totalPosts = response.data.countSearchBoards;
+          this.totalPages = Math.ceil(
+            this.totalPosts / this.searchCondition.pageSize
+          );
         }
       } catch (error) {
         console.log(error);

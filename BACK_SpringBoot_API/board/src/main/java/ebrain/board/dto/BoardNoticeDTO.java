@@ -5,18 +5,13 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.List;
 
-/**
- * 게시글 정보를 전달하는 DTO
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BoardDTO {
+public class BoardNoticeDTO {
     /**
      * 공지 게시글 ID
      */
@@ -37,7 +32,11 @@ public class BoardDTO {
     private String content;
 
 
-    private String userId;
+    /**
+     * 관리자 식별자 아이디
+     */
+    private int adminSeqId;
+
 
     /**
      * 작성일시
@@ -48,52 +47,23 @@ public class BoardDTO {
      * 방문 횟수
      */
     private int visitCount;
-    /**
-     * 카테고리 이름
-     */
-    @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
-    private String categoryValue;
-
-
-    /**
-     * 카테고리 값
-     */
-    private String categoryName;
-
-
-    /**
-     * 사용자 식별자 아이디
-     */
-    private int userSeqId;
-    /**
-     * 관리자 식별자 아이디
-     */
-    private int adminSeqId;
 
     /**
      * 알림 여부 (1: 알림 표시, 0: 알림 미표시)
      */
     private int isNoticed;
 
-    /**
-     * 삭제할 첨부 파일의 ID 목록
-     */
-    private List<Integer> deletedAttachmentIDs;
+    @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
+    private String categoryValue;
 
-    /**
-     * 업로드된 첨부 파일 목록
-     */
-    private List<MultipartFile> uploadAttachments;
 
-    /**
-     * 업로드된 첨부 파일 목록
-     */
-    private List<AttachmentDTO> boardAttachments;
+    private String categoryName;
 
-    /**
-     * 댓글 목록
-     */
-    private List<CommentDTO> boardComments;
+
+    private String userId;
+
+
+
 
 
 }
