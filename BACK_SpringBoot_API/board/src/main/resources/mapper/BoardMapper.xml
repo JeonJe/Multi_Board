@@ -176,7 +176,7 @@
     <!-- 자유 게시글 저장   -->
     <insert id="saveFreeBoardInfo" parameterType="BoardFreeDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO free_board
-        (title, content, user_seq_id, created_at, visit_count, child_code_value)
+        (title, content, user_se q_id, created_at, visit_count, child_code_value)
         VALUES (#{title},
                 #{content},
                 (SELECT seq_id FROM users WHERE user_id = #{userId}),
@@ -208,5 +208,46 @@
             child_code_value = #{categoryValue}
         WHERE board_id = #{boardId}
     </update>
+
+    <!--  갤러리게시판 카테고리 목록을 조회  -->
+    <select id="getGalleryBoardCategories" resultType="CategoryDTO">
+        SELECT cc.child_code_name as categoryName, cc.child_code_value as categoryValue
+        FROM category_child_code cc
+                 JOIN category_parent_code cp ON cc.parent_code_value = cp.parent_code_value
+        WHERE cp.parent_code_value = #{categoryParentCodeValue}
+    </select>
+
+    <insert id="saveGalleryBoardInfo" parameterType="BoardGalleryDTO" useGeneratedKeys="true" keyProperty="boardId">
+        INSERT INTO gallery_board
+        (title, content, user_seq_id, created_at, visit_count, child_code_value)
+        VALUES (#{title},
+                #{content},
+                (SELECT seq_id FROM users WHERE user_id = #{userId}),
+                now(),
+                0,
+                #{categoryValue})
+    </insert>
+
+    <!-- 검색 조건에 해당하는 갤러리 게시글 리스트 조회  -->
+    <select id="searchGalleryBoards" parameterType="SearchConditionDTO" resultType="BoardGalleryDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId
+        FROM gallery_board AS target_board
+        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+        JOIN users AS u ON target_board.user_seq_id = u.seq_id
+        WHERE 1=1
+        <include refid="searchQuery"/>
+        <include refid="orderQuery"/>
+        LIMIT #{pageSize}
+        OFFSET #{offset}
+    </select>
+
+    <!-- 검색 조건에 해당하는 갤러리 게시글의 개수를 조회 -->
+    <select id="countGalleryBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM gallery_board AS target_board
+        WHERE 1=1
+        <include refid="searchQuery"/>
+    </select>
+
 
 </mapper>

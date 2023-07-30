@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    유저 매퍼
+    UserRepository 인터페이스와 연결
+-->
+<mapper namespace="ebrain.board.mapper.ImageRepository">
+
+    <!--  첨부 파일 정보 저장 -->
+    <insert id="saveImage" parameterType="ImageDTO">
+        INSERT INTO images (filename, origin_filename, priority, board_id)
+        VALUES ( #{fileName}, #{originFileName},#{priority},#{boardId})
+    </insert>
+
+<!--    &lt;!&ndash; 게시글 ID에 해당하는 첨부 파일 정보 조회 &ndash;&gt;-->
+<!--    <select id="getAttachmentsByBoardId" parameterType="int" resultType="AttachmentDTO">-->
+<!--        SELECT attachment_id, board_id, filename, origin_filename AS originFileName-->
+<!--        FROM attachments-->
+<!--        WHERE board_id = #{boardId}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 정보 조회 &ndash;&gt;-->
+<!--    <select id="getAttachmentByAttachmentId" parameterType="int" resultType="AttachmentDTO">-->
+<!--        SELECT attachment_id   AS attachmentId,-->
+<!--               filename        AS fileName,-->
+<!--               origin_filename AS originFileName,-->
+<!--               board_id        AS boardId-->
+<!--        FROM attachments-->
+<!--        WHERE attachment_id = #{attachmentId}-->
+<!--    </select>-->
+
+<!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 삭제 &ndash;&gt;-->
+<!--    <delete id="deleteAttachmentByAttachmentId" parameterType="int">-->
+<!--        DELETE-->
+<!--        FROM attachments-->
+<!--        WHERE attachment_id = #{attachmentId}-->
+<!--    </delete>-->
+<!--    <delete id="deleteAttachmentsByBoardId">-->
+<!--        DELETE-->
+<!--        FROM attachments-->
+<!--        WHERE board_id = ${board_id}-->
+<!--    </delete>-->
+
+
+</mapper>

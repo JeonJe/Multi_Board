@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="container">
-      <h1>자유게시판</h1>
+      <h1>갤러리게시판</h1>
 
       <form enctype="multipart/form-data">
         <!-- 카테고리 -->
@@ -57,7 +57,7 @@
       <hr />
       <div>
         <!-- 기존 첨부파일 리스트  -->
-        <div
+        <!-- <div
           v-for="(attachment, index) in boardInfo.boardAttachments"
           :key="attachment.attachmentId"
         >
@@ -80,30 +80,39 @@
               </a>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- 새로 첨부파일 추가할 수 있는 input -->
         <div
-          class="mt-3"
+          class="mt-3 d-flex justify-content-between align-items-center"
           v-for="(file, index) in fileInputBoxes"
           :key="file.id"
         >
-          <div class="d-flex justify-content-between align-items-center">
-            <input
-              type="file"
-              :id="'attachment' + (index + 1)"
-              :name="files"
-              @change="handleFileChange($event)"
-              class="form-control-file"
+          <!-- 이미지 미리보기 -->
+          <div v-if="file.previewUrl">
+            <img
+              :src="file.previewUrl"
+              alt="미리보기"
+              style="max-height: 50px; max-width: 50px"
             />
-            <button
-              type="button"
-              @click="clickRemoveEmptyInput(index)"
-              class="btn btn-sm btn-danger mx-2"
-            >
-              삭제
-            </button>
           </div>
+          <!-- 새로운 이미지 추가 -->
+          <input
+            type="file"
+            :id="'attachment' + (index + 1)"
+            :name="files"
+            @change="handleFileChange($event, index)"
+            class="form-control-file"
+            style="flex: 1; margin-right: 10px"
+          />
+
+          <button
+            type="button"
+            @click="clickRemoveEmptyInput(index)"
+            class="btn btn-sm btn-danger mx-2"
+          >
+            삭제
+          </button>
         </div>
 
         <button
@@ -135,7 +144,7 @@
         </button>
         <button
           type="button"
-          @click="moveToFreeBoardList"
+          @click="moveToGalleryBoardList"
           class="btn btn-secondary"
         >
           목록으로
@@ -150,7 +159,7 @@ import boardService from "@/services/board-service";
 import {
   validateTitle,
   validateContent,
-  validateFiles,
+  validateImages,
   downloadAttachment,
 } from "@/utils/util";
 import { mapGetters } from "vuex";
@@ -169,7 +178,7 @@ export default {
       uploadAttachments: [],
       deletedAttachmentIDs: [],
       inputFiles: [],
-      maxAttachments: 5,
+      maxAttachments: 20,
       nextInputId: 1,
     };
   },
@@ -194,7 +203,7 @@ export default {
     if (boardId) {
       this.isUpdate = true;
       this.boardId = boardId;
-      this.getOriginFreeBoardDetail(boardId);
+      // TODO: 갤러리 게시글 가져오기
     } else {
       // 글 작성
       this.isUpdate = false;
@@ -203,7 +212,7 @@ export default {
   methods: {
     validateTitle,
     validateContent,
-    validateFiles,
+    validateImages,
     downloadAttachment,
     /**
      * 게시판 정보를 초기화
@@ -216,28 +225,28 @@ export default {
         boardService.replaceRouterToBoardList(
           this.$router,
           this.$route,
-          "free"
+          "gallery"
         );
       }
-      await this.getFreeBoardCategories();
+      await this.getGalleryBoardCategories();
     },
-    async getOriginFreeBoardDetail(boardId) {
-      if (!(await boardService.hasBoardEditPermission(boardId))) {
-        alert("수정 권한이 없습니다");
-        this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
-        return;
-      }
-      const response = await boardService.getBoardDetail("free", boardId);
-      if (response.data != "") {
-        this.boardInfo = response.data;
-      }
-    },
+    // async getOriginFreeBoardDetail(boardId) {
+    //   if (!(await boardService.hasBoardEditPermission(boardId))) {
+    //     alert("수정 권한이 없습니다");
+    //     this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
+    //     return;
+    //   }
+    //   const response = await boardService.getBoardDetail("free", boardId);
+    //   if (response.data != "") {
+    //     this.boardInfo = response.data;
+    //   }
+    // },
     /**
      * 자유 게시판 카테고리를 조회
      */
-    async getFreeBoardCategories() {
+    async getGalleryBoardCategories() {
       try {
-        const response = await boardService.getBoardCategories("free");
+        const response = await boardService.getBoardCategories("gallery");
         if (response === "") {
           alert("카테고리 목록이 없습니다.");
         } else {
@@ -261,8 +270,12 @@ export default {
       }
       const getNewBoardInfo = this.createFormDataToSumbit(this.isUpdate);
 
-      await boardService.saveBoardInfo("free", getNewBoardInfo);
-      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
+      await boardService.saveBoardInfo("gallery", getNewBoardInfo);
+      boardService.replaceRouterToBoardList(
+        this.$router,
+        this.$route,
+        "gallery"
+      );
     },
     /**
      * 게시글 수정 폼을 제출하는 함수
@@ -274,9 +287,9 @@ export default {
         return;
       }
       const getNewBoardInfo = this.createFormDataToSumbit(this.isUpdate);
-      await boardService.updateBoardInfo("free", boardId, getNewBoardInfo);
+      await boardService.updateBoardInfo("gallery", boardId, getNewBoardInfo);
       this.$router.replace({
-        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
+        path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/${boardId}`,
         query: { ...this.$route.query },
       });
     },
@@ -313,7 +326,13 @@ export default {
       const file = event.target.files[0];
       const index = Number(event.target.id.replace("attachment", "")) - 1;
       this.inputFiles[index] = file;
-      // this.uploadAttachments.push(file);
+      // 이미지 미리보기
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // 해당 첨부파일 입력창의 미리보기를 파일의 미리보기로 설정
+        this.fileInputBoxes[index].previewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
     },
     /**
      * 첨부 파일 입력 양식을 추가하는 함수
@@ -349,8 +368,12 @@ export default {
      * 자유 게시판 목록으로 이동하는 함수
      * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
      */
-    moveToFreeBoardList() {
-      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
+    moveToGalleryBoardList() {
+      boardService.replaceRouterToBoardList(
+        this.$router,
+        this.$route,
+        "gallery"
+      );
     },
     async validateForm() {
       if (
@@ -369,8 +392,8 @@ export default {
         alert("내용은 1자 이상 4000자 이하로 작성해주세요.");
         return false;
       }
-      if (!(await this.validateFiles(this.uploadAttachments))) {
-        alert("파일은 2MB이하, jpg,gif,png,zip 파일만 올려주세요.");
+      if (!(await this.validateImages(this.uploadAttachments))) {
+        alert("이미지는 1MB이하, jpg,gif,png 파일만 올려주세요.");
         return false;
       }
       return true;

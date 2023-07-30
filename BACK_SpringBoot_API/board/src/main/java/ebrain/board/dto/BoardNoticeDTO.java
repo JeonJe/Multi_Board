@@ -64,8 +64,4 @@ public class BoardNoticeDTO {
 
     private String userId;
 
-
-
-
-
 }

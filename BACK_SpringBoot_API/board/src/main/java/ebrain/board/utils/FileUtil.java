@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +32,10 @@ public class FileUtil {
      * @throws Exception  예외 발생 시
      */
     public static File uploadFile(MultipartFile file, String uploadPath) throws Exception {
-        String fileName = file.getOriginalFilename();
-        String baseName = FilenameUtils.getBaseName(fileName);
-        String extension = FilenameUtils.getExtension(fileName);
+        String originalFileName = file.getOriginalFilename();
+        String encodedFileName = URLEncoder.encode(originalFileName, "UTF-8");
+        String baseName = FilenameUtils.getBaseName(encodedFileName);
+        String extension = FilenameUtils.getExtension(encodedFileName);
 
         // 파일 크기 제한: 2MB
         long maxSize = 2 * 1024 * 1024; // 2MB
@@ -48,7 +50,7 @@ public class FileUtil {
         }
 
         // 중복 파일명 처리합니다.
-        File uploadedFile = new File(uploadPath + File.separator + fileName);
+        File uploadedFile = new File(uploadPath + File.separator + encodedFileName);
 
         int count = 1;
         while (uploadedFile.exists()) {
@@ -96,5 +98,43 @@ public class FileUtil {
         // 파일 다운로드 응답을 생성하여 반환합니다.
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
+
+
+    public static File uploadImage(MultipartFile file, String uploadPath) throws Exception {
+        String originalFileName = file.getOriginalFilename();
+        String encodedFileName = URLEncoder.encode(originalFileName, "UTF-8");
+        String baseName = FilenameUtils.getBaseName(encodedFileName);
+        String extension = FilenameUtils.getExtension(encodedFileName);
+
+        // 파일 크기 제한: 1MB
+        long maxSize = 1 * 1024 * 1024;
+        if (file.getSize() > maxSize) {
+            throw new IllegalArgumentException("이미지 크기는 최대 1MB까지 업로드 가능합니다.");
+        }
+
+        // 확장자 제한: jpg, gif, png
+        List<String> allowedExtensions = Arrays.asList("jpg", "gif", "png");
+        if (!allowedExtensions.contains(extension.toLowerCase())) {
+            throw new IllegalArgumentException("jpg, gif, png");
+        }
+
+        // 중복 파일명 처리합니다.
+        File uploadedFile = new File(uploadPath + File.separator + encodedFileName);
+
+        int count = 1;
+        while (uploadedFile.exists()) {
+            // 중복 파일명에 번호 추가합니다.
+            String numberedFileName = baseName + "_" + count + "." + extension;
+            uploadedFile = new File(uploadPath + File.separator + numberedFileName);
+            count++;
+        }
+
+        //파일을 업로드 폴더로 업로드합니다.
+        file.transferTo(uploadedFile);
+        //파일 고유 식별번호를 반환합니다.
+        return uploadedFile;
+    }
+
+
 
 }

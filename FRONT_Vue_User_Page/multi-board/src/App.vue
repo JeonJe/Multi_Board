@@ -46,6 +46,7 @@ export default {
       navLinks: [
         { to: "/boards/notice/list", text: "공지사항" },
         { to: "/boards/free/list", text: "자유 게시판" },
+        { to: "/boards/gallery/list", text: "갤러리 게시판" },
         { to: "/auth/login", text: "로그인" },
       ],
     };

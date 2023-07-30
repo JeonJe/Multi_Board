@@ -82,6 +82,24 @@ const validateFiles = async (files) => {
   return true;
 };
 
+const validateImages = async (images) => {
+  const allowedExtensions = ["jpg", "jif", "png"];
+  const maxFileSize = 1 * 1024 * 1024;
+
+  for (const image of images) {
+    const imageExtension = image.name.split(".").pop().toLowerCase();
+
+    if (
+      !allowedExtensions.includes(imageExtension) ||
+      image.size > maxFileSize
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 export {
   getQueryParamOrDefault,
   getFormattedDate,
@@ -90,4 +108,5 @@ export {
   validateTitle,
   validateContent,
   validateFiles,
+  validateImages,
 };

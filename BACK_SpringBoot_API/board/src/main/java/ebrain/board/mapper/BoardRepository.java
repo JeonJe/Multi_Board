@@ -134,4 +134,19 @@ public interface BoardRepository {
      * @param boardDTO 수정할 자유게시판 정보 DTO
      */
     void updateFreeBoardInfo(BoardFreeDTO boardDTO);
+
+    /**
+     * 갤러리게시판의 카테고리 목록을 조회
+     *
+     * @param categoryParentValue 카테고리 부모 값
+     * @return 카테고리 목록
+     */
+    List<CategoryDTO> getGalleryBoardCategories(String categoryParentValue);
+
+    int saveGalleryBoardInfo(BoardGalleryDTO boardDTO);
+
+    List<BoardGalleryDTO> searchGalleryBoards(SearchConditionDTO searchConditionDTO);
+
+    int countGalleryBoards(SearchConditionDTO searchConditionDTO);
+
 }

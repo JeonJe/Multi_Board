@@ -240,10 +240,10 @@ const replaceRouterToBoardList = (router, route, boardType) => {
     case "free":
       path = process.env.VUE_APP_BOARD_FREE_LIST;
       break;
-    // case "gallery":
-    //   return process.env.VUE_APP_API_BOARD_GALLARY;
-    // case "inquiry":
-    //   return process.env.VUE_APP_API_BOARD_INQUIRY;
+    case "gallery":
+      return process.env.VUE_APP_BOARD_GALLERY_LIST;
+    case "inquiry":
+      return process.env.VUE_APP_BOARD_INQUIRY_LIST;
     default:
       return new Error("지원하지 않는 보드타입입니다 :  ${boardType}");
   }
@@ -267,7 +267,7 @@ const getAPIUrlByBoardType = async (boardType) => {
     case "free":
       return process.env.VUE_APP_API_BOARD_FREE;
     case "gallery":
-      return process.env.VUE_APP_API_BOARD_GALLARY;
+      return process.env.VUE_APP_API_BOARD_GALLERY;
     case "inquiry":
       return process.env.VUE_APP_API_BOARD_INQUIRY;
     default:

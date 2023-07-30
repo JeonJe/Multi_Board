@@ -6,6 +6,8 @@ import BoardNoticeView from "../views/boards/notice/BoardNoticeView.vue";
 import BoardFreeList from "../views/boards/free/BoardFreeList.vue";
 import BoardFreeView from "../views/boards/free/BoardFreeView.vue";
 import BoardFreeWrite from "../views/boards/free/BoardFreeWrite.vue";
+import BoardGalleryList from "../views/boards/gallery/BoardGalleryList.vue";
+import BoardGalleryWrite from "../views/boards/gallery/BoardGalleryWrite.vue";
 
 const routes = [
   {
@@ -42,6 +44,16 @@ const routes = [
     path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/:boardId?`,
     name: BoardFreeWrite,
     component: BoardFreeWrite,
+  },
+  {
+    path: process.env.VUE_APP_BOARD_GALLERY_LIST,
+    name: BoardGalleryList,
+    component: BoardGalleryList,
+  },
+  {
+    path: `${process.env.VUE_APP_BOARD_GALLERY_WRITE}/:boardId?`,
+    name: BoardGalleryWrite,
+    component: BoardGalleryWrite,
   },
 ];
 

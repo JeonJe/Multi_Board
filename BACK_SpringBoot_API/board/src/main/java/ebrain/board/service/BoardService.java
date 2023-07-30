@@ -6,14 +6,19 @@ import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.AttachmentRepository;
 import ebrain.board.mapper.BoardRepository;
 import ebrain.board.mapper.CommentRepository;
+import ebrain.board.mapper.ImageRepository;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -27,6 +32,9 @@ public class BoardService {
      */
     @Value("${UPLOAD_PATH}")
     private String UPLOAD_PATH;
+
+    @Value("${THUMBNAIL_PATH}")
+    private String THUMBNAIL_PATH;
 
     /**
      * 게시글 저장소 객체
@@ -42,6 +50,8 @@ public class BoardService {
      * 댓글 저장소 객체
      */
     private final CommentRepository commentRepository;
+
+    private final ImageRepository imageRepository;
 
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
@@ -99,8 +109,8 @@ public class BoardService {
      */
     public List<CategoryDTO> getNoticeBoardCategories() {
 
-        BoardCategory categoryParentCodeN = BoardCategory.NOTICE_BOARD;
-        return boardRepository.getNoticeBoardCategories(categoryParentCodeN.getCategoryParentCodeValue());
+        BoardCategory categoryParentCode = BoardCategory.NOTICE_BOARD;
+        return boardRepository.getNoticeBoardCategories(categoryParentCode.getCategoryParentCodeValue());
     }
 
     /**
@@ -138,7 +148,7 @@ public class BoardService {
         List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
 
         BoardFreeDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
-        if(ObjectUtils.isEmpty(boardDTO)) {
+        if (ObjectUtils.isEmpty(boardDTO)) {
             return null;
         }
         boardDTO.setBoardAttachments(attachments);
@@ -161,7 +171,7 @@ public class BoardService {
     /**
      * 자유 게시글 정보를 저장하는 메서드입니다.
      *
-     * @param seqId 사용자 식별 ID
+     * @param seqId    사용자 식별 ID
      * @param boardDTO 저장할 게시글 정보
      * @throws Exception 예외 발생 시
      */
@@ -178,6 +188,7 @@ public class BoardService {
             for (MultipartFile file : newFiles) {
                 if (!file.isEmpty()) {
                     String originName = file.getOriginalFilename();
+
                     String numberedFileName = FileUtil.uploadFile(file, UPLOAD_PATH).getName();
                     AttachmentDTO attachmentDTO = AttachmentDTO.builder()
                             .boardId(boardDTO.getBoardId())
@@ -189,10 +200,11 @@ public class BoardService {
             }
         }
     }
+
     /**
      * 자유 게시글 정보를 수정하는 메서드입니다.
      *
-     * @param seqId 사용자 식별 ID
+     * @param seqId    사용자 식별 ID
      * @param boardDTO 수정할 게시글 정보
      * @throws Exception 예외 발생 시
      */
@@ -209,7 +221,7 @@ public class BoardService {
 
         //첨부파일 수정
         List<Integer> deletedAttachmentIds = boardDTO.getDeletedAttachmentIDs();
-        if (deletedAttachmentIds != null){
+        if (deletedAttachmentIds != null) {
             for (Integer deletedId : deletedAttachmentIds) {
                 String deletedFileName = attachmentRepository.
                         getAttachmentByAttachmentId(deletedId).getFileName();
@@ -244,20 +256,22 @@ public class BoardService {
             }
         }
     }
+
     /**
      * 자유 게시글 수정 권한이 있는지 확인하는 메서드입니다.
      *
-     * @param seqId 사용자 식별 ID
+     * @param seqId   사용자 식별 ID
      * @param boardId 게시글 ID
      * @return 수정 권한 여부 (1: 있음, 0: 없음)
      */
     public int hasFreeBoardEditPermission(int seqId, int boardId) {
         return boardRepository.hasFreeBoardEditPermission(seqId, boardId);
     }
+
     /**
      * 자유 게시글을 삭제하는 메서드입니다.
      *
-     * @param seqId 사용자 식별 ID
+     * @param seqId   사용자 식별 ID
      * @param boardId 게시글 ID
      * @throws AppException 삭제 권한이 없을 경우 예외가 발생합니다.
      */
@@ -269,6 +283,68 @@ public class BoardService {
         }
         boardRepository.deleteFreeBoard(boardId);
     }
+
+    /**
+     * 갤러리게시판 카테고리 목록을 가져옵니다.
+     *
+     * @return 갤러리게시판 카테고리 목록
+     */
+    public List<CategoryDTO> getGalleryBoardCategories() {
+
+        BoardCategory categoryParentCode = BoardCategory.GALLERY_BOARD;
+        return boardRepository.getGalleryBoardCategories(categoryParentCode.getCategoryParentCodeValue());
+    }
+
+    public void saveGalleryBoardInfo(int seqId, BoardGalleryDTO boardDTO) throws Exception {
+
+        if (seqId <= 0) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
+
+        boardRepository.saveGalleryBoardInfo(boardDTO);
+        List<MultipartFile> newFiles = boardDTO.getUploadImages();
+        int priority = 1;
+
+        boolean isFirstFile = true;
+        if (newFiles != null) {
+            for (MultipartFile file : newFiles) {
+                if (!file.isEmpty()) {
+
+                    String originName = file.getOriginalFilename();
+                    File numberedFile= FileUtil.uploadImage(file, UPLOAD_PATH);
+                    ImageDTO imagesDTO = ImageDTO.builder()
+                            .boardId(boardDTO.getBoardId())
+                            .fileName(numberedFile.getName())
+                            .originFileName(originName)
+                            .priority(priority)
+                            .build();
+                    imageRepository.saveImage(imagesDTO);
+
+                    if (isFirstFile) {
+                        // Generate the thumbnail using Thumbnailator and save it to a different location
+
+                            Thumbnails.of(numberedFile)
+                                    .size(100, 100)
+                                    .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
+
+                        }
+                        isFirstFile = false;
+                    priority++;
+                }
+            }
+        }
+    }
+
+    public List<BoardGalleryDTO> searchGalleryBoards(SearchConditionDTO searchParamsDTO) {
+        //TODO : 썸네일 경로 리스트에 넣기
+        return boardRepository.searchGalleryBoards(searchParamsDTO);
+    }
+
+    public int countGalleryBoards(SearchConditionDTO searchParamsDTO){
+        return boardRepository.countGalleryBoards(searchParamsDTO);
+    }
+
+
 
 
 

@@ -213,12 +213,17 @@ public class BoardController {
     @PostMapping("/api/boards/free")
     ResponseEntity<APIResponse> saveFreeBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardFreeDTO boardDTO) throws Exception {
 
-        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
-        int seqId = Integer.parseInt((String) request.getAttribute("seqId"));
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
 
         boardService.saveFreeBoardInfo(seqId, boardDTO);
 
-        APIResponse apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
@@ -343,13 +348,12 @@ public class BoardController {
     public ResponseEntity<APIResponse> deleteFreeBoardComment(HttpServletRequest request, @RequestBody CommentDTO commentDTO) {
 
         APIResponse apiResponse;
-        String seqIdString = (String) request.getAttribute("seqId");
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
 
-        if (StringUtils.isEmpty(seqIdString)) {
-            apiResponse = ResponseBuilder.ErrorWithoutData("JWT가 없습니다.");
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
         }
-        int seqId = Integer.parseInt(seqIdString);
         // 댓글 삭제
         commentService.deleteFreeBoardComment(seqId, commentDTO);
 
@@ -384,5 +388,54 @@ public class BoardController {
         apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
+
+    @GetMapping("/api/boards/gallery")
+    ResponseEntity<APIResponse> getGalleryBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
+        List<BoardGalleryDTO> searchResult = boardService.searchGalleryBoards(searchCondition);
+        int countFreeBoards = boardService.countGalleryBoards(searchCondition);
+
+        BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
+                .searchGalleryBoards(searchResult)
+                .countSearchBoards(countFreeBoards)
+                .build();
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("검색조건에 해당하는 자유 게시글 목록입니다.", boardSearchResponse);
+
+        if (countFreeBoards == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    @GetMapping("/api/boards/gallery/categories")
+    ResponseEntity<APIResponse> getGalleryBoardCategories() {
+        List<CategoryDTO> categories = boardService.getGalleryBoardCategories();
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("갤러리게시판 카테고리 목록입니다.", categories);
+        if (ObjectUtils.isEmpty(categories)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    @PostMapping("/api/boards/gallery")
+    ResponseEntity<APIResponse> saveGalleryBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardGalleryDTO boardDTO) throws Exception {
+
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        boardService.saveGalleryBoardInfo(seqId, boardDTO);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
 
 }
