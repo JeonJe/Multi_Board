@@ -230,7 +230,13 @@
 
     <!-- 검색 조건에 해당하는 갤러리 게시글 리스트 조회  -->
     <select id="searchGalleryBoards" parameterType="SearchConditionDTO" resultType="BoardGalleryDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId,
+            (
+            SELECT fileName
+            FROM images
+            WHERE board_id = target_board.board_id AND priority = 1
+            LIMIT 1
+            ) AS thumbnailPath
         FROM gallery_board AS target_board
         JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
         JOIN users AS u ON target_board.user_seq_id = u.seq_id

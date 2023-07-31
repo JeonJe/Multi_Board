@@ -7,7 +7,6 @@
       @emitSearchContion="updateSearchCondition"
     />
 
-    <!-- 게시글 리스트 -->
     <div class="container">
       <div class="d-flex justify-content-end mb-2 mr-2">
         <router-link
@@ -17,13 +16,34 @@
           <b-button>글 등록</b-button>
         </router-link>
       </div>
+      <!-- 게시글 리스트 (Card table layout) -->
+      <div class="row">
+        <div
+          v-for="item in searchBoardList"
+          :key="item.boardId"
+          class="d-flex border"
+        >
+          <img
+            :src="getFullThumbnailURL(item.thumbnailPath)"
+            alt="Thumbnail"
+            class="col-md-2 p-2"
+          />
+          <div class="col-md-10 mx-4 mt-4">
+            <div class="card-body">
+              <h5 class="card-title">{{ item.title }}</h5>
+
+              <p class="card-text">{{ item.content }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 페이지네이션 -->
+      <BoardPagination
+        :currentPage="searchCondition.currentPage"
+        :totalPages="totalPages"
+        @clickPagination="updatePagination"
+      />
     </div>
-    <!-- 페이지네이션 -->
-    <BoardPagination
-      :currentPage="searchCondition.currentPage"
-      :totalPages="totalPages"
-      @clickPagination="updatePagination"
-    />
   </div>
 </template>
 
@@ -72,8 +92,7 @@ export default {
      */
     async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
-      //TODO : gallery board update
-      // await this.getGalleryBoardList();
+      await this.getGalleryBoardList();
     },
     async getGalleryBoardList() {
       try {
@@ -89,6 +108,8 @@ export default {
           this.totalPages = Math.ceil(
             this.totalPosts / this.searchCondition.pageSize
           );
+
+          console.log(this.searchBoardList);
         }
       } catch (error) {
         console.log(error);
@@ -150,6 +171,11 @@ export default {
         path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
+    },
+    getFullThumbnailURL(thumbnailPath) {
+      // Concatenate VUE_APP_API_SER_URL with thumbnailPath
+      console.log(thumbnailPath);
+      return `${process.env.VUE_APP_API_SER_URL}/thumbnails/${thumbnailPath}`;
     },
   },
 };

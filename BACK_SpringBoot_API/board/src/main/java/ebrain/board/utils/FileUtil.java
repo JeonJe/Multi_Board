@@ -14,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +32,8 @@ public class FileUtil {
      */
     public static File uploadFile(MultipartFile file, String uploadPath) throws Exception {
         String originalFileName = file.getOriginalFilename();
-        String encodedFileName = URLEncoder.encode(originalFileName, "UTF-8");
-        String baseName = FilenameUtils.getBaseName(encodedFileName);
-        String extension = FilenameUtils.getExtension(encodedFileName);
+        String baseName = FilenameUtils.getBaseName(originalFileName);
+        String extension = FilenameUtils.getExtension(originalFileName);
 
         // 파일 크기 제한: 2MB
         long maxSize = 2 * 1024 * 1024; // 2MB
@@ -50,7 +48,7 @@ public class FileUtil {
         }
 
         // 중복 파일명 처리합니다.
-        File uploadedFile = new File(uploadPath + File.separator + encodedFileName);
+        File uploadedFile = new File(uploadPath + File.separator + originalFileName);
 
         int count = 1;
         while (uploadedFile.exists()) {
@@ -102,11 +100,12 @@ public class FileUtil {
 
     public static File uploadImage(MultipartFile file, String uploadPath) throws Exception {
         String originalFileName = file.getOriginalFilename();
-        String encodedFileName = URLEncoder.encode(originalFileName, "UTF-8");
-        String baseName = FilenameUtils.getBaseName(encodedFileName);
-        String extension = FilenameUtils.getExtension(encodedFileName);
+        String baseName = FilenameUtils.getBaseName(originalFileName);
+        String extension = FilenameUtils.getExtension(originalFileName);
+
 
         // 파일 크기 제한: 1MB
+
         long maxSize = 1 * 1024 * 1024;
         if (file.getSize() > maxSize) {
             throw new IllegalArgumentException("이미지 크기는 최대 1MB까지 업로드 가능합니다.");
@@ -119,7 +118,7 @@ public class FileUtil {
         }
 
         // 중복 파일명 처리합니다.
-        File uploadedFile = new File(uploadPath + File.separator + encodedFileName);
+        File uploadedFile = new File(uploadPath + File.separator + originalFileName);
 
         int count = 1;
         while (uploadedFile.exists()) {

@@ -306,7 +306,7 @@ export default {
       newBoardInfo.append("content", this.boardInfo.content);
 
       for (const file of this.inputFiles) {
-        newBoardInfo.append(`uploadAttachments`, file);
+        newBoardInfo.append(`uploadImages`, file);
       }
 
       if (isUpdate) {

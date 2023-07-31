@@ -65,5 +65,7 @@ public class BoardGalleryDTO {
      */
     private List<Integer> deletedAttachmentIDs;
 
+    private String thumbnailPath;
+
 
 }

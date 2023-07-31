@@ -311,7 +311,8 @@ public class BoardService {
                 if (!file.isEmpty()) {
 
                     String originName = file.getOriginalFilename();
-                    File numberedFile= FileUtil.uploadImage(file, UPLOAD_PATH);
+                    File numberedFile = FileUtil.uploadImage(file, UPLOAD_PATH);
+
                     ImageDTO imagesDTO = ImageDTO.builder()
                             .boardId(boardDTO.getBoardId())
                             .fileName(numberedFile.getName())
@@ -321,14 +322,11 @@ public class BoardService {
                     imageRepository.saveImage(imagesDTO);
 
                     if (isFirstFile) {
-                        // Generate the thumbnail using Thumbnailator and save it to a different location
-
-                            Thumbnails.of(numberedFile)
-                                    .size(100, 100)
-                                    .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
-
-                        }
-                        isFirstFile = false;
+                        Thumbnails.of(numberedFile)
+                                .size(100, 100)
+                                .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
+                    }
+                    isFirstFile = false;
                     priority++;
                 }
             }
@@ -336,16 +334,12 @@ public class BoardService {
     }
 
     public List<BoardGalleryDTO> searchGalleryBoards(SearchConditionDTO searchParamsDTO) {
-        //TODO : 썸네일 경로 리스트에 넣기
         return boardRepository.searchGalleryBoards(searchParamsDTO);
     }
 
-    public int countGalleryBoards(SearchConditionDTO searchParamsDTO){
+    public int countGalleryBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.countGalleryBoards(searchParamsDTO);
     }
-
-
-
 
 
 }
