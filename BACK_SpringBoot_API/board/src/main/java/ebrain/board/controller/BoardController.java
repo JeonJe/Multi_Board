@@ -53,6 +53,7 @@ public class BoardController {
     private final UserService userService;
 
 
+
     /**
      * 파일 업로드 경로
      */
@@ -449,6 +450,47 @@ public class BoardController {
             apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", galleryBoard);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
+    }
+
+    @GetMapping("/api/auth/boards/gallery/{boardId}")
+    public ResponseEntity<APIResponse> hasGalleryBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
+
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        //boardId 작성자와 userId가 동일하면 true
+        boolean hasPermission = boardService.hasGalleryBoardEditPermission(seqId, boardId) == 1;
+
+        if (hasPermission) {
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        } else {
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+    }
+
+    @DeleteMapping("/api/boards/gallery/{boardId}")
+    public ResponseEntity<APIResponse> deleteGalleryBoard(HttpServletRequest request, @PathVariable int boardId) {
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        // 첨부파일 삭제 후 게시글 삭제
+        boardService.deleteGalleryBoard(seqId, boardId);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
 

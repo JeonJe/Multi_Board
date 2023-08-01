@@ -41,13 +41,6 @@
             :title="slide.title"
           />
         </vueper-slides>
-        <!-- <div v-for="image in boardInfo.boardImages" :key="image.imageId">
-          <img
-            :src="getImageURL(image.fileName)"
-            alt="Thumbnail"
-            class="col-md-2 p-2"
-          />
-        </div> -->
 
         <div
           class="mt-4 ml-2 mb-4 border p-3 text-left"
@@ -124,7 +117,7 @@ export default {
           this.boardImages = response.data.boardImages;
         }
 
-        this.editPermission = await boardService.hasBoardEditPermission(
+        this.editPermission = await boardService.hasGalleryBoardEditPermission(
           boardId
         );
       } catch (error) {
@@ -166,7 +159,6 @@ export default {
       );
     },
     getImageURL(thumbnailPath) {
-      console.log(thumbnailPath);
       return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE}/${thumbnailPath}`;
     },
   },

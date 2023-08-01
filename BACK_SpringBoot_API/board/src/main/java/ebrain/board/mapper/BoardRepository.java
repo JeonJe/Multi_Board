@@ -153,5 +153,9 @@ public interface BoardRepository {
 
     void updateGalleryBoardVisitCount(int boardId);
 
+    int hasGalleryBoardEditPermission(int seqId, int boardId);
+    void deleteGalleryBoard(int boardId);
+
+
 
 }

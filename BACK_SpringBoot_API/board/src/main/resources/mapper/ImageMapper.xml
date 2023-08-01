@@ -36,11 +36,11 @@
 <!--        FROM attachments-->
 <!--        WHERE attachment_id = #{attachmentId}-->
 <!--    </delete>-->
-<!--    <delete id="deleteAttachmentsByBoardId">-->
-<!--        DELETE-->
-<!--        FROM attachments-->
-<!--        WHERE board_id = ${board_id}-->
-<!--    </delete>-->
+    <delete id="deleteImagesByBoardId">
+        DELETE
+        FROM images
+        WHERE board_id = ${board_id}
+    </delete>
 
 
 </mapper>

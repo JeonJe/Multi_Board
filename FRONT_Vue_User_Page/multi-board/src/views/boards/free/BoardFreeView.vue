@@ -159,7 +159,7 @@ export default {
           this.boardInfo = response.data;
         }
 
-        this.editPermission = await boardService.hasBoardEditPermission(
+        this.editPermission = await boardService.hasFreeBoardEditPermission(
           boardId
         );
       } catch (error) {

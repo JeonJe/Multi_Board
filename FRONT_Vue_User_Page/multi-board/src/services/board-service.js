@@ -174,7 +174,7 @@ const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
  * @returns {Promise} - 게시글 편집 권한 여부를 담은 Promise 객체
  * @throws {Error} API 요청 중 발생한 오류
  */
-const hasBoardEditPermission = async (boardId) => {
+const hasFreeBoardEditPermission = async (boardId) => {
   try {
     const response = await api.get(
       `${process.env.VUE_APP_API_BOARD_FREE_EDIT_PERMISSION}/${boardId}`
@@ -225,6 +225,19 @@ const deleteFreeBoardComment = async (comment, boardId) => {
     alert(error.response.data.message);
   }
 };
+
+const hasGalleryBoardEditPermission = async (boardId) => {
+  try {
+    const response = await api.get(
+      `${process.env.VUE_APP_API_BOARD_GALLERY_EDIT_PERMISSION}/${boardId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log(error.response.data.message);
+    return false;
+  }
+};
+
 /**
  * 자유 게시판 목록 페이지로 라우터를 변경하는 함수
  *
@@ -285,8 +298,9 @@ export default {
   deleteBoardInfo,
   saveBoardInfo,
   updateBoardInfo,
-  hasBoardEditPermission,
+  hasFreeBoardEditPermission,
   addFreeBoardComment,
   deleteFreeBoardComment,
   replaceRouterToBoardList,
+  hasGalleryBoardEditPermission,
 };

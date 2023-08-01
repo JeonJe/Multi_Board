@@ -12,4 +12,6 @@ public interface ImageRepository {
 
     List<ImageDTO> getImagesByBoardId(int boardId);
 
+    void deleteImagesByBoardId(int boardId);
+
 }

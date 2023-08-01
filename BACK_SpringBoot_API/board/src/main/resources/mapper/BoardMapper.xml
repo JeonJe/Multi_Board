@@ -272,6 +272,18 @@
         WHERE board_id = #{boardId}
     </update>
 
+    <select id="hasGalleryBoardEditPermission" resultType="int">
+        SELECT COUNT(*) > 0
+        FROM gallery_board
+        WHERE board_id = #{boardId}
+          AND user_seq_id = #{seqId}
+    </select>
+
+    <delete id="deleteGalleryBoard">
+        DELETE
+        FROM gallery_board
+        WHERE board_id = #{boardId}
+    </delete>
 
 
 

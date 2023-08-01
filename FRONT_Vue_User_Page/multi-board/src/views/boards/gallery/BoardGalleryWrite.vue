@@ -57,30 +57,30 @@
       <hr />
       <div>
         <!-- 기존 첨부파일 리스트  -->
-        <!-- <div
-          v-for="(attachment, index) in boardInfo.boardAttachments"
-          :key="attachment.attachmentId"
+        <div
+          v-for="(image, index) in boardInfo.boardImages"
+          :key="image.imageId"
         >
           <div class="d-flex justify-content-between">
-            <span>{{ attachment.originFileName }}</span>
+            <span>{{ image.originFileName }}</span>
             <i class="fas fa-paperclip"></i>
             <div>
               <button
                 type="button"
-                @click="clickDeleteAttachment(index, attachment.attachmentId)"
+                @click="clickDeleteAttachment(index, image.imageId)"
                 class="btn btn-sm btn-danger mx-2"
               >
                 삭제
               </button>
               <a
-                :href="downloadAttachment(attachment.attachmentId)"
+                :href="downloadAttachment(image.imageId)"
                 class="btn btn-sm btn-primary"
               >
                 다운로드
               </a>
             </div>
           </div>
-        </div> -->
+        </div>
 
         <!-- 새로 첨부파일 추가할 수 있는 input -->
         <div
@@ -204,6 +204,7 @@ export default {
       this.isUpdate = true;
       this.boardId = boardId;
       // TODO: 갤러리 게시글 가져오기
+      this.getOriginGalleryBoardDetail;
     } else {
       // 글 작성
       this.isUpdate = false;
@@ -230,17 +231,17 @@ export default {
       }
       await this.getGalleryBoardCategories();
     },
-    // async getOriginFreeBoardDetail(boardId) {
-    //   if (!(await boardService.hasBoardEditPermission(boardId))) {
-    //     alert("수정 권한이 없습니다");
-    //     this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
-    //     return;
-    //   }
-    //   const response = await boardService.getBoardDetail("free", boardId);
-    //   if (response.data != "") {
-    //     this.boardInfo = response.data;
-    //   }
-    // },
+    async getOriginGalleryBoardDetail(boardId) {
+      if (!(await boardService.hasGalleryBoardEditPermission(boardId))) {
+        alert("수정 권한이 없습니다");
+        this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
+        return;
+      }
+      const response = await boardService.getBoardDetail("gallery", boardId);
+      if (response.data != "") {
+        this.boardInfo = response.data;
+      }
+    },
     /**
      * 자유 게시판 카테고리를 조회
      */

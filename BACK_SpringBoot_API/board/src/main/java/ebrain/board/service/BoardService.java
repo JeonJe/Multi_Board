@@ -356,6 +356,20 @@ public class BoardService {
         return boardDTO;
     }
 
+    public int hasGalleryBoardEditPermission(int seqId, int boardId) {
+        return boardRepository.hasGalleryBoardEditPermission(seqId, boardId);
+    }
+
+    public void deleteGalleryBoard(int seqId, int boardId) {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+        int getUserSeqId = boardRepository.getGalleryBoardDetail(boardId).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
+        }
+        imageRepository.deleteImagesByBoardId(boardId);
+        boardRepository.deleteGalleryBoard(boardId);
+    }
+
 
 
 

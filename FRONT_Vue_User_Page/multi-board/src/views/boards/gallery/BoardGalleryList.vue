@@ -116,8 +116,6 @@ export default {
           this.totalPages = Math.ceil(
             this.totalPosts / this.searchCondition.pageSize
           );
-
-          console.log(this.searchBoardList);
         }
       } catch (error) {
         console.log(error);
