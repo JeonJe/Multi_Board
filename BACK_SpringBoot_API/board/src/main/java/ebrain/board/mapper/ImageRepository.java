@@ -10,5 +10,6 @@ public interface ImageRepository {
 
     void saveImage(ImageDTO image);
 
+    List<ImageDTO> getImagesByBoardId(int boardId);
 
 }

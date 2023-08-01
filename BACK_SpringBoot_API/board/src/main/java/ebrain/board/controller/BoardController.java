@@ -437,5 +437,20 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    @GetMapping("/api/boards/gallery/{boardId}")
+    ResponseEntity<APIResponse> getGalleryBoardDetail(@PathVariable @NotEmpty int boardId) {
+        BoardGalleryDTO galleryBoard = boardService.getGalleryBoardDetail(boardId);
+
+        APIResponse apiResponse;
+        if (ObjectUtils.isEmpty(galleryBoard)) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("해당 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+        } else {
+            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", galleryBoard);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+
 
 }

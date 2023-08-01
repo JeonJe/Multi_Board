@@ -255,5 +255,24 @@
         <include refid="searchQuery"/>
     </select>
 
+    <select id="getGalleryBoardDetail" parameterType="java.lang.Integer" resultType="BoardGalleryDTO">
+        SELECT target_board.*,
+               target_board.child_code_value as categoryValue,
+               cc.child_code_name            AS categoryName,
+               u.user_id                     as userId
+        FROM gallery_board AS target_board
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.user_seq_id = u.seq_id
+        WHERE target_board.board_id = #{boardId}
+    </select>
+
+    <update id="updateGalleryBoardVisitCount" parameterType="java.lang.Integer">
+        UPDATE gallery_board
+        SET visit_count = visit_count + 1
+        WHERE board_id = #{boardId}
+    </update>
+
+
+
 
 </mapper>

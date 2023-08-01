@@ -26,11 +26,19 @@
           <img
             :src="getFullThumbnailURL(item.thumbnailPath)"
             alt="Thumbnail"
-            class="col-md-2 p-2"
+            class="col-md-3 p-2"
+            style="height: 200px; object-fit: cover"
           />
           <div class="col-md-10 mx-4 mt-4">
             <div class="card-body">
-              <h5 class="card-title">{{ item.title }}</h5>
+              <h5 class="card-title">
+                <router-link :to="getBoardDetail(item.boardId)">
+                  <span class="list-title">{{ item.title }}</span>
+                  <span v-if="IsNewBoard(item.createdAt)" class="new-text">
+                    New
+                  </span>
+                </router-link>
+              </h5>
 
               <p class="card-text">{{ item.content }}</p>
             </div>
@@ -159,7 +167,7 @@ export default {
     updatePagination(page) {
       this.searchCondition.currentPage = page;
       this.searchCondition.offset = (page - 1) * this.searchCondition.pageSize;
-      this.getFreeBoardList();
+      this.getGalleryBoardList();
     },
     /**
      * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
@@ -173,9 +181,7 @@ export default {
       };
     },
     getFullThumbnailURL(thumbnailPath) {
-      // Concatenate VUE_APP_API_SER_URL with thumbnailPath
-      console.log(thumbnailPath);
-      return `${process.env.VUE_APP_API_SER_URL}/thumbnails/${thumbnailPath}`;
+      return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE_THUMBNAIL}/${thumbnailPath}`;
     },
   },
 };

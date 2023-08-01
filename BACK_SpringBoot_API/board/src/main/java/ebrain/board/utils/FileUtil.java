@@ -2,7 +2,6 @@ package ebrain.board.utils;
 
 import ebrain.board.dto.AttachmentDTO;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -130,8 +132,28 @@ public class FileUtil {
 
         //파일을 업로드 폴더로 업로드합니다.
         file.transferTo(uploadedFile);
+        // 이미지 크기 조절
+//        BufferedImage originalImage = ImageIO.read(uploadedFile);
+//        int originalWidth = originalImage.getWidth();
+//        int originalHeight = originalImage.getHeight();
+//
+//        int targetHeight = 300;
+//        int targetWidth = (int) Math.round(originalWidth * ((double) targetHeight / originalHeight));
+//
+//        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+//        Graphics2D graphics = resizedImage.createGraphics();
+//        graphics.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+//        graphics.dispose();
+//
+//        File resizedFile = new File(uploadPath + File.separator + "resized_" + originalFileName);
+//        ImageIO.write(resizedImage, extension, resizedFile);
+
+        // 원본 이미지 삭제
+//        uploadedFile.delete();
+
         //파일 고유 식별번호를 반환합니다.
         return uploadedFile;
+//        return resizedFile;
     }
 
 

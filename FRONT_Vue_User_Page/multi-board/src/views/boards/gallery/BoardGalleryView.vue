@@ -27,6 +27,28 @@
             <p>조회수: {{ boardInfo.visitCount }}</p>
           </div>
         </div>
+        <vueper-slides
+          3d
+          :touchable="false"
+          arrows-outside
+          bullets-outside
+          :slide-ratio="1"
+        >
+          <vueper-slide
+            v-for="(slide, i) in boardImages"
+            :key="i"
+            :image="getImageURL(slide.fileName)"
+            :title="slide.title"
+          />
+        </vueper-slides>
+        <!-- <div v-for="image in boardInfo.boardImages" :key="image.imageId">
+          <img
+            :src="getImageURL(image.fileName)"
+            alt="Thumbnail"
+            class="col-md-2 p-2"
+          />
+        </div> -->
+
         <div
           class="mt-4 ml-2 mb-4 border p-3 text-left"
           style="overflow: auto; word-wrap: break-word"
@@ -35,71 +57,8 @@
             {{ boardInfo.content }}
           </p>
         </div>
-
-        <!-- 첨부파일 -->
-        <div v-if="boardInfo.boardAttachments.length > 0">
-          <table>
-            <tr
-              v-for="(attachment, index) in boardInfo.boardAttachments"
-              :key="index"
-            >
-              <td>
-                <a :href="downloadAttachment(attachment.attachmentId)">
-                  {{ attachment.originFileName }}
-                </a>
-                <i class="fas fa-paperclip"></i>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <!-- 댓글 -->
         <br />
-        <div v-if="isLoggedIn">
-          <div class="row">
-            <div class="col-md-11">
-              <textarea
-                v-model="newComment"
-                rows="2"
-                class="w-100 d-block"
-              ></textarea>
-            </div>
-            <div class="col-md-1">
-              <button
-                @click="clickSumbitCommentBtn(newComment, boardId)"
-                class="btn btn-primary w-100 h-100 d-block mb-2"
-              >
-                댓글등록
-              </button>
-            </div>
-          </div>
-        </div>
         <hr />
-        <div class="bg-light">
-          <div
-            v-for="comment in boardInfo.boardComments"
-            :key="comment.commentId"
-            class="mb-4"
-          >
-            <div class="d-flex justify-content-between mb-2">
-              <div class="mx-2">
-                <strong> {{ comment.userId }} </strong>
-                {{ getFormattedDate(comment.createdAt) }}
-              </div>
-              <div v-if="isLoggedIn && comment.userId === getUser.userId">
-                <button
-                  @click="clickCommentDeleteBtn(comment, boardId)"
-                  class="btn btn-danger"
-                >
-                  댓글 삭제
-                </button>
-              </div>
-            </div>
-            <div class="m-2" style="overflow: auto; word-wrap: break-word">
-              <p>{{ comment.content }}</p>
-            </div>
-            <hr />
-          </div>
-        </div>
       </div>
       <div v-else>
         <p>내용을 가져올 수 없습니다.</p>
@@ -119,14 +78,19 @@ import { getFormattedDate, downloadAttachment } from "@/utils/util";
 import { mapGetters } from "vuex";
 import boardService from "@/services/board-service";
 import BoardEditBtnGroup from "@/components/BoardEditBtnGroup.vue";
+import { VueperSlides, VueperSlide } from "vueperslides";
+import "vueperslides/dist/vueperslides.css";
 
 export default {
   components: {
     BoardEditBtnGroup,
+    VueperSlides,
+    VueperSlide,
   },
   data() {
     return {
       boardInfo: null,
+      boardImages: null,
       boardId: null,
       newComment: "",
       editPermission: false,
@@ -134,7 +98,7 @@ export default {
   },
   mounted() {
     this.boardId = this.$route.params.boardId;
-    this.getFreeBoardDetail(this.boardId);
+    this.getGalleryBoardDetail(this.boardId);
   },
   computed: {
     ...mapGetters(["isLoggedIn", "getUser"]),
@@ -152,11 +116,12 @@ export default {
      * 공지사항 상세 정보를 가져오는 비동기 함수
      * @param {number} boardId - 공지사항 게시글의 ID
      */
-    async getFreeBoardDetail(boardId) {
+    async getGalleryBoardDetail(boardId) {
       try {
-        const response = await boardService.getBoardDetail("free", boardId);
+        const response = await boardService.getBoardDetail("gallery", boardId);
         if (response.data != "") {
           this.boardInfo = response.data;
+          this.boardImages = response.data.boardImages;
         }
 
         this.editPermission = await boardService.hasBoardEditPermission(
@@ -173,7 +138,7 @@ export default {
      */
     async clickEditBtn(boardId) {
       this.$router.push({
-        path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/${boardId}`,
+        path: `${process.env.VUE_APP_BOARD_GALLERY_WRITE}/${boardId}`,
         query: this.$route.query,
       });
     },
@@ -183,42 +148,26 @@ export default {
      * @returns {void}
      */
     async clickDeleteBtn(boardId) {
-      if (await boardService.deleteBoardInfo("free", boardId)) {
+      if (await boardService.deleteBoardInfo("gallery", boardId)) {
         boardService.replaceRouterToBoardList(
           this.$router,
           this.$route,
-          "free"
+          "gallery"
         );
       } else {
-        alert("삭제가 불가합니다. 댓글이 남아있는지 확인해주세요.");
+        alert("삭제가 불가합니다.");
       }
     },
-    /**
-     * 댓글 작성 버튼 클릭 이벤트 핸들러 함수
-     * @param {string} newComment - 작성한 댓글 내용
-     * @param {number} boardId - 댓글이 작성된 게시글의 ID
-     * @returns {void}
-     */
-    async clickSumbitCommentBtn(newComment, boardId) {
-      await boardService.addFreeBoardComment(newComment, boardId);
-      await this.getFreeBoardDetail(boardId);
-    },
-    /**
-     * 댓글 삭제 버튼 클릭 이벤트 핸들러 함수
-     * @param {Object} comment - 삭제할 댓글 정보 객체
-     * @param {number} boardId - 댓글이 작성된 게시글의 ID
-     * @returns {void}
-     */
-    async clickCommentDeleteBtn(comment, boardId) {
-      await boardService.deleteFreeBoardComment(comment, boardId);
-      await this.getFreeBoardDetail(boardId);
-    },
-    /**
-     * 공지사항 목록 페이지로 이동하는 함수
-     * @returns {Object} - 공지사항 목록 페이지의 URL과 query
-     */
     clickBackToListBtn() {
-      boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
+      boardService.replaceRouterToBoardList(
+        this.$router,
+        this.$route,
+        "gallery"
+      );
+    },
+    getImageURL(thumbnailPath) {
+      console.log(thumbnailPath);
+      return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE}/${thumbnailPath}`;
     },
   },
 };

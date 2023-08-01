@@ -142,15 +142,14 @@ public class BoardService {
      * @return 자유 게시글 상세 내용
      */
     public BoardFreeDTO getFreeBoardDetail(int boardId) {
-        boardRepository.updateFreeBoardVisitCount(boardId);
-
-        List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
-        List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
-
         BoardFreeDTO boardDTO = boardRepository.getFreeBoardDetail(boardId);
         if (ObjectUtils.isEmpty(boardDTO)) {
             return null;
         }
+        boardRepository.updateFreeBoardVisitCount(boardId);
+
+        List<AttachmentDTO> attachments = attachmentRepository.getAttachmentsByBoardId(boardId);
+        List<CommentDTO> comments = commentRepository.getCommentsByBoardId(boardId);
         boardDTO.setBoardAttachments(attachments);
         boardDTO.setBoardComments(comments);
 
@@ -323,7 +322,8 @@ public class BoardService {
 
                     if (isFirstFile) {
                         Thumbnails.of(numberedFile)
-                                .size(100, 100)
+                                .height(200)
+                                .keepAspectRatio(true)
                                 .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
                     }
                     isFirstFile = false;
@@ -340,6 +340,23 @@ public class BoardService {
     public int countGalleryBoards(SearchConditionDTO searchParamsDTO) {
         return boardRepository.countGalleryBoards(searchParamsDTO);
     }
+
+    public BoardGalleryDTO getGalleryBoardDetail(int boardId) {
+        BoardGalleryDTO boardDTO = boardRepository.getGalleryBoardDetail(boardId);
+        if (ObjectUtils.isEmpty(boardDTO)) {
+            return null;
+        }
+
+        boardRepository.updateGalleryBoardVisitCount(boardId);
+
+        List<ImageDTO> images = imageRepository.getImagesByBoardId(boardId);
+
+        boardDTO.setBoardImages(images);
+
+        return boardDTO;
+    }
+
+
 
 
 }

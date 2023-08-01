@@ -51,7 +51,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/thumbnails/**") // The URL path to access the thumbnails
+        registry.addResourceHandler("/api/images/thumbnail/**") // The URL path to access the thumbnails
                 .addResourceLocations("file:/Users/premise/Desktop/github/Java/thumbnail/"); // The external directory path on the server
+
+        registry.addResourceHandler("/api/images/**")
+                .addResourceLocations("file:/Users/premise/Desktop/github/Java/upload/");
+
     }
 }

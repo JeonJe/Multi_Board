@@ -241,9 +241,11 @@ const replaceRouterToBoardList = (router, route, boardType) => {
       path = process.env.VUE_APP_BOARD_FREE_LIST;
       break;
     case "gallery":
-      return process.env.VUE_APP_BOARD_GALLERY_LIST;
+      path = process.env.VUE_APP_BOARD_GALLERY_LIST;
+      break;
     case "inquiry":
-      return process.env.VUE_APP_BOARD_INQUIRY_LIST;
+      path = process.env.VUE_APP_BOARD_INQUIRY_LIST;
+      break;
     default:
       return new Error("지원하지 않는 보드타입입니다 :  ${boardType}");
   }

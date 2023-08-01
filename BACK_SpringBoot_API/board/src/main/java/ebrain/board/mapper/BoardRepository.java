@@ -149,4 +149,9 @@ public interface BoardRepository {
 
     int countGalleryBoards(SearchConditionDTO searchConditionDTO);
 
+    BoardGalleryDTO getGalleryBoardDetail(int boardId);
+
+    void updateGalleryBoardVisitCount(int boardId);
+
+
 }

@@ -35,8 +35,10 @@
             <td class="text-center">{{ item.categoryName }}</td>
             <td class="text-left">
               <router-link :to="getBoardDetail(item.boardId)">
-                {{ item.title }}
-                <span v-if="IsNewBoard(item.createdAt)"> New </span>
+                <span class="list-title">{{ item.title }}</span>
+                <span v-if="IsNewBoard(item.createdAt)" class="new-text">
+                  New
+                </span>
               </router-link>
               ({{ item.countBoardComment }})
               <i
