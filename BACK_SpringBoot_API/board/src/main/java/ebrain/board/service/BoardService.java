@@ -3,22 +3,20 @@ package ebrain.board.service;
 import ebrain.board.dto.*;
 import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
-import ebrain.board.mapper.AttachmentRepository;
-import ebrain.board.mapper.BoardRepository;
-import ebrain.board.mapper.CommentRepository;
-import ebrain.board.mapper.ImageRepository;
+import ebrain.board.mapper.*;
 import ebrain.board.utils.FileUtil;
+import ebrain.board.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -52,6 +50,8 @@ public class BoardService {
     private final CommentRepository commentRepository;
 
     private final ImageRepository imageRepository;
+
+    private final ReplyRepository replyRepository;
 
     /**
      * 검색 조건에 해당하는 공지 게시글 목록을 조회합니다.
@@ -370,6 +370,62 @@ public class BoardService {
         boardRepository.deleteGalleryBoard(boardId);
     }
 
+    public List<CategoryDTO> getInquiryBoardCategories() {
+
+        BoardCategory categoryParentCode = BoardCategory.INQUIRY_BOARD;
+        return boardRepository.getInquiryBoardCategories(categoryParentCode.getCategoryParentCodeValue());
+    }
+
+    public List<BoardInquiryDTO> searchInquiryBoards(SearchConditionDTO searchParamsDTO) {
+        return boardRepository.searchInquiryBoards(searchParamsDTO);
+    }
+
+    public int countInquiryBoards(SearchConditionDTO searchConditionDTO) {
+        return boardRepository.countInquiryBoards(searchConditionDTO);
+    }
+
+    public void saveInquiryBoardInfo(int seqId, BoardInquiryDTO boardDTO) throws Exception {
+
+        if (seqId <= 0) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
+        }
+
+        boardRepository.saveInquiryBoardInfo(boardDTO);
+
+    }
+
+    public int hasInquiryBoardEditPermission(int seqId, int boardId) {
+        return boardRepository.hasInquiryBoardEditPermission(seqId, boardId);
+    }
+
+    public BoardInquiryDTO getInquiryBoardDetail(int boardId){
+        BoardInquiryDTO boardDTO = boardRepository.getInquiryBoardDetail(boardId);
+        if (ObjectUtils.isEmpty(boardDTO)) {
+            return null;
+        }
+        boardRepository.updateInquiryBoardVisitCount(boardId);
+
+        List<ReplyDTO> replies = replyRepository.getRepliesByBoardId(boardId);
+        boardDTO.setBoardReplies(replies);
+
+        return boardDTO;
+    }
+
+    public void deleteInquiryBoard(int seqId, int boardId) {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+
+
+        int getUserSeqId = boardRepository.getInquiryBoardDetail(boardId).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
+        }
+
+        if (replyRepository.countRepliesByBoardId(boardId) > 0){
+            throw new AppException(ErrorCode.REMAIN_REPLY, "답변이 남아있어서 게시글 삭제가 불가합니다.");
+        }
+
+        boardRepository.deleteInquiryBoard(boardId);
+    }
 
 
 

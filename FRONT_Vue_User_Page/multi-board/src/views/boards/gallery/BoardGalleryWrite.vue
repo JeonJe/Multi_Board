@@ -56,6 +56,8 @@
       </form>
       <hr />
       <div>
+        <strong>1MB이하의 jpg, gif, png 파일 업로드가 가능합니다.</strong>
+        <br /><em>*1번째 이미지는 썸네일로 사용됩니다.</em><br />
         <!-- 기존 첨부파일 리스트  -->
         <div
           v-for="(image, index) in boardInfo.boardImages"
@@ -63,7 +65,6 @@
         >
           <div class="d-flex justify-content-between">
             <span>{{ image.originFileName }}</span>
-            <i class="fas fa-paperclip"></i>
             <div>
               <button
                 type="button"
@@ -81,7 +82,6 @@
             </div>
           </div>
         </div>
-
         <!-- 새로 첨부파일 추가할 수 있는 input -->
         <div
           class="mt-3 d-flex justify-content-between align-items-center"
@@ -204,7 +204,7 @@ export default {
       this.isUpdate = true;
       this.boardId = boardId;
       // TODO: 갤러리 게시글 가져오기
-      this.getOriginGalleryBoardDetail;
+      this.getOriginGalleryBoardDetail(boardId);
     } else {
       // 글 작성
       this.isUpdate = false;

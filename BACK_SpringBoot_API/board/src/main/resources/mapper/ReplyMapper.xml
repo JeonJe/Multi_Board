@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+    유저 매퍼
+    UserRepository 인터페이스와 연결
+-->
+<mapper namespace="ebrain.board.mapper.ReplyRepository">
+
+    <!-- 게시글에 달린 모든 댓글 조회 -->
+    <select id="getRepliesByBoardId" resultType="ReplyDTO">
+        SELECT r.*, a.admin_id AS userId
+        FROM replies AS r
+                 JOIN admin a on r.admin_seq_id = a.seq_id
+        WHERE r.board_id = #{boardId}
+    </select>
+
+    <select id="countRepliesByBoardId" parameterType="java.lang.Integer" resultType="int">
+        SELECT COUNT(*) > 0
+        FROM replies
+        WHERE board_id = #{board_id}
+    </select>
+
+
+
+</mapper>

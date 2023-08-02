@@ -81,7 +81,8 @@
             </div>
           </div>
         </div>
-
+        <strong>2MB이하의 jpg, gif, png, zip 파일 업로드가 가능합니다.</strong>
+        <br />
         <!-- 새로 첨부파일 추가할 수 있는 input -->
         <div
           class="mt-3"
@@ -222,7 +223,7 @@ export default {
       await this.getFreeBoardCategories();
     },
     async getOriginFreeBoardDetail(boardId) {
-      if (!(await boardService.hasBoardEditPermission(boardId))) {
+      if (!(await boardService.hasFreeBoardEditPermission(boardId))) {
         alert("수정 권한이 없습니다");
         this.$router.replace({ path: process.env.VUE_APP_USER_LOGIN_PAGE });
         return;

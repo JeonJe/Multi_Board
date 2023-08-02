@@ -9,6 +9,9 @@ import BoardFreeWrite from "../views/boards/free/BoardFreeWrite.vue";
 import BoardGalleryList from "../views/boards/gallery/BoardGalleryList.vue";
 import BoardGalleryWrite from "../views/boards/gallery/BoardGalleryWrite.vue";
 import BoardGalleryView from "../views/boards/gallery/BoardGalleryView.vue";
+import BoardInquiryList from "../views/boards/inquiry/BoardInquiryList.vue";
+import BoardInquiryView from "../views/boards/inquiry/BoardInquiryView.vue";
+import BoardInquiryWrite from "../views/boards/inquiry/BoardInquiryWrite.vue";
 
 const routes = [
   {
@@ -60,6 +63,21 @@ const routes = [
     path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/:boardId`,
     name: BoardGalleryView,
     component: BoardGalleryView,
+  },
+  {
+    path: process.env.VUE_APP_BOARD_INQUIRY_LIST,
+    name: BoardInquiryList,
+    component: BoardInquiryList,
+  },
+  {
+    path: `${process.env.VUE_APP_BOARD_INQUIRY_WRITE}/:boardId?`,
+    name: BoardInquiryWrite,
+    component: BoardInquiryWrite,
+  },
+  {
+    path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/:boardId`,
+    name: BoardInquiryView,
+    component: BoardInquiryView,
   },
 ];
 

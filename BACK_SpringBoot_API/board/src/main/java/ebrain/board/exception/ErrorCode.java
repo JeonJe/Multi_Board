@@ -31,6 +31,7 @@ public enum ErrorCode {
      */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다"),
     DUPLICATE_USERID(HttpStatus.CONFLICT, "이미 회원가입된 아이디입니다."),
+    REMAIN_REPLY(HttpStatus.CONFLICT, "댓글이 남아있어 삭제가 불가합니다"),
     ;
 
     /**

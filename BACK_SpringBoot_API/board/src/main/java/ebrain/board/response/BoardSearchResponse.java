@@ -2,6 +2,7 @@ package ebrain.board.response;
 
 import ebrain.board.dto.BoardFreeDTO;
 import ebrain.board.dto.BoardGalleryDTO;
+import ebrain.board.dto.BoardInquiryDTO;
 import ebrain.board.dto.BoardNoticeDTO;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,8 @@ public class BoardSearchResponse {
      * 검색된 자유 게시글 목록
      */
     private List<BoardGalleryDTO> searchGalleryBoards;
+
+    private List<BoardInquiryDTO> searchInquiryBoards;
 
 
 

@@ -118,7 +118,14 @@ const getBoardDetail = async (boardType, boardId) => {
 const saveBoardInfo = async (boardType, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
-    const response = await multipartApi.post(apiURL, newBoardInfo);
+    let response = null;
+    console.log(apiURL, boardType);
+    if (boardType === "inquiry") {
+      response = await api.post(apiURL, newBoardInfo);
+      console.log(response);
+    } else {
+      response = await multipartApi.post(apiURL, newBoardInfo);
+    }
     alert(response.data.message);
   } catch (error) {
     alert(error);
@@ -238,6 +245,18 @@ const hasGalleryBoardEditPermission = async (boardId) => {
   }
 };
 
+const hasInquiryBoardEditPermission = async (boardId) => {
+  try {
+    const response = await api.get(
+      `${process.env.VUE_APP_API_BOARD_INQUIRY_EDIT_PERMISSION}/${boardId}`
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log(error.response.data.message);
+    return false;
+  }
+};
+
 /**
  * 자유 게시판 목록 페이지로 라우터를 변경하는 함수
  *
@@ -303,4 +322,5 @@ export default {
   deleteFreeBoardComment,
   replaceRouterToBoardList,
   hasGalleryBoardEditPermission,
+  hasInquiryBoardEditPermission,
 };

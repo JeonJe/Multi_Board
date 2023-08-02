@@ -16,8 +16,7 @@
     <div class="row justify-content-end">
       <div class="col-md-auto">
         <span v-if="isLoggedIn">
-          <strong>{{ getUser.name }}</strong>
-          님 로그인 중입니다.
+          안녕하세요, <strong> {{ getUser.name }}</strong> 님
         </span>
       </div>
     </div>
@@ -47,6 +46,7 @@ export default {
         { to: "/boards/notice/list", text: "공지사항" },
         { to: "/boards/free/list", text: "자유 게시판" },
         { to: "/boards/gallery/list", text: "갤러리 게시판" },
+        { to: "/boards/inquiry/list", text: "문의 게시판" },
         { to: "/auth/login", text: "로그인" },
       ],
     };

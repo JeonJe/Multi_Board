@@ -156,6 +156,21 @@ public interface BoardRepository {
     int hasGalleryBoardEditPermission(int seqId, int boardId);
     void deleteGalleryBoard(int boardId);
 
+    List<CategoryDTO> getInquiryBoardCategories(String categoryParentValue);
+
+    List<BoardInquiryDTO> searchInquiryBoards(SearchConditionDTO searchConditionDTO);
+
+    int countInquiryBoards(SearchConditionDTO searchConditionDTO);
+
+    void saveInquiryBoardInfo(BoardInquiryDTO boardInquiryDTO);
+
+    int hasInquiryBoardEditPermission(int seqId, int boardId);
+
+    BoardInquiryDTO getInquiryBoardDetail(int boardId);
+
+    void updateInquiryBoardVisitCount(int boardId);
+
+    void deleteInquiryBoard(int boardId);
 
 
 }

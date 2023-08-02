@@ -18,7 +18,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -51,7 +50,6 @@ public class BoardController {
      * 유저 서비스
      */
     private final UserService userService;
-
 
 
     /**
@@ -493,6 +491,108 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    @GetMapping("/api/boards/inquiry/categories")
+    ResponseEntity<APIResponse> getInquiryBoardCategories() {
+        List<CategoryDTO> categories = boardService.getInquiryBoardCategories();
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("갤러리게시판 카테고리 목록입니다.", categories);
+        if (ObjectUtils.isEmpty(categories)) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    @GetMapping("/api/boards/inquiry")
+    ResponseEntity<APIResponse> getInquiryBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
+        List<BoardInquiryDTO> searchResult = boardService.searchInquiryBoards(searchCondition);
+        int countFreeBoards = boardService.countInquiryBoards(searchCondition);
+
+        BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
+                .searchInquiryBoards(searchResult)
+                .countSearchBoards(countFreeBoards)
+                .build();
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("검색조건에 해당하는 자유 게시글 목록입니다.", boardSearchResponse);
+
+        if (countFreeBoards == 0) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    @PostMapping("/api/boards/inquiry")
+    ResponseEntity<APIResponse> saveInquiryBoardInfo(HttpServletRequest request, @Valid  @RequestBody  BoardInquiryDTO boardDTO) throws Exception {
+
+        APIResponse apiResponse;
+
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+        boardService.saveInquiryBoardInfo(seqId, boardDTO);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 저장에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @GetMapping("/api/auth/boards/inquiry/{boardId}")
+    public ResponseEntity<APIResponse> hasInquiryBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
+
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        //boardId 작성자와 userId가 동일하면 true
+        boolean hasPermission = boardService.hasInquiryBoardEditPermission(seqId, boardId) == 1;
+
+        if (hasPermission) {
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일합니다.", true);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        } else {
+            apiResponse = ResponseBuilder.SuccessWithData("게시글 작성자와 동일하지 않습니다.", false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+    }
+
+    @GetMapping("/api/boards/inquiry/{boardId}")
+    ResponseEntity<APIResponse> getInquiryBoardDetail(@PathVariable @NotEmpty int boardId) {
+        BoardInquiryDTO inquiryBoard = boardService.getInquiryBoardDetail(boardId);
+
+        APIResponse apiResponse;
+        if (ObjectUtils.isEmpty(inquiryBoard)) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("해당 정보를 찾을 수 없습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+        } else {
+            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", inquiryBoard);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        }
+    }
+
+    @DeleteMapping("/api/boards/inquiry/{boardId}")
+    public ResponseEntity<APIResponse> deleteInquiryBoard(HttpServletRequest request, @PathVariable int boardId) {
+        //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        // 미 답변일 경우에만 삭제 가능
+        boardService.deleteInquiryBoard(seqId, boardId);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
 
 
 }

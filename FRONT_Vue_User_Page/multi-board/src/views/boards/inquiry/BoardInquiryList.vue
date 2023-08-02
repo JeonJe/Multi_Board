@@ -1,12 +1,13 @@
 <template>
   <div class="container">
-    <h1>갤러리게시판</h1>
+    <h1>문의게시판</h1>
     <!-- 게시판 카테고리를 pros로 전달 -->
     <SearchForm
       :categories="categories"
       @emitSearchContion="updateSearchCondition"
     />
 
+    <!-- 게시글 리스트 -->
     <div class="container">
       <div class="d-flex justify-content-end mb-2 mr-2">
         <router-link
@@ -16,42 +17,47 @@
           <b-button>글 등록</b-button>
         </router-link>
       </div>
-      <!-- 게시글 리스트 (Card table layout) -->
-      <div class="row">
-        <div
-          v-for="item in searchBoardList"
-          :key="item.boardId"
-          class="d-flex border"
-        >
-          <img
-            :src="getFullThumbnailURL(item.thumbnailPath)"
-            alt="Thumbnail"
-            class="col-md-3 p-2"
-            style="height: 200px; object-fit: cover"
-          />
-          <div class="col-md-10 mx-4 mt-4">
-            <div class="card-body">
-              <h5 class="card-title">
-                <router-link :to="getBoardDetail(item.boardId)">
-                  <span class="list-title">{{ item.title }}</span>
-                  <span v-if="IsNewBoard(item.createdAt)" class="new-text">
-                    New
-                  </span>
-                </router-link>
-              </h5>
-
-              <p class="card-text">{{ item.content }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- 페이지네이션 -->
-      <BoardPagination
-        :currentPage="searchCondition.currentPage"
-        :totalPages="totalPages"
-        @clickPagination="updatePagination"
-      />
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark text-center">
+          <tr>
+            <th style="width: 5%">번호</th>
+            <th style="width: 5%">분류</th>
+            <th style="width: 30%">제목</th>
+            <th style="width: 5%">조회</th>
+            <th style="width: 10%">등록일시</th>
+            <th style="width: 5%">등록자</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 문의게시글 -->
+          <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
+            <td class="text-center">{{ totalPosts - index }}</td>
+            <td class="text-center">{{ item.categoryName }}</td>
+            <td class="text-left">
+              <router-link :to="getBoardDetail(item.boardId)">
+                <span class="list-title">{{ item.title }}</span>
+                <span v-if="item.isAnswered == 1" class="list-title">
+                  (답변 완료)
+                </span>
+                <span v-if="IsNewBoard(item.createdAt)" class="new-text">
+                  New
+                </span>
+              </router-link>
+              <i v-if="item.isSecret > 0" class="fa-solid fa-lock"></i>
+            </td>
+            <td class="text-center">{{ item.visitCount }}</td>
+            <td class="text-center">{{ getFormattedDate(item.createdAt) }}</td>
+            <td class="text-center">{{ item.userId }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <!-- 페이지네이션 -->
+    <BoardPagination
+      :currentPage="searchCondition.currentPage"
+      :totalPages="totalPages"
+      @clickPagination="updatePagination"
+    />
   </div>
 </template>
 
@@ -80,7 +86,7 @@ export default {
   },
   async mounted() {
     await this.checkJWTAuth();
-    await this.getGalleryBoardCategories();
+    await this.getInquiryBoardCategories();
   },
   computed: {
     ...mapGetters(["isLoggedIn", "getUser"]),
@@ -101,18 +107,18 @@ export default {
      */
     async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
-      await this.getGalleryBoardList();
+      await this.getInquiryBoardList();
     },
-    async getGalleryBoardList() {
+    async getInquiryBoardList() {
       try {
         const response = await boardService.getBoardList(
-          "gallery",
+          "inquiry",
           this.searchCondition
         );
         if (response === "") {
-          alert("표시 할 갤러리게시글이 없습니다.");
+          alert("표시 할 자유게시글이 없습니다.");
         } else {
-          this.searchBoardList = response.data.searchGalleryBoards;
+          this.searchBoardList = response.data.searchInquiryBoards;
           this.totalPosts = response.data.countSearchBoards;
           this.totalPages = Math.ceil(
             this.totalPosts / this.searchCondition.pageSize
@@ -122,10 +128,12 @@ export default {
         console.log(error);
       }
     },
-    async getGalleryBoardCategories() {
+    /**
+     * 자유 게시판 카테고리를 가져오는 함수
+     */
+    async getInquiryBoardCategories() {
       try {
-        const response = await boardService.getBoardCategories("gallery");
-        console.error(response);
+        const response = await boardService.getBoardCategories("inquiry");
         if (response === "") {
           alert("카테고리 목록이 없습니다.");
         } else {
@@ -156,7 +164,7 @@ export default {
      */
     clickBoardWriteBtn(searchCondition) {
       return {
-        path: process.env.VUE_APP_BOARD_GALLERY_WRITE,
+        path: process.env.VUE_APP_BOARD_INQUIRY_WRITE,
         query: searchCondition,
       };
     },
@@ -167,7 +175,7 @@ export default {
     updatePagination(page) {
       this.searchCondition.currentPage = page;
       this.searchCondition.offset = (page - 1) * this.searchCondition.pageSize;
-      this.getGalleryBoardList();
+      this.getInquiryBoardList();
     },
     /**
      * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
@@ -176,12 +184,9 @@ export default {
      */
     getBoardDetail(boardId) {
       return {
-        path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/${boardId}`,
+        path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
-    },
-    getFullThumbnailURL(thumbnailPath) {
-      return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE_THUMBNAIL}/${thumbnailPath}`;
     },
   },
 };
