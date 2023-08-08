@@ -390,6 +390,10 @@ public class BoardService {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }
 
+        if(boardDTO.getIsSecret() == 1 && boardDTO.getPassword().length() < 4){
+            throw new AppException(ErrorCode.BAD_REQUEST, "게시글 비밀번호는 4자 이상입니다.");
+        }
+
         boardRepository.saveInquiryBoardInfo(boardDTO);
 
     }
@@ -414,18 +418,29 @@ public class BoardService {
     public void deleteInquiryBoard(int seqId, int boardId) {
         //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
 
-
         int getUserSeqId = boardRepository.getInquiryBoardDetail(boardId).getUserSeqId();
         if (seqId != getUserSeqId) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
         }
 
         if (replyRepository.countRepliesByBoardId(boardId) > 0){
-            throw new AppException(ErrorCode.REMAIN_REPLY, "답변이 남아있어서 게시글 삭제가 불가합니다.");
+            throw new AppException(ErrorCode.REMAIN_REPLY, "답변 남아있어서 게시글 삭제가 불가합니다.");
         }
 
         boardRepository.deleteInquiryBoard(boardId);
     }
+
+    public boolean checkInquiryBoardPassword(int boardId, BoardInquiryDTO boardDTO) {
+        BoardInquiryDTO boardInfo = boardRepository.getInquiryBoardDetail(boardId);
+
+        if(!boardInfo.getPassword().equals(boardDTO.getPassword())){
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "비밀번호가 틀렸습니다.");
+        }
+        return true;
+    }
+
+
+
 
 
 

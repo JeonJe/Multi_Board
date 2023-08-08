@@ -257,6 +257,22 @@ const hasInquiryBoardEditPermission = async (boardId) => {
   }
 };
 
+const checkInquiryBoardPassword = async (boardId, password) => {
+  try {
+    const response = await api.post(
+      `${process.env.VUE_APP_API_BOARD_INQUIRY_CHECK_PASSWORD}/${boardId}`,
+      {
+        boardId: boardId,
+        password: password,
+      }
+    );
+    console.log(response.data.data);
+    return response.data.data;
+  } catch (error) {
+    return false;
+  }
+};
+
 /**
  * 자유 게시판 목록 페이지로 라우터를 변경하는 함수
  *
@@ -323,4 +339,5 @@ export default {
   replaceRouterToBoardList,
   hasGalleryBoardEditPermission,
   hasInquiryBoardEditPermission,
+  checkInquiryBoardPassword,
 };

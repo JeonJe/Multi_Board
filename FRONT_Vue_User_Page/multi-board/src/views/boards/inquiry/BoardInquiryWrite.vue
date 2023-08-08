@@ -54,9 +54,17 @@
           </div>
         </div>
         <div class="form-group row">
-          <label class="col-sm-1 col-form-label">비밀글</label>
-          <div class="col-sm-10 d-flex align-items-center">
-            <input type="checkbox" v-model="isSecretCheckBox" />
+          <label class="col-sm-1 col-form-label mt-2">비밀글</label>
+          <div class="col-sm-4 d-flex align-items-center">
+            <input type="checkbox" v-model="isSecretChecked" />
+            <input
+              type="password"
+              id="password"
+              v-model="boardInfo.password"
+              class="form-control mx-2 mt-2"
+              :placeholder="passwordPlaceholder"
+              :disabled="!isSecretChecked"
+            />
           </div>
         </div>
         <hr />
@@ -113,10 +121,13 @@ export default {
         isSecret: "",
         password: "",
       },
-      isSecretCheckBox: false,
+      isSecretChecked: false,
     };
   },
   computed: {
+    passwordPlaceholder() {
+      return this.password ? "" : "비밀번호";
+    },
     ...mapGetters(["isLoggedIn", "getUser"]),
     /**
      * 카테고리 select-option 목록을 생성합니다.
@@ -202,7 +213,7 @@ export default {
       if (!(await this.validateForm())) {
         return;
       }
-      this.boardInfo.isSecret = this.isSecretCheckBox ? 1 : 0;
+      this.boardInfo.isSecret = this.isSecretChecked ? 1 : 0;
       await boardService.saveBoardInfo("inquiry", this.boardInfo);
       boardService.replaceRouterToBoardList(
         this.$router,
@@ -219,7 +230,7 @@ export default {
       if (!(await this.validateForm())) {
         return;
       }
-      this.boardInfo.isSecret = this.isSecretCheckBox ? 1 : 0;
+      this.boardInfo.isSecret = this.isSecretChecked ? 1 : 0;
       await boardService.updateBoardInfo("inquiry", boardId, this.boardInfo);
       this.$router.replace({
         path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/${boardId}`,
@@ -249,6 +260,12 @@ export default {
       if (!(await this.validateContent(this.boardInfo.content))) {
         alert("내용은 1자 이상 4000자 이하로 작성해주세요.");
         return false;
+      }
+      if (this.isSecretChecked) {
+        if (this.boardInfo.password.length < 4) {
+          alert("게시글 비밀번호는 4자 이상입니다.");
+          return false;
+        }
       }
       return true;
     },

@@ -571,7 +571,7 @@ public class BoardController {
             apiResponse = ResponseBuilder.ErrorWithoutData("해당 정보를 찾을 수 없습니다.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
         } else {
-            apiResponse = ResponseBuilder.SuccessWithData("자유게시글 상세 내용입니다.", inquiryBoard);
+            apiResponse = ResponseBuilder.SuccessWithData("문의게시글 상세 내용입니다.", inquiryBoard);
             return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
         }
     }
@@ -592,6 +592,24 @@ public class BoardController {
 
         apiResponse = ResponseBuilder.SuccessWithoutData("게시글 삭제에 성공하였습니다.");
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @PostMapping("/api/auth/boards/inquiry/{boardId}")
+    public ResponseEntity<APIResponse> checkInquiryBoardPassword(HttpServletRequest request, @PathVariable int boardId,
+                                                                 @RequestBody BoardInquiryDTO boardDTO ) {
+
+        APIResponse apiResponse;
+
+        //boardId 작성자와 userId가 동일하면 true
+        boolean isValid = boardService.checkInquiryBoardPassword(boardId, boardDTO);
+
+        if (isValid) {
+            apiResponse = ResponseBuilder.SuccessWithData("비밀번호가 맞습니다.", true);
+            return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        } else {
+            apiResponse = ResponseBuilder.SuccessWithData("비밀번호가 틀렸습니다.", false);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
     }
 
 

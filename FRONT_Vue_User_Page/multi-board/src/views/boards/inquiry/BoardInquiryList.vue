@@ -34,9 +34,20 @@
             <td class="text-center">{{ totalPosts - index }}</td>
             <td class="text-center">{{ item.categoryName }}</td>
             <td class="text-left">
-              <router-link :to="getBoardDetail(item.boardId)">
+              <!-- 비밀번호가 있는 문의 게시글 -->
+              <div v-if="item.isSecret === 1">
+                <div class="list-title" @click="clickSecretBoard(item.boardId)">
+                  <span>{{ item.title }}</span>
+                  <span v-if="item.isAnswered === 1"> (답변 완료) </span>
+                  <span v-if="IsNewBoard(item.createdAt)" class="new-text">
+                    New
+                  </span>
+                </div>
+              </div>
+              <!-- 비밀번호가 없는 문의 게시글 -->
+              <router-link v-else :to="getBoardDetail(item.boardId)">
                 <span class="list-title">{{ item.title }}</span>
-                <span v-if="item.isAnswered == 1" class="list-title">
+                <span v-if="item.isAnswered === 1" class="list-title">
                   (답변 완료)
                 </span>
                 <span v-if="IsNewBoard(item.createdAt)" class="new-text">
@@ -59,6 +70,28 @@
       @clickPagination="updatePagination"
     />
   </div>
+  <b-modal v-model="showModal" title="비밀번호 확인" @ok="handleOk">
+    <div>
+      <b-form @submit.stop.prevent="handlePasswordSubmit">
+        <b-form-input
+          v-model="inputPassword"
+          ref="passwordInput"
+          id="password"
+          type="password"
+          placeholder="비밀번호"
+          :state="passwordState"
+        ></b-form-input>
+        <b-form-invalid-feedback :state="passwordState">
+          <div v-if="passwordState === 'invalidLength'">
+            비밀번호를 4자 이상 입력해주세요.
+          </div>
+          <div v-else-if="passwordState === 'invalidPassword'">
+            비밀번호가 틀렸습니다.
+          </div>
+        </b-form-invalid-feedback>
+      </b-form>
+    </div>
+  </b-modal>
 </template>
 
 <script>
@@ -82,6 +115,10 @@ export default {
       totalPosts: 0,
       totalPages: 0,
       showRegisterButton: false,
+      showModal: false,
+      inputPassword: "",
+      passwordState: null,
+      selectedBoardId: null,
     };
   },
   async mounted() {
@@ -89,6 +126,9 @@ export default {
     await this.getInquiryBoardCategories();
   },
   computed: {
+    passwordPlaceholder() {
+      return this.inputPassword ? "" : "비밀번호";
+    },
     ...mapGetters(["isLoggedIn", "getUser"]),
   },
   methods: {
@@ -187,6 +227,40 @@ export default {
         path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
+    },
+    async clickSecretBoard(boardId) {
+      this.openModal(boardId);
+    },
+    handleOk(bvModalEvent) {
+      // Prevent modal from closing
+      bvModalEvent.preventDefault();
+      // Trigger submit handler
+      this.handlePasswordSubmit();
+    },
+    openModal(boardId) {
+      this.showModal = true;
+      this.inputPassword = "";
+      this.passwordState = null;
+      this.selectedBoardId = boardId;
+    },
+    async handlePasswordSubmit() {
+      // 비밀번호 확인 폼 제출 시 폼 유효성을 체크합니다.
+      if (this.inputPassword.length < 4) {
+        this.passwordState = "invalidLength";
+        return;
+      }
+
+      const response = await boardService.checkInquiryBoardPassword(
+        this.selectedBoardId,
+        this.inputPassword
+      );
+
+      if (response) {
+        const boardDetailPath = this.getBoardDetail(this.selectedBoardId).path; // 게시글 상세 정보 페이지의 경로를 가져옴
+        this.$router.push(boardDetailPath); // 페이지 이동
+      } else {
+        this.passwordState = "invalidPassword";
+      }
     },
   },
 };
