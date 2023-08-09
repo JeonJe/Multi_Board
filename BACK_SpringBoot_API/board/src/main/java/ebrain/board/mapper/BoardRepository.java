@@ -172,5 +172,13 @@ public interface BoardRepository {
 
     void deleteInquiryBoard(int boardId);
 
+    void updateInquiryBoardInfo(BoardInquiryDTO boardDTO);
+
+    void updateGalleryBoardInfo(BoardGalleryDTO boardDTO);
+
+    List<BoardNoticeDTO> getRecentNoticeBoards(int amount);
+    List<BoardFreeDTO> getRecentFreeBoards(int amount);
+    List<BoardGalleryDTO> getRecentGalleryBoards(int amount);
+    List<BoardInquiryDTO> getRecentInquiryBoards(int amount);
 
 }

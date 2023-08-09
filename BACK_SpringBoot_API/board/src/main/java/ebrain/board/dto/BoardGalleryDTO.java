@@ -67,5 +67,7 @@ public class BoardGalleryDTO {
 
     private String thumbnailPath;
 
+    private int numOfImages;
+
 
 }

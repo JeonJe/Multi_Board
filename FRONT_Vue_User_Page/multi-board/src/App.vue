@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       navLinks: [
+        { to: "/dashboard", text: "멀티게시판" },
         { to: "/boards/notice/list", text: "공지사항" },
         { to: "/boards/free/list", text: "자유 게시판" },
         { to: "/boards/gallery/list", text: "갤러리 게시판" },

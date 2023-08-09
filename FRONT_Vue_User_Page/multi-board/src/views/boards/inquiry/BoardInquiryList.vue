@@ -35,7 +35,7 @@
             <td class="text-center">{{ item.categoryName }}</td>
             <td class="text-left">
               <!-- 비밀번호가 있는 문의 게시글 -->
-              <div v-if="item.isSecret === 1">
+              <div v-if="item.isSecret === 1" class="d-flex align-items-center">
                 <div class="list-title" @click="clickSecretBoard(item.boardId)">
                   <span>{{ item.title }}</span>
                   <span v-if="item.isAnswered === 1"> (답변 완료) </span>
@@ -43,6 +43,7 @@
                     New
                   </span>
                 </div>
+                <i class="fa-solid fa-lock ml-2"></i>
               </div>
               <!-- 비밀번호가 없는 문의 게시글 -->
               <router-link v-else :to="getBoardDetail(item.boardId)">
@@ -54,7 +55,6 @@
                   New
                 </span>
               </router-link>
-              <i v-if="item.isSecret > 0" class="fa-solid fa-lock"></i>
             </td>
             <td class="text-center">{{ item.visitCount }}</td>
             <td class="text-center">{{ getFormattedDate(item.createdAt) }}</td>
@@ -228,23 +228,17 @@ export default {
         query: this.searchCondition,
       };
     },
-    async clickSecretBoard(boardId) {
-      this.openModal(boardId);
-    },
-    handleOk(bvModalEvent) {
-      // Prevent modal from closing
-      bvModalEvent.preventDefault();
-      // Trigger submit handler
-      this.handlePasswordSubmit();
-    },
-    openModal(boardId) {
+    clickSecretBoard(boardId) {
       this.showModal = true;
       this.inputPassword = "";
       this.passwordState = null;
       this.selectedBoardId = boardId;
     },
+    handleOk(bvModalEvent) {
+      bvModalEvent.preventDefault();
+      this.handlePasswordSubmit();
+    },
     async handlePasswordSubmit() {
-      // 비밀번호 확인 폼 제출 시 폼 유효성을 체크합니다.
       if (this.inputPassword.length < 4) {
         this.passwordState = "invalidLength";
         return;
@@ -256,8 +250,7 @@ export default {
       );
 
       if (response) {
-        const boardDetailPath = this.getBoardDetail(this.selectedBoardId).path; // 게시글 상세 정보 페이지의 경로를 가져옴
-        this.$router.push(boardDetailPath); // 페이지 이동
+        this.$router.push(this.getBoardDetail(this.selectedBoardId));
       } else {
         this.passwordState = "invalidPassword";
       }

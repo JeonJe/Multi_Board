@@ -612,5 +612,66 @@ public class BoardController {
         }
     }
 
+    @PutMapping("/api/boards/gallery/{boardId}")
+    public ResponseEntity<APIResponse> updateGalleryBoardInfo(HttpServletRequest request, @PathVariable int boardId,
+                                                           @Valid @ModelAttribute BoardGalleryDTO boardDTO) throws Exception {
+        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        boardDTO.setBoardId(boardId);
+        boardService.updateGalleryBoardInfo(seqId, boardDTO);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    @PutMapping("/api/boards/inquiry/{boardId}")
+    public ResponseEntity<APIResponse> updateInquiryBoardInfo(HttpServletRequest request, @PathVariable int boardId,
+                                                           @Valid @RequestBody BoardInquiryDTO boardDTO) throws Exception {
+        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        boardDTO.setBoardId(boardId);
+        boardService.updateInquiryBoardInfo(seqId, boardDTO);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+
+    @GetMapping("/api/boards/recent")
+    ResponseEntity<APIResponse> getRecentBoardsList() {
+
+        List<BoardNoticeDTO> noticePosts = boardService.getRecentNoticeBoards(5);
+        List<BoardFreeDTO> freePosts = boardService.getRecentFreeBoards(5);
+        List<BoardGalleryDTO> galleryPosts = boardService.getRecentGalleryBoards(5);
+        List<BoardInquiryDTO> inquiryPosts = boardService.getRecentInquiryBoards(5);
+
+        BoardSearchResponse boardSearchResponse = BoardSearchResponse.builder()
+                .searchNoticeBoards(noticePosts)
+                .searchFreeBoards(freePosts)
+                .searchGalleryBoards(galleryPosts)
+                .searchInquiryBoards(inquiryPosts)
+                .build();
+
+        APIResponse apiResponse = ResponseBuilder.SuccessWithData("대시보드 목록입니다", boardSearchResponse);
+
+
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+
+    }
+
 
 }

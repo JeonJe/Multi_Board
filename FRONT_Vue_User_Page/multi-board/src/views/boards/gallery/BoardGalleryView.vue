@@ -27,21 +27,22 @@
             <p>조회수: {{ boardInfo.visitCount }}</p>
           </div>
         </div>
-        <vueper-slides
-          3d
-          :touchable="false"
-          arrows-outside
-          bullets-outside
-          :slide-ratio="1"
-        >
-          <vueper-slide
-            v-for="(slide, i) in boardImages"
-            :key="i"
-            :image="getImageURL(slide.fileName)"
-            :title="slide.title"
-          />
-        </vueper-slides>
-
+        <div v-if="boardInfo.boardImages.length > 0">
+          <vueper-slides
+            3d
+            :touchable="false"
+            arrows-outside
+            bullets-outside
+            :slide-ratio="1"
+          >
+            <vueper-slide
+              v-for="(slide, i) in boardImages"
+              :key="i"
+              :image="getImageURL(slide.fileName)"
+              :title="slide.title"
+            />
+          </vueper-slides>
+        </div>
         <div
           class="mt-4 ml-2 mb-4 border p-3 text-left"
           style="overflow: auto; word-wrap: break-word"

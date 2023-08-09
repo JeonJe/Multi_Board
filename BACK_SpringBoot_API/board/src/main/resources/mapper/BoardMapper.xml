@@ -176,7 +176,7 @@
     <!-- 자유 게시글 저장   -->
     <insert id="saveFreeBoardInfo" parameterType="BoardFreeDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO free_board
-        (title, content, user_se q_id, created_at, visit_count, child_code_value)
+        (title, content, user_seq_id, created_at, visit_count, child_code_value)
         VALUES (#{title},
                 #{content},
                 (SELECT seq_id FROM users WHERE user_id = #{userId}),
@@ -356,9 +356,76 @@
         WHERE board_id = #{boardId}
     </delete>
 
+    <update id="updateInquiryBoardInfo" parameterType="BoardInquiryDTO">
+        UPDATE inquiry_board
+        SET title            = #{title},
+            content          = #{content},
+            child_code_value = #{categoryValue}
+            <if test="password != null">
+                , password = #{password}
+                , is_secret = 1
+            </if>
+        WHERE board_id = #{boardId}
+    </update>
+
+    <update id="updateGalleryBoardInfo" parameterType="BoardGalleryDTO">
+        UPDATE gallery_board
+        SET title            = #{title},
+            content          = #{content},
+            child_code_value = #{categoryValue}
+        WHERE board_id = #{boardId}
+    </update>
 
 
+    <select id="getRecentNoticeBoards" parameterType="java.lang.Integer" resultType="BoardNoticeDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName
+        FROM notice_board AS target_board
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+        WHERE is_noticed = 0
+        ORDER BY target_board.created_at DESC
+        LIMIT #{amount}
+    </select>
 
 
+    <select id="getRecentFreeBoards" parameterType="java.lang.Integer" resultType="BoardFreeDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS
+        countBoardComment,
+        COALESCE(cntAttachment, 0) AS countBoardAttachment
+        FROM free_board AS target_board
+        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+        JOIN users AS u ON target_board.user_seq_id = u.seq_id
+        LEFT JOIN (
+        SELECT board_id, COUNT(*) AS cntComment
+        FROM comments
+        GROUP BY board_id
+        ) AS countComments ON target_board.board_id = countComments.board_id
+        LEFT JOIN (
+        SELECT board_id, COUNT(*) AS cntAttachment
+        FROM attachments
+        GROUP BY board_id
+        ) AS countAttachments ON target_board.board_id = countAttachments.board_id
+        ORDER BY target_board.created_at DESC
+        LIMIT #{amount}
+    </select>
+
+    <select id="getRecentGalleryBoards" parameterType="java.lang.Integer" resultType="BoardGalleryDTO">
+    SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId,
+           ( SELECT fileName FROM images WHERE board_id = target_board.board_id AND priority = 1 LIMIT 1 ) AS thumbnailPath,
+           ( SELECT COUNT(*) FROM images WHERE board_id = target_board.board_id ) AS numOfImages
+    FROM gallery_board AS target_board
+        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+        JOIN users AS u ON target_board.user_seq_id = u.seq_id
+    ORDER BY target_board.created_at DESC
+        LIMIT #{amount}
+    </select>
+
+    <select id="getRecentInquiryBoards" parameterType="java.lang.Integer" resultType="BoardInquiryDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId
+        FROM inquiry_board AS target_board
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.user_seq_id = u.seq_id
+        ORDER BY target_board.created_at DESC
+            LIMIT #{amount}
+    </select>
 
 </mapper>

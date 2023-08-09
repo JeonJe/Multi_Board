@@ -20,27 +20,39 @@
         WHERE board_id = #{boardId}
     </select>
 
-<!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 정보 조회 &ndash;&gt;-->
-<!--    <select id="getAttachmentByAttachmentId" parameterType="int" resultType="AttachmentDTO">-->
-<!--        SELECT attachment_id   AS attachmentId,-->
-<!--               filename        AS fileName,-->
-<!--               origin_filename AS originFileName,-->
-<!--               board_id        AS boardId-->
-<!--        FROM attachments-->
-<!--        WHERE attachment_id = #{attachmentId}-->
-<!--    </select>-->
+    <select id="getFirstPriorityImageByBoardId" parameterType="int" resultType="ImageDTO">
+        SELECT image_id, board_id, filename, origin_filename AS originFileName, priority
+        FROM images
+        WHERE board_id = #{boardId}
+        AND priority = 1
+    </select>
 
-<!--    &lt;!&ndash; 첨부 파일 ID에 해당하는 첨부 파일 삭제 &ndash;&gt;-->
-<!--    <delete id="deleteAttachmentByAttachmentId" parameterType="int">-->
-<!--        DELETE-->
-<!--        FROM attachments-->
-<!--        WHERE attachment_id = #{attachmentId}-->
-<!--    </delete>-->
-    <delete id="deleteImagesByBoardId">
+    <select id="getImageByImageId" parameterType="java.lang.Integer" resultType="ImageDTO">
+        SELECT image_id, board_id, filename, origin_filename AS originFileName, priority
+        FROM images
+        WHERE image_id = #{imageId}
+    </select>
+
+    <delete id="deleteImageByBoardId" parameterType="java.lang.Integer">
         DELETE
         FROM images
         WHERE board_id = ${board_id}
     </delete>
 
+    <select id="getMaxImagePriorityByBoardId" resultType="java.lang.Integer">
+        SELECT MAX(priority) FROM image
+        WHERE board_id = #{boardId}
+    </select>
 
+    <update id="updateImagePriority" parameterType="ImageDTO">
+        UPDATE images
+        SET priority = #{priority}
+        WHERE image_id = #{imageId}
+    </update>
+
+    <delete id="deleteImageByImageId" parameterType="java.lang.Integer">
+        DELETE
+        FROM images
+        WHERE image_id = #{imageId}
+    </delete>
 </mapper>

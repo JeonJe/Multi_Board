@@ -12,8 +12,14 @@ import BoardGalleryView from "../views/boards/gallery/BoardGalleryView.vue";
 import BoardInquiryList from "../views/boards/inquiry/BoardInquiryList.vue";
 import BoardInquiryView from "../views/boards/inquiry/BoardInquiryView.vue";
 import BoardInquiryWrite from "../views/boards/inquiry/BoardInquiryWrite.vue";
+import DashBoard from "../views/DashBoard.vue";
 
 const routes = [
+  {
+    path: process.env.VUE_APP_BOARD_DASHBOARD,
+    name: DashBoard,
+    component: DashBoard,
+  },
   {
     path: process.env.VUE_APP_USER_LOGIN_PAGE,
     name: UserLogin,

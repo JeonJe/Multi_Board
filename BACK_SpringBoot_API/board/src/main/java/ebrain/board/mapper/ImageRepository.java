@@ -12,6 +12,13 @@ public interface ImageRepository {
 
     List<ImageDTO> getImagesByBoardId(int boardId);
 
-    void deleteImagesByBoardId(int boardId);
+    void deleteImageByBoardId(int boardId);
+
+    ImageDTO getImageByImageId(int imageId);
+
+    void updateImagePriority(ImageDTO imageDTO);
+
+    void deleteImageByImageId(int imageId);
+    ImageDTO getFirstPriorityImageByBoardId(int boardId);
 
 }

@@ -5,14 +5,11 @@ import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.*;
 import ebrain.board.utils.FileUtil;
-import ebrain.board.utils.ResponseBuilder;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -303,8 +300,7 @@ public class BoardService {
         boardRepository.saveGalleryBoardInfo(boardDTO);
         List<MultipartFile> newFiles = boardDTO.getUploadImages();
         int priority = 1;
-
-        boolean isFirstFile = true;
+        int boardId = boardDTO.getBoardId();
         if (newFiles != null) {
             for (MultipartFile file : newFiles) {
                 if (!file.isEmpty()) {
@@ -313,24 +309,28 @@ public class BoardService {
                     File numberedFile = FileUtil.uploadImage(file, UPLOAD_PATH);
 
                     ImageDTO imagesDTO = ImageDTO.builder()
-                            .boardId(boardDTO.getBoardId())
+                            .boardId(boardId)
                             .fileName(numberedFile.getName())
                             .originFileName(originName)
                             .priority(priority)
                             .build();
                     imageRepository.saveImage(imagesDTO);
 
-                    if (isFirstFile) {
-                        Thumbnails.of(numberedFile)
-                                .height(200)
-                                .keepAspectRatio(true)
-                                .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
-                    }
-                    isFirstFile = false;
                     priority++;
                 }
             }
         }
+
+        ImageDTO firstPriorityImage = imageRepository.getFirstPriorityImageByBoardId(boardId);
+
+        if (firstPriorityImage != null) {
+            File newThumbNail = new File(UPLOAD_PATH + File.separator + firstPriorityImage.getFileName());
+            Thumbnails.of(newThumbNail)
+                    .height(200)
+                    .keepAspectRatio(true)
+                    .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
+        }
+
     }
 
     public List<BoardGalleryDTO> searchGalleryBoards(SearchConditionDTO searchParamsDTO) {
@@ -348,11 +348,8 @@ public class BoardService {
         }
 
         boardRepository.updateGalleryBoardVisitCount(boardId);
-
         List<ImageDTO> images = imageRepository.getImagesByBoardId(boardId);
-
         boardDTO.setBoardImages(images);
-
         return boardDTO;
     }
 
@@ -366,12 +363,11 @@ public class BoardService {
         if (seqId != getUserSeqId) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
         }
-        imageRepository.deleteImagesByBoardId(boardId);
+        imageRepository.deleteImageByBoardId(boardId);
         boardRepository.deleteGalleryBoard(boardId);
     }
 
     public List<CategoryDTO> getInquiryBoardCategories() {
-
         BoardCategory categoryParentCode = BoardCategory.INQUIRY_BOARD;
         return boardRepository.getInquiryBoardCategories(categoryParentCode.getCategoryParentCodeValue());
     }
@@ -390,10 +386,9 @@ public class BoardService {
             throw new AppException(ErrorCode.USER_NOT_FOUND, "유효한 사용자가 아닙니다.");
         }
 
-        if(boardDTO.getIsSecret() == 1 && boardDTO.getPassword().length() < 4){
+        if (boardDTO.getIsSecret() == 1 && boardDTO.getPassword().length() < 4) {
             throw new AppException(ErrorCode.BAD_REQUEST, "게시글 비밀번호는 4자 이상입니다.");
         }
-
         boardRepository.saveInquiryBoardInfo(boardDTO);
 
     }
@@ -402,7 +397,7 @@ public class BoardService {
         return boardRepository.hasInquiryBoardEditPermission(seqId, boardId);
     }
 
-    public BoardInquiryDTO getInquiryBoardDetail(int boardId){
+    public BoardInquiryDTO getInquiryBoardDetail(int boardId) {
         BoardInquiryDTO boardDTO = boardRepository.getInquiryBoardDetail(boardId);
         if (ObjectUtils.isEmpty(boardDTO)) {
             return null;
@@ -423,25 +418,122 @@ public class BoardService {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "삭제 권한이 없습니다.");
         }
 
-        if (replyRepository.countRepliesByBoardId(boardId) > 0){
+        if (replyRepository.countRepliesByBoardId(boardId) > 0) {
             throw new AppException(ErrorCode.REMAIN_REPLY, "답변 남아있어서 게시글 삭제가 불가합니다.");
         }
-
         boardRepository.deleteInquiryBoard(boardId);
     }
 
     public boolean checkInquiryBoardPassword(int boardId, BoardInquiryDTO boardDTO) {
         BoardInquiryDTO boardInfo = boardRepository.getInquiryBoardDetail(boardId);
 
-        if(!boardInfo.getPassword().equals(boardDTO.getPassword())){
+        if (!boardInfo.getPassword().equals(boardDTO.getPassword())) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "비밀번호가 틀렸습니다.");
         }
         return true;
     }
 
+    public void updateInquiryBoardInfo(int seqId, BoardInquiryDTO boardDTO) throws Exception {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+        int getUserSeqId = boardRepository.getInquiryBoardDetail(boardDTO.getBoardId()).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "수정 권한이 없습니다.");
+        }
+        boardRepository.updateInquiryBoardInfo(boardDTO);
+    }
+
+    public void updateGalleryBoardInfo(int seqId, BoardGalleryDTO boardDTO) throws Exception {
+        //현재 userSeqId와 게시글 정보에 저장된 userSeqId와 비교
+        int getUserSeqId = boardRepository.getGalleryBoardDetail(boardDTO.getBoardId()).getUserSeqId();
+        if (seqId != getUserSeqId) {
+            throw new AppException(ErrorCode.INVALID_PERMISSION, "수정 권한이 없습니다.");
+        }
+        //게시글 수정
+        boardRepository.updateGalleryBoardInfo(boardDTO);
+
+        //첨부파일 수정
+        List<Integer> deletedAttachmentIds = boardDTO.getDeletedAttachmentIDs();
+        int boardId = boardDTO.getBoardId();
+        if (deletedAttachmentIds != null) {
+            for (Integer deletedId : deletedAttachmentIds) {
+                String deletedImageName = imageRepository.
+                        getImageByImageId(deletedId).getFileName();
+
+                //업로드 폴더/썸네일에서 이미지 삭제
+                if (deletedImageName != null) {
+                    File file = new File(UPLOAD_PATH + '/' + deletedImageName);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+                    File thumbnail = new File(THUMBNAIL_PATH + '/' + deletedImageName);
+                    if (thumbnail.exists()) {
+                        file.delete();
+                    }
+                }
+                //데이터베이스에서 이미지 정보 삭제
+                imageRepository.deleteImageByImageId(deletedId);
+            }
+        }
+
+        // 기존 이미지에 대해 우선순위 조정
+        int lastPriority = 1;
+        List<ImageDTO> remainingImages = imageRepository.getImagesByBoardId(boardId);
+
+        if (!remainingImages.isEmpty()) {
+            int newPriority = 1;
+            for (ImageDTO image : remainingImages) {
+                image.setPriority(newPriority);
+                imageRepository.updateImagePriority(image);
+                newPriority++;
+            }
+            lastPriority = newPriority;
+        }
+
+        //기존 이미지 -> 업로드 이미지 순으로 우선순위 적용
+        List<MultipartFile> newFiles = boardDTO.getUploadImages();
+        if (newFiles != null) {
+            for (MultipartFile file : newFiles) {
+                if (!file.isEmpty()) {
+                    String originName = file.getOriginalFilename();
+                    File numberedFile = FileUtil.uploadImage(file, UPLOAD_PATH);
+
+                    ImageDTO imagesDTO = ImageDTO.builder()
+                            .boardId(boardDTO.getBoardId())
+                            .fileName(numberedFile.getName())
+                            .originFileName(originName)
+                            .priority(lastPriority)
+                            .build();
+                    imageRepository.saveImage(imagesDTO);
+                    lastPriority++;
+                }
+            }
+        }
+        //우선순위가 가장 높은 이미지를 썸네일로 사용
+        ImageDTO firstPriorityImage = imageRepository.getFirstPriorityImageByBoardId(boardId);
+        File newThumbNail = new File(UPLOAD_PATH + File.separator + firstPriorityImage.getFileName());
+        if (firstPriorityImage != null) {
+            Thumbnails.of(newThumbNail)
+                    .height(200)
+                    .keepAspectRatio(true)
+                    .toFiles(new File(THUMBNAIL_PATH), Rename.NO_CHANGE);
+        }
 
 
+    }
+    public List<BoardNoticeDTO> getRecentNoticeBoards(int num) {
+        return boardRepository.getRecentNoticeBoards(num);
+    }
 
+    public List<BoardFreeDTO> getRecentFreeBoards(int num) {
+        return boardRepository.getRecentFreeBoards(num);
+    }
 
+    public List<BoardGalleryDTO> getRecentGalleryBoards(int num) {
+        return boardRepository.getRecentGalleryBoards(num);
+    }
+
+    public List<BoardInquiryDTO> getRecentInquiryBoards(int num) {
+        return boardRepository.getRecentInquiryBoards(num);
+    }
 
 }

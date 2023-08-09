@@ -71,6 +71,16 @@ const getBoardList = async (boardType, searchCondtion) => {
   }
 };
 
+const getRecentBoardList = async () => {
+  try {
+    const response = await api.get(process.env.VUE_APP_API_BOARD_RECENT_LIST);
+    return response.data.data;
+  } catch (error) {
+    alert("리스트를 가져오지 못했습니다.");
+    return false;
+  }
+};
+
 /**
  * 게시판의 카테고리 목록을 가져오는 함수
  *
@@ -119,10 +129,9 @@ const saveBoardInfo = async (boardType, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
     let response = null;
-    console.log(apiURL, boardType);
+
     if (boardType === "inquiry") {
       response = await api.post(apiURL, newBoardInfo);
-      console.log(response);
     } else {
       response = await multipartApi.post(apiURL, newBoardInfo);
     }
@@ -162,10 +171,12 @@ const deleteBoardInfo = async (boardType, boardId) => {
 const updateBoardInfo = async (boardType, boardId, newBoardInfo) => {
   try {
     const apiURL = await getAPIUrlByBoardType(boardType);
-    const response = await multipartApi.put(
-      `${apiURL}/${boardId}`,
-      newBoardInfo
-    );
+    let response = null;
+    if (boardType === "inquiry") {
+      response = await api.put(`${apiURL}/${boardId}`, newBoardInfo);
+    } else {
+      response = await multipartApi.put(`${apiURL}/${boardId}`, newBoardInfo);
+    }
     alert(response.data.message);
     return true;
   } catch (error) {
@@ -330,6 +341,7 @@ export default {
   getBoardCategories,
   getBoardDetail,
   getBoardList,
+  getRecentBoardList,
   deleteBoardInfo,
   saveBoardInfo,
   updateBoardInfo,

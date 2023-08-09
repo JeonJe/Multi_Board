@@ -65,7 +65,7 @@ export default {
       const response = await userService.loginUser(this.userData);
       if (response) {
         await this.setLoginUser(response);
-        this.$router.replace({ path: process.env.VUE_APP_BOARD_FREE_LIST });
+        this.$router.replace({ path: process.env.VUE_APP_BOARD_DASHBOARD });
       }
     },
     /**

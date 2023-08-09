@@ -363,7 +363,7 @@ export default {
 
     async clickDeleteAttachment(index, attachmentId) {
       this.deletedAttachmentIDs.push(attachmentId);
-      this.boardInfo.boardAttachments.splice(index, 1);
+      this.boardInfo.boardImages.splice(index, 1);
     },
     /**
      * 자유 게시판 목록으로 이동하는 함수

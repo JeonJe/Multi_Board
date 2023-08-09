@@ -122,7 +122,7 @@ export default {
      */
     async clickEditBtn(boardId) {
       this.$router.push({
-        path: `${process.env.VUE_APP_BOARD_FREE_WRITE}/${boardId}`,
+        path: `${process.env.VUE_APP_BOARD_INQUIRY_WRITE}/${boardId}`,
         query: this.$route.query,
       });
     },
