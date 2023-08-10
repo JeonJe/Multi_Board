@@ -14,18 +14,23 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th class="align-middle">카테고리</th>
-                <th class="align-middle">제목</th>
+                <th>카테고리</th>
+                <th>제목</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in noticePosts" :key="post.id">
-                <td class="align-middle">{{ post.categoryName }}</td>
-                <td class="align-middle">
-                  {{ post.title }}
-                  <span v-if="IsNewBoard(post.createdAt)" class="new-text"
-                    >New
-                  </span>
+                <td>{{ post.categoryName }}</td>
+                <td>
+                  <router-link
+                    :to="getNoticeBoardDetail(post.boardId)"
+                    class="text-black"
+                  >
+                    {{ post.title }}
+                    <span v-if="IsNewBoard(post.createdAt)" class="new-text"
+                      >New
+                    </span>
+                  </router-link>
                 </td>
               </tr>
             </tbody>
@@ -45,23 +50,28 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th class="align-middle">카테고리</th>
-                <th class="align-middle">제목</th>
+                <th>카테고리</th>
+                <th>제목</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in freePosts" :key="post.id">
-                <td class="align-middle">{{ post.categoryName }}</td>
-                <td class="align-middle">
-                  {{ post.title }}
-                  <span v-if="IsNewBoard(post.createdAt)" class="new-text"
-                    >New
-                  </span>
-                  ({{ post.countBoardComment }})
-                  <i
-                    v-if="post.countBoardAttachment > 0"
-                    class="fas fa-paperclip"
-                  ></i>
+                <td>{{ post.categoryName }}</td>
+                <td>
+                  <router-link
+                    :to="getFreeBoardDetail(post.boardId)"
+                    class="text-black"
+                  >
+                    {{ post.title }}
+                    ({{ post.countBoardComment }})
+                    <span v-if="IsNewBoard(post.createdAt)" class="new-text"
+                      >New
+                    </span>
+                    <i
+                      v-if="post.countBoardAttachment > 0"
+                      class="fas fa-paperclip"
+                    ></i>
+                  </router-link>
                 </td>
               </tr>
             </tbody>
@@ -83,27 +93,35 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th class="align-middle">카테고리</th>
-                <th class="align-middle"></th>
+                <th>카테고리</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in galleryPosts" :key="post.id">
-                <td class="align-middle">{{ post.categoryName }}</td>
-                <td class="align-middle">
-                  <img
-                    :src="getFullThumbnailURL(post.thumbnailPath)"
-                    alt="Thumbnail"
-                    class="col-md-3 p-2"
-                    style="height: 100px; object-fit: cover"
-                  />
-                  {{ post.title }}
-                  <span v-if="post.numOfImages - 1 > 0" class="new-text">
-                    +{{ post.numOfImages - 1 }}
-                  </span>
-                  <span v-if="IsNewBoard(post.createdAt)" class="new-text">
-                    &nbsp;New
-                  </span>
+                <td>{{ post.categoryName }}</td>
+                <td>
+                  <div>
+                    <img
+                      :src="getFullThumbnailURL(post.thumbnailPath)"
+                      alt="Thumbnail"
+                      class="col-md-3 p-2"
+                      style="height: 100px; object-fit: cover"
+                    />
+                    <router-link
+                      :to="getGalleryBoardDetail(post.boardId)"
+                      class="text-black"
+                    >
+                      {{ post.title }}
+
+                      <span v-if="post.numOfImages - 1 > 0" class="new-text">
+                        +{{ post.numOfImages - 1 }}
+                      </span>
+                      <span v-if="IsNewBoard(post.createdAt)" class="new-text">
+                        &nbsp;New
+                      </span>
+                    </router-link>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -123,21 +141,35 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th class="align-middle">제목</th>
+                <th>제목</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in inquiryPosts" :key="post.id">
-                <td class="align-middle">
-                  {{ post.title }}
-                  <span v-if="post.isAnswered === 1"> (답변 완료) </span>
+                <td class="d-flex">
+                  <!-- 비밀 글  -->
+                  <span v-if="post.isSecret === 1">
+                    <div @click="clickSecretBoard(post.boardId)">
+                      <i class="fa-solid fa-lock ml-2" />
+                      {{ post.title }}
+                      <span v-if="post.isAnswered === 1"> (답변 완료) </span>
+                      <span v-else> (미 답변) </span>
+                    </div>
+                  </span>
+                  <!-- 공개 글 -->
+                  <span v-else>
+                    <router-link
+                      :to="getInquiryBoardDetail(post.boardId)"
+                      class="text-black"
+                    >
+                      <span>{{ post.title }}</span>
+                      <span v-if="post.isAnswered === 1"> (답변 완료) </span>
+                      <span v-else> (미 답변) </span>
+                    </router-link>
+                  </span>
                   <span v-if="IsNewBoard(post.createdAt)" class="new-text">
                     &nbsp;New
                   </span>
-                  <i
-                    v-if="post.isSecret === 1"
-                    class="fa-solid fa-lock ml-2"
-                  ></i>
                 </td>
               </tr>
             </tbody>
@@ -146,6 +178,28 @@
       </div>
     </div>
   </div>
+  <b-modal v-model="showModal" title="비밀번호 확인" @ok="handleOk">
+    <div>
+      <b-form @submit.stop.prevent="handlePasswordSubmit">
+        <b-form-input
+          v-model="inputPassword"
+          ref="passwordInput"
+          id="password"
+          type="password"
+          placeholder="비밀번호"
+          :state="passwordState"
+        ></b-form-input>
+        <b-form-invalid-feedback :state="passwordState">
+          <div v-if="passwordState === 'invalidLength'">
+            비밀번호를 4자 이상 입력해주세요.
+          </div>
+          <div v-else-if="passwordState === 'invalidPassword'">
+            비밀번호가 틀렸습니다.
+          </div>
+        </b-form-invalid-feedback>
+      </b-form>
+    </div>
+  </b-modal>
 </template>
 <script>
 // boardService로부터 최근 게시글 데이터를 가져온다고 가정
@@ -158,6 +212,9 @@ export default {
       freePosts: [], // 자유게시글 최근 게시글
       galleryPosts: [], // 갤러리게시판 최근 게시글
       inquiryPosts: [], // 문의게시판 최근 게시글
+      inputPassword: "",
+      passwordState: null,
+      selectedBoardId: null,
     };
   },
   async mounted() {
@@ -175,6 +232,57 @@ export default {
     getFullThumbnailURL(thumbnailPath) {
       return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE_THUMBNAIL}/${thumbnailPath}`;
     },
+    getInquiryBoardDetail(boardId) {
+      return {
+        path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/${boardId}`,
+        query: this.searchCondition,
+      };
+    },
+    getFreeBoardDetail(boardId) {
+      return {
+        path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
+        query: this.searchCondition,
+      };
+    },
+    getNoticeBoardDetail(boardId) {
+      return {
+        path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/${boardId}`,
+        query: this.searchCondition,
+      };
+    },
+    getGalleryBoardDetail(boardId) {
+      return {
+        path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/${boardId}`,
+        query: this.searchCondition,
+      };
+    },
+    clickSecretBoard(boardId) {
+      this.showModal = true;
+      this.inputPassword = "";
+      this.passwordState = null;
+      this.selectedBoardId = boardId;
+    },
+    handleOk(bvModalEvent) {
+      bvModalEvent.preventDefault();
+      this.handlePasswordSubmit();
+    },
+    async handlePasswordSubmit() {
+      if (this.inputPassword.length < 4) {
+        this.passwordState = "invalidLength";
+        return;
+      }
+
+      const response = await boardService.checkInquiryBoardPassword(
+        this.selectedBoardId,
+        this.inputPassword
+      );
+
+      if (response) {
+        this.$router.push(this.getBoardDetail(this.selectedBoardId));
+      } else {
+        this.passwordState = "invalidPassword";
+      }
+    },
   },
 };
 </script>
@@ -183,6 +291,8 @@ export default {
 .card {
   border: none;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  height: 400px; /* 원하는 최대 높이로 설정 */
+  overflow: auto; /* 내용이 카드를 넘어갈 경우 스크롤 생성 */
 }
 
 .card-header {

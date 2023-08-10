@@ -126,9 +126,9 @@ export default {
     await this.getInquiryBoardCategories();
   },
   computed: {
-    passwordPlaceholder() {
-      return this.inputPassword ? "" : "비밀번호";
-    },
+    // passwordPlaceholder() {
+    //   return this.inputPassword ? "" : "비밀번호";
+    // },
     ...mapGetters(["isLoggedIn", "getUser"]),
   },
   methods: {
