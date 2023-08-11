@@ -40,7 +40,9 @@
           </tr>
           <!-- 알림 표시되지 않은 공지 게시글 -->
           <tr v-for="(item, index) in searchBoardList" :key="item.boardId">
-            <td class="text-center">{{ totalPosts - index }}</td>
+            <td class="text-center">
+              {{ totalPosts - index - markNoticedBoardList.length }}
+            </td>
             <td class="text-center">{{ item.categoryName }}</td>
             <td class="text-left">
               <router-link :to="getBoardDetail(item.boardId)">

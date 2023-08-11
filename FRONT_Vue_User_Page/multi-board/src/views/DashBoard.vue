@@ -4,9 +4,9 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div
-            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
           >
-            공지사항
+            <div class="font-weight-bold fs-5">공지사항</div>
             <router-link to="/boards/notice/list" class="text-black"
               >+더보기</router-link
             >
@@ -14,21 +14,21 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th>카테고리</th>
-                <th>제목</th>
+                <th style="width: 15%">카테고리</th>
+                <th style="width: 100%">제목</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in noticePosts" :key="post.id">
-                <td>{{ post.categoryName }}</td>
+                <td class="category-cell">{{ post.categoryName }}</td>
                 <td>
                   <router-link
                     :to="getNoticeBoardDetail(post.boardId)"
-                    class="text-black"
+                    class="text-black d-flex align-items-center"
                   >
-                    {{ post.title }}
-                    <span v-if="IsNewBoard(post.createdAt)" class="new-text"
-                      >New
+                    <span class="title-cell">{{ post.title }}</span>
+                    <span v-if="IsNewBoard(post.createdAt)" class="new-text">
+                      New
                     </span>
                   </router-link>
                 </td>
@@ -40,9 +40,9 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div
-            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
           >
-            자유게시판
+            <div class="font-weight-bold fs-5">자유게시판</div>
             <router-link to="/boards/free/list" class="text-black"
               >+더보기</router-link
             >
@@ -50,8 +50,8 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th>카테고리</th>
-                <th>제목</th>
+                <th style="width: 15%">카테고리</th>
+                <th style="width: 100%">제목</th>
               </tr>
             </thead>
             <tbody>
@@ -83,9 +83,9 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div
-            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
           >
-            갤러리게시판
+            <div class="font-weight-bold fs-5">갤러리게시판</div>
             <router-link to="/boards/gallery/list" class="text-black"
               >+더보기</router-link
             >
@@ -93,35 +93,34 @@
           <table class="table text-left">
             <thead>
               <tr>
-                <th>카테고리</th>
-                <th></th>
+                <th style="width: 15%">카테고리</th>
+                <th style="width: 100%">제목</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="post in galleryPosts" :key="post.id">
-                <td>{{ post.categoryName }}</td>
-                <td>
-                  <div>
+                <td class="align-middle">{{ post.categoryName }}</td>
+                <td class="d-flex align-items-center">
+                  <div class="thumbnail-container">
                     <img
                       :src="getFullThumbnailURL(post.thumbnailPath)"
                       alt="Thumbnail"
-                      class="col-md-3 p-2"
-                      style="height: 100px; object-fit: cover"
+                      class="thumbnail-image"
                     />
-                    <router-link
-                      :to="getGalleryBoardDetail(post.boardId)"
-                      class="text-black"
-                    >
-                      {{ post.title }}
-
-                      <span v-if="post.numOfImages - 1 > 0" class="new-text">
-                        +{{ post.numOfImages - 1 }}
-                      </span>
-                      <span v-if="IsNewBoard(post.createdAt)" class="new-text">
-                        &nbsp;New
-                      </span>
-                    </router-link>
                   </div>
+                  <router-link
+                    :to="getGalleryBoardDetail(post.boardId)"
+                    class="text-black"
+                  >
+                    {{ post.title }}
+
+                    <span v-if="post.numOfImages - 1 > 0" class="new-text">
+                      +{{ post.numOfImages - 1 }}
+                    </span>
+                    <span v-if="IsNewBoard(post.createdAt)" class="new-text">
+                      &nbsp;New
+                    </span>
+                  </router-link>
                 </td>
               </tr>
             </tbody>
@@ -131,9 +130,9 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div
-            class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+            class="card-header bg-secondary text-white d-flex justify-content-between align-items-center"
           >
-            문의게시판
+            <div class="font-weight-bold fs-5">문의게시판</div>
             <router-link to="/boards/inquiry/list" class="text-black"
               >+더보기</router-link
             >
@@ -215,10 +214,10 @@ export default {
       inputPassword: "",
       passwordState: null,
       selectedBoardId: null,
+      showModal: false,
     };
   },
   async mounted() {
-    // 서비스를 통해 각 게시판의 최근 게시글 데이터를 가져온다고 가정
     const response = await boardService.getRecentBoardList();
     if (response) {
       this.noticePosts = response.searchNoticeBoards;
@@ -261,6 +260,7 @@ export default {
       this.inputPassword = "";
       this.passwordState = null;
       this.selectedBoardId = boardId;
+      console.log(this.showModal);
     },
     handleOk(bvModalEvent) {
       bvModalEvent.preventDefault();
@@ -286,20 +286,3 @@ export default {
   },
 };
 </script>
-
-<style>
-.card {
-  border: none;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  height: 400px; /* 원하는 최대 높이로 설정 */
-  overflow: auto; /* 내용이 카드를 넘어갈 경우 스크롤 생성 */
-}
-
-.card-header {
-  font-weight: bold;
-}
-
-.list-group-item {
-  border: none;
-}
-</style>

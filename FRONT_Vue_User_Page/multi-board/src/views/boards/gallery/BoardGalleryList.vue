@@ -23,13 +23,16 @@
           :key="item.boardId"
           class="d-flex border"
         >
-          <img
-            :src="getFullThumbnailURL(item.thumbnailPath)"
-            alt="Thumbnail"
-            class="col-md-3 p-2"
-            style="height: 200px; object-fit: cover"
-          />
-          <div class="col-md-10 mx-4 mt-4">
+          <div class="col-md-2 p-2">
+            <div class="thumbnail-container">
+              <img
+                :src="getFullThumbnailURL(item.thumbnailPath)"
+                alt="Thumbnail"
+                class="thumbnail-image"
+              />
+            </div>
+          </div>
+          <div class="col-md-10 mt-4">
             <div class="card-body">
               <h5 class="card-title">
                 <router-link :to="getBoardDetail(item.boardId)">
