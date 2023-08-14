@@ -66,6 +66,14 @@ public interface BoardRepository {
     void updateNoticeBoardVisitCount(int boardId);
 
     /**
+     * 각 게시판 종류별 최신 공지 게시글 목록을 조회
+     *
+     * @param amount 조회할 최신 공지 게시글의 개수
+     * @return 최신 공지 게시글 목록
+     */
+    List<BoardNoticeDTO> getRecentNoticeBoards(int amount);
+
+    /**
      * 검색 조건에 해당하는 자유 게시글 목록을 조회
      *
      * @param searchConditionDTO 검색 조건 DTO
@@ -135,6 +143,15 @@ public interface BoardRepository {
      */
     void updateFreeBoardInfo(BoardFreeDTO boardDTO);
 
+
+    /**
+     * 각 게시판 종류별 최신 자유 게시글 목록을 조회
+     *
+     * @param amount 조회할 최신 자유 게시글의 개수
+     * @return 최신 자유 게시글 목록
+     */
+    List<BoardFreeDTO> getRecentFreeBoards(int amount);
+
     /**
      * 갤러리게시판의 카테고리 목록을 조회
      *
@@ -143,42 +160,152 @@ public interface BoardRepository {
      */
     List<CategoryDTO> getGalleryBoardCategories(String categoryParentValue);
 
+    /**
+     * 갤러리게시판 정보를 저장
+     *
+     * @param boardDTO 갤러리게시판 정보 DTO
+     * @return 저장된 게시글의 ID
+     */
     int saveGalleryBoardInfo(BoardGalleryDTO boardDTO);
 
+    /**
+     * 검색 조건에 해당하는 갤러리 게시글 목록을 조회
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 검색 결과 갤러리 게시글 목록
+     */
     List<BoardGalleryDTO> searchGalleryBoards(SearchConditionDTO searchConditionDTO);
 
+    /**
+     * 검색 조건에 해당하는 갤러리 게시글의 개수를 조회
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 갤러리 게시글의 개수
+     */
     int countGalleryBoards(SearchConditionDTO searchConditionDTO);
 
+    /**
+     * 갤러리게시판의 상세 내용을 조회
+     *
+     * @param boardId 게시글 ID
+     * @return 갤러리게시판 상세 내용
+     */
     BoardGalleryDTO getGalleryBoardDetail(int boardId);
 
+    /**
+     * 갤러리게시판의 조회수를 1 증가
+     *
+     * @param boardId 게시글 ID
+     */
     void updateGalleryBoardVisitCount(int boardId);
 
+    /**
+     * 갤러리게시판 수정 권한 여부를 확인
+     *
+     * @param seqId   사용자 식별자 아이디
+     * @param boardId 게시글 ID
+     * @return 권한 여부 (1: 권한 있음, 0: 권한 없음)
+     */
     int hasGalleryBoardEditPermission(int seqId, int boardId);
+
+    /**
+     * 갤러리게시판을 삭제합니다.
+     *
+     * @param boardId 게시글 ID
+     */
     void deleteGalleryBoard(int boardId);
 
+    /**
+     * 각 게시판 종류별 최신 갤러리 게시글 목록을 조회
+     *
+     * @param amount 조회할 최신 갤러리 게시글의 개수
+     * @return 최신 갤러리 게시글 목록
+     */
+    List<BoardGalleryDTO> getRecentGalleryBoards(int amount);
+
+
+    /**
+     * 문의게시판의 카테고리 목록을 조회
+     *
+     * @param categoryParentValue 카테고리 부모 값
+     * @return 카테고리 목록
+     */
     List<CategoryDTO> getInquiryBoardCategories(String categoryParentValue);
 
+    /**
+     * 검색 조건에 해당하는 문의 게시글 목록을 조회
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 검색 결과 문의 게시글 목록
+     */
     List<BoardInquiryDTO> searchInquiryBoards(SearchConditionDTO searchConditionDTO);
 
+    /**
+     * 검색 조건에 해당하는 문의 게시글의 개수를 조회
+     *
+     * @param searchConditionDTO 검색 조건 DTO
+     * @return 문의 게시글의 개수
+     */
     int countInquiryBoards(SearchConditionDTO searchConditionDTO);
 
+    /**
+     * 새로운 문의 게시글을 저장
+     *
+     * @param boardInquiryDTO 문의 게시글 정보 DTO
+     */
     void saveInquiryBoardInfo(BoardInquiryDTO boardInquiryDTO);
 
+    /**
+     * 문의 게시글 수정 권한 여부를 확인
+     *
+     * @param seqId   사용자 식별자 아이디
+     * @param boardId 게시글 ID
+     * @return 권한 여부 (1: 권한 있음, 0: 권한 없음)
+     */
     int hasInquiryBoardEditPermission(int seqId, int boardId);
 
+    /**
+     * 문의 게시글의 상세 내용을 조회
+     *
+     * @param boardId 게시글 ID
+     * @return 문의 게시글 상세 내용
+     */
     BoardInquiryDTO getInquiryBoardDetail(int boardId);
 
+    /**
+     * 문의 게시글의 조회수를 1 증가
+     *
+     * @param boardId 게시글 ID
+     */
     void updateInquiryBoardVisitCount(int boardId);
 
+    /**
+     * 문의 게시글을 삭제합니다.
+     *
+     * @param boardId 게시글 ID
+     */
     void deleteInquiryBoard(int boardId);
 
+    /**
+     * 문의 게시글을 수정합니다.
+     *
+     * @param boardDTO 수정할 문의 게시글 정보 DTO
+     */
     void updateInquiryBoardInfo(BoardInquiryDTO boardDTO);
 
+    /**
+     * 갤러리 게시글을 수정합니다.
+     *
+     * @param boardDTO 수정할 문의 게시글 정보 DTO
+     */
     void updateGalleryBoardInfo(BoardGalleryDTO boardDTO);
 
-    List<BoardNoticeDTO> getRecentNoticeBoards(int amount);
-    List<BoardFreeDTO> getRecentFreeBoards(int amount);
-    List<BoardGalleryDTO> getRecentGalleryBoards(int amount);
+    /**
+     * 각 게시판 종류별 최신 문의 게시글 목록을 조회
+     *
+     * @param amount 조회할 최신 문의 게시글의 개수
+     * @return 최신 문의 게시글 목록
+     */
     List<BoardInquiryDTO> getRecentInquiryBoards(int amount);
 
 }

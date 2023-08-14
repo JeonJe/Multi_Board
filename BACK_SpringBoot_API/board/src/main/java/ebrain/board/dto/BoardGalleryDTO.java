@@ -65,8 +65,14 @@ public class BoardGalleryDTO {
      */
     private List<Integer> deletedAttachmentIDs;
 
+    /**
+     * 썸네일 파일 경로
+     */
     private String thumbnailPath;
 
+    /**
+     * 게시글과 연관된 이미지 개수
+     */
     private int numOfImages;
 
 

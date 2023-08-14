@@ -388,6 +388,12 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    /**
+     * 갤러리 게시글 목록을 검색 조건에 따라 조회합니다.
+     *
+     * @param searchCondition 검색 조건 DTO
+     * @return 검색 조건에 해당하는 갤러리 게시글 목록과 개수를 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/gallery")
     ResponseEntity<APIResponse> getGalleryBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
         List<BoardGalleryDTO> searchResult = boardService.searchGalleryBoards(searchCondition);
@@ -407,6 +413,11 @@ public class BoardController {
         }
     }
 
+    /**
+     * 갤러리 게시판의 카테고리 목록을 조회합니다.
+     *
+     * @return 갤러리 게시판의 카테고리 목록을 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/gallery/categories")
     ResponseEntity<APIResponse> getGalleryBoardCategories() {
         List<CategoryDTO> categories = boardService.getGalleryBoardCategories();
@@ -419,6 +430,14 @@ public class BoardController {
         }
     }
 
+    /**
+     * 갤러리 게시글을 저장하고 결과를 반환합니다.
+     *
+     * @param request  HttpServletRequest 객체
+     * @param boardDTO 갤러리 게시글 정보 DTO
+     * @return 게시글 저장 결과를 담은 API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
     @PostMapping("/api/boards/gallery")
     ResponseEntity<APIResponse> saveGalleryBoardInfo(HttpServletRequest request, @Valid @ModelAttribute BoardGalleryDTO boardDTO) throws Exception {
 
@@ -436,6 +455,12 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    /**
+     * 특정 갤러리 게시글의 상세 내용을 조회합니다.
+     *
+     * @param boardId 게시글 ID
+     * @return 갤러리 게시글 상세 내용을 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/gallery/{boardId}")
     ResponseEntity<APIResponse> getGalleryBoardDetail(@PathVariable @NotEmpty int boardId) {
         BoardGalleryDTO galleryBoard = boardService.getGalleryBoardDetail(boardId);
@@ -450,6 +475,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * 현재 사용자가 특정 갤러리 게시글을 수정할 권한이 있는지 확인합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 게시글 ID
+     * @return 권한 여부를 담은 API 응답 객체
+     */
     @GetMapping("/api/auth/boards/gallery/{boardId}")
     public ResponseEntity<APIResponse> hasGalleryBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
 
@@ -473,6 +505,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * 특정 갤러리 게시글을 삭제합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 게시글 ID
+     * @return 게시글 삭제 결과를 담은 API 응답 객체
+     */
     @DeleteMapping("/api/boards/gallery/{boardId}")
     public ResponseEntity<APIResponse> deleteGalleryBoard(HttpServletRequest request, @PathVariable int boardId) {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
@@ -491,6 +530,39 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    /**
+     * 특정 갤러리 게시글을 수정하고 결과를 반환합니다.
+     *
+     * @param request  HttpServletRequest 객체
+     * @param boardId  수정할 게시글 ID
+     * @param boardDTO 수정할 갤러리 게시글 정보
+     * @return 게시글 수정 결과를 담은 API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
+    @PutMapping("/api/boards/gallery/{boardId}")
+    public ResponseEntity<APIResponse> updateGalleryBoardInfo(HttpServletRequest request, @PathVariable int boardId,
+                                                              @Valid @ModelAttribute BoardGalleryDTO boardDTO) throws Exception {
+        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
+        APIResponse apiResponse;
+        int seqId = AuthUtil.getSeqIdFromRequest(request);
+
+        if (seqId == 0) {
+            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
+        }
+
+        boardDTO.setBoardId(boardId);
+        boardService.updateGalleryBoardInfo(seqId, boardDTO);
+
+        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+
+    /**
+     * 문의 게시판의 카테고리 목록을 조회합니다.
+     *
+     * @return 문의 게시판의 카테고리 목록을 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/inquiry/categories")
     ResponseEntity<APIResponse> getInquiryBoardCategories() {
         List<CategoryDTO> categories = boardService.getInquiryBoardCategories();
@@ -503,6 +575,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * 문의 게시글 목록을 검색 조건에 따라 조회합니다.
+     *
+     * @param searchCondition 검색 조건 DTO
+     * @return 검색 조건에 해당하는 문의 게시글 목록과 개수를 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/inquiry")
     ResponseEntity<APIResponse> getInquiryBoardsWitchSearchCondition(@ModelAttribute SearchConditionDTO searchCondition) {
         List<BoardInquiryDTO> searchResult = boardService.searchInquiryBoards(searchCondition);
@@ -522,8 +600,16 @@ public class BoardController {
         }
     }
 
+    /**
+     * 문의 게시글을 저장하고 결과를 반환합니다.
+     *
+     * @param request  HttpServletRequest 객체
+     * @param boardDTO 문의 게시글 정보 DTO
+     * @return 게시글 저장 결과를 담은 API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
     @PostMapping("/api/boards/inquiry")
-    ResponseEntity<APIResponse> saveInquiryBoardInfo(HttpServletRequest request, @Valid  @RequestBody  BoardInquiryDTO boardDTO) throws Exception {
+    ResponseEntity<APIResponse> saveInquiryBoardInfo(HttpServletRequest request, @Valid @RequestBody BoardInquiryDTO boardDTO) throws Exception {
 
         APIResponse apiResponse;
 
@@ -539,6 +625,13 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    /**
+     * 현재 사용자가 특정 문의 게시글을 수정할 권한이 있는지 확인합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 게시글 ID
+     * @return 권한 여부를 담은 API 응답 객체
+     */
     @GetMapping("/api/auth/boards/inquiry/{boardId}")
     public ResponseEntity<APIResponse> hasInquiryBoardEditPermission(HttpServletRequest request, @PathVariable int boardId) {
 
@@ -562,6 +655,12 @@ public class BoardController {
         }
     }
 
+    /**
+     * 특정 문의 게시글의 상세 내용을 조회합니다.
+     *
+     * @param boardId 게시글 ID
+     * @return 문의 게시글 상세 내용을 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/inquiry/{boardId}")
     ResponseEntity<APIResponse> getInquiryBoardDetail(@PathVariable @NotEmpty int boardId) {
         BoardInquiryDTO inquiryBoard = boardService.getInquiryBoardDetail(boardId);
@@ -576,6 +675,13 @@ public class BoardController {
         }
     }
 
+    /**
+     * 특정 문의 게시글을 삭제합니다.
+     *
+     * @param request HttpServletRequest 객체
+     * @param boardId 게시글 ID
+     * @return 게시글 삭제 결과를 담은 API 응답 객체
+     */
     @DeleteMapping("/api/boards/inquiry/{boardId}")
     public ResponseEntity<APIResponse> deleteInquiryBoard(HttpServletRequest request, @PathVariable int boardId) {
         //BearerAuthInterceptor에서 JWT에 따른 userId를 포함한 Request를 전달
@@ -594,9 +700,17 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
+    /**
+     * 특정 문의 게시글의 비밀번호를 확인합니다.
+     *
+     * @param request  HttpServletRequest 객체
+     * @param boardId  게시글 ID
+     * @param boardDTO 비밀번호 확인을 위한 DTO
+     * @return 비밀번호 일치 여부를 담은 API 응답 객체
+     */
     @PostMapping("/api/auth/boards/inquiry/{boardId}")
     public ResponseEntity<APIResponse> checkInquiryBoardPassword(HttpServletRequest request, @PathVariable int boardId,
-                                                                 @RequestBody BoardInquiryDTO boardDTO ) {
+                                                                 @RequestBody BoardInquiryDTO boardDTO) {
 
         APIResponse apiResponse;
 
@@ -612,28 +726,18 @@ public class BoardController {
         }
     }
 
-    @PutMapping("/api/boards/gallery/{boardId}")
-    public ResponseEntity<APIResponse> updateGalleryBoardInfo(HttpServletRequest request, @PathVariable int boardId,
-                                                           @Valid @ModelAttribute BoardGalleryDTO boardDTO) throws Exception {
-        //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
-        APIResponse apiResponse;
-        int seqId = AuthUtil.getSeqIdFromRequest(request);
-
-        if (seqId == 0) {
-            apiResponse = ResponseBuilder.ErrorWithoutData("로그인되지 않았습니다.");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
-        }
-
-        boardDTO.setBoardId(boardId);
-        boardService.updateGalleryBoardInfo(seqId, boardDTO);
-
-        apiResponse = ResponseBuilder.SuccessWithoutData("게시글 수정에 성공하였습니다.");
-        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
-    }
-
+    /**
+     * 특정 문의 게시글을 수정하고 결과를 반환합니다.
+     *
+     * @param request  HttpServletRequest 객체
+     * @param boardId  수정할 게시글 ID
+     * @param boardDTO 수정할 문의 게시글 정보
+     * @return 게시글 수정 결과를 담은 API 응답 객체
+     * @throws Exception 예외 발생 시
+     */
     @PutMapping("/api/boards/inquiry/{boardId}")
     public ResponseEntity<APIResponse> updateInquiryBoardInfo(HttpServletRequest request, @PathVariable int boardId,
-                                                           @Valid @RequestBody BoardInquiryDTO boardDTO) throws Exception {
+                                                              @Valid @RequestBody BoardInquiryDTO boardDTO) throws Exception {
         //BearerAuthInterceptor 에서 Request에 추출한 JWT로부터 추출한 seqId 포함하여 전달
         APIResponse apiResponse;
         int seqId = AuthUtil.getSeqIdFromRequest(request);
@@ -650,7 +754,11 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
-
+    /**
+     * 최근 게시글 목록을 조회합니다.
+     *
+     * @return 최근 게시글 목록과 개수를 담은 API 응답 객체
+     */
     @GetMapping("/api/boards/recent")
     ResponseEntity<APIResponse> getRecentBoardsList() {
 

@@ -37,6 +37,8 @@
         FROM attachments
         WHERE attachment_id = #{attachmentId}
     </delete>
+
+    <!-- 게시글 ID에 해당하는 첨부 파일을 삭제하는 쿼리 -->
     <delete id="deleteAttachmentsByBoardId">
         DELETE
         FROM attachments

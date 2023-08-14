@@ -13,7 +13,7 @@ public class AuthUtil {
 
 
     /**
-     * 비밀번호를 해싱하는 메서드
+     * 비밀번호를 해싱하는 메서드입니다.
      *
      * @param password 비밀번호
      * @return 해시화된 비밀번호

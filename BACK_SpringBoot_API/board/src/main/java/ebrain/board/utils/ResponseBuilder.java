@@ -22,6 +22,13 @@ public class ResponseBuilder {
      */
     private static final String ERROR_STATUS = "error";
 
+    /**
+     * 데이터를 포함한 성공 응답 생성 메서드
+     *
+     * @param message 응답 메시지
+     * @param data    응답 데이터
+     * @return APIResponse 객체
+     */
     public static APIResponse SuccessWithData(String message, Object data) {
         APIResponse response = APIResponse.builder()
                 .status(SUCCESS_STATUS)
@@ -30,14 +37,6 @@ public class ResponseBuilder {
                 .build();
         return response;
     }
-
-    /**
-     * 데이터를 포함한 성공 응답 생성 메서드
-     *
-     * @param message 응답 메시지
-     * @param data    응답 데이터
-     * @return APIResponse 객체
-     */
 
     /**
      * 데이터 없이 성공 응답 생성 메서드

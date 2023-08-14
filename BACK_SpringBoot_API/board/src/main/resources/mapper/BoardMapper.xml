@@ -112,6 +112,16 @@
         WHERE board_id = #{boardId}
     </update>
 
+    <!-- 최근 공지사항 게시글 조회하는 쿼리 -->
+    <select id="getRecentNoticeBoards" parameterType="java.lang.Integer" resultType="BoardNoticeDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName
+        FROM notice_board AS target_board
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+        WHERE is_noticed = 0
+        ORDER BY target_board.created_at DESC
+            LIMIT #{amount}
+    </select>
+
     <!-- 검색 조건에 해당하는 자유 게시글 리스트 조회  -->
     <select id="searchFreeBoards" parameterType="SearchConditionDTO" resultType="BoardFreeDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS
@@ -209,6 +219,28 @@
         WHERE board_id = #{boardId}
     </update>
 
+    <!-- 최근 자유 게시글 조회하는 쿼리 -->
+    <select id="getRecentFreeBoards" parameterType="java.lang.Integer" resultType="BoardFreeDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS
+                                                     countBoardComment,
+               COALESCE(cntAttachment, 0) AS countBoardAttachment
+        FROM free_board AS target_board
+                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+                 JOIN users AS u ON target_board.user_seq_id = u.seq_id
+                 LEFT JOIN (
+            SELECT board_id, COUNT(*) AS cntComment
+            FROM comments
+            GROUP BY board_id
+        ) AS countComments ON target_board.board_id = countComments.board_id
+                 LEFT JOIN (
+            SELECT board_id, COUNT(*) AS cntAttachment
+            FROM attachments
+            GROUP BY board_id
+        ) AS countAttachments ON target_board.board_id = countAttachments.board_id
+        ORDER BY target_board.created_at DESC
+            LIMIT #{amount}
+    </select>
+
     <!--  갤러리게시판 카테고리 목록을 조회  -->
     <select id="getGalleryBoardCategories" resultType="CategoryDTO">
         SELECT cc.child_code_name as categoryName, cc.child_code_value as categoryValue
@@ -217,6 +249,7 @@
         WHERE cp.parent_code_value = #{categoryParentCodeValue}
     </select>
 
+    <!-- 갤러리 게시글 저장   -->
     <insert id="saveGalleryBoardInfo" parameterType="BoardGalleryDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO gallery_board
         (title, content, user_seq_id, created_at, visit_count, child_code_value)
@@ -255,6 +288,7 @@
         <include refid="searchQuery"/>
     </select>
 
+    <!-- 갤러리 게시글의 상세 정보를 조회하는 쿼리 -->
     <select id="getGalleryBoardDetail" parameterType="java.lang.Integer" resultType="BoardGalleryDTO">
         SELECT target_board.*,
                target_board.child_code_value as categoryValue,
@@ -266,12 +300,14 @@
         WHERE target_board.board_id = #{boardId}
     </select>
 
+    <!-- 갤러리 게시글의 방문 횟수를 업데이트하는 쿼리 -->
     <update id="updateGalleryBoardVisitCount" parameterType="java.lang.Integer">
         UPDATE gallery_board
         SET visit_count = visit_count + 1
         WHERE board_id = #{boardId}
     </update>
 
+    <!-- 갤러리 게시글의 편집 권한 여부를 확인하는 쿼리 -->
     <select id="hasGalleryBoardEditPermission" resultType="int">
         SELECT COUNT(*) > 0
         FROM gallery_board
@@ -279,12 +315,26 @@
           AND user_seq_id = #{seqId}
     </select>
 
+    <!-- 갤러리 게시글 삭제하는 쿼리 -->
     <delete id="deleteGalleryBoard">
         DELETE
         FROM gallery_board
         WHERE board_id = #{boardId}
     </delete>
 
+    <!-- 최근 갤러리 게시글 조회하는 쿼리 -->
+    <select id="getRecentGalleryBoards" parameterType="java.lang.Integer" resultType="BoardGalleryDTO">
+        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId,
+               ( SELECT fileName FROM images WHERE board_id = target_board.board_id AND priority = 1 LIMIT 1 ) AS thumbnailPath,
+           ( SELECT COUNT(*) FROM images WHERE board_id = target_board.board_id ) AS numOfImages
+        FROM gallery_board AS target_board
+            JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
+            JOIN users AS u ON target_board.user_seq_id = u.seq_id
+        ORDER BY target_board.created_at DESC
+            LIMIT #{amount}
+    </select>
+
+    <!-- 문의 게시글 카테고리 목록 조회하는 쿼리 -->
     <select id="getInquiryBoardCategories" resultType="CategoryDTO">
         SELECT cc.child_code_name as categoryName, cc.child_code_value as categoryValue
         FROM category_child_code cc
@@ -292,6 +342,7 @@
         WHERE cp.parent_code_value = #{categoryParentCodeValue}
     </select>
 
+    <!-- 문의 게시글 검색 쿼리 -->
     <select id="searchInquiryBoards" parameterType="SearchConditionDTO" resultType="BoardInquiryDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId
         FROM inquiry_board AS target_board
@@ -304,6 +355,7 @@
         OFFSET #{offset}
     </select>
 
+    <!-- 문의 게시글 개수 조회하는 쿼리 -->
     <select id="countInquiryBoards" parameterType="SearchConditionDTO" resultType="java.lang.Integer">
         SELECT COUNT(*)
         FROM inquiry_board AS target_board
@@ -311,6 +363,7 @@
         <include refid="searchQuery"/>
     </select>
 
+    <!-- 문의 게시글 저장 -->
     <insert id="saveInquiryBoardInfo" parameterType="BoardInquiryDTO" useGeneratedKeys="true" keyProperty="boardId">
         INSERT INTO inquiry_board
         (title, content, user_seq_id, created_at, visit_count, is_secret, is_answered, password, child_code_value)
@@ -325,6 +378,7 @@
                 #{categoryValue})
     </insert>
 
+    <!-- 문의 게시글 편집 권한 여부를 확인하는 쿼리 -->
     <select id="hasInquiryBoardEditPermission" resultType="int">
         SELECT COUNT(*) > 0
         FROM inquiry_board
@@ -332,6 +386,7 @@
           AND user_seq_id = #{seqId}
     </select>
 
+    <!-- 문의 게시글의 상세 정보를 조회하는 쿼리 -->
     <select id="getInquiryBoardDetail" parameterType="java.lang.Integer" resultType="BoardInquiryDTO">
         SELECT target_board.*,
                target_board.child_code_value as categoryValue,
@@ -343,19 +398,21 @@
         WHERE target_board.board_id = #{boardId}
     </select>
 
+    <!-- 문의 게시글의 방문 횟수를 업데이트하는 쿼리 -->
     <update id="updateInquiryBoardVisitCount" parameterType="java.lang.Integer">
         UPDATE inquiry_board
         SET visit_count = visit_count + 1
         WHERE board_id = #{boardId}
     </update>
 
-
+    <!-- 문의 게시글 삭제하는 쿼리 -->
     <delete id="deleteInquiryBoard">
         DELETE
         FROM inquiry_board
         WHERE board_id = #{boardId}
     </delete>
 
+    <!-- 문의 게시글 정보를 업데이트하는 쿼리 -->
     <update id="updateInquiryBoardInfo" parameterType="BoardInquiryDTO">
         UPDATE inquiry_board
         SET title            = #{title},
@@ -368,6 +425,7 @@
         WHERE board_id = #{boardId}
     </update>
 
+    <!-- 문의 게시글 정보를 업데이트하는 쿼리 -->
     <update id="updateGalleryBoardInfo" parameterType="BoardGalleryDTO">
         UPDATE gallery_board
         SET title            = #{title},
@@ -376,49 +434,7 @@
         WHERE board_id = #{boardId}
     </update>
 
-
-    <select id="getRecentNoticeBoards" parameterType="java.lang.Integer" resultType="BoardNoticeDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName
-        FROM notice_board AS target_board
-                 JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-        WHERE is_noticed = 0
-        ORDER BY target_board.created_at DESC
-        LIMIT #{amount}
-    </select>
-
-
-    <select id="getRecentFreeBoards" parameterType="java.lang.Integer" resultType="BoardFreeDTO">
-        SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId, COALESCE(cntComment, 0) AS
-        countBoardComment,
-        COALESCE(cntAttachment, 0) AS countBoardAttachment
-        FROM free_board AS target_board
-        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-        JOIN users AS u ON target_board.user_seq_id = u.seq_id
-        LEFT JOIN (
-        SELECT board_id, COUNT(*) AS cntComment
-        FROM comments
-        GROUP BY board_id
-        ) AS countComments ON target_board.board_id = countComments.board_id
-        LEFT JOIN (
-        SELECT board_id, COUNT(*) AS cntAttachment
-        FROM attachments
-        GROUP BY board_id
-        ) AS countAttachments ON target_board.board_id = countAttachments.board_id
-        ORDER BY target_board.created_at DESC
-        LIMIT #{amount}
-    </select>
-
-    <select id="getRecentGalleryBoards" parameterType="java.lang.Integer" resultType="BoardGalleryDTO">
-    SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId,
-           ( SELECT fileName FROM images WHERE board_id = target_board.board_id AND priority = 1 LIMIT 1 ) AS thumbnailPath,
-           ( SELECT COUNT(*) FROM images WHERE board_id = target_board.board_id ) AS numOfImages
-    FROM gallery_board AS target_board
-        JOIN category_child_code AS cc ON target_board.child_code_value = cc.child_code_value
-        JOIN users AS u ON target_board.user_seq_id = u.seq_id
-    ORDER BY target_board.created_at DESC
-        LIMIT #{amount}
-    </select>
-
+    <!-- 최근 문의 게시글 조회하는 쿼리 -->
     <select id="getRecentInquiryBoards" parameterType="java.lang.Integer" resultType="BoardInquiryDTO">
         SELECT target_board.*, cc.child_code_name AS categoryName, u.user_id as userId
         FROM inquiry_board AS target_board

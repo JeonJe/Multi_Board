@@ -8,20 +8,19 @@
 -->
 <mapper namespace="ebrain.board.mapper.ReplyRepository">
 
-    <!-- 게시글에 달린 모든 댓글 조회 -->
+    <!-- 게시글에 달린 모든 댓글을 조회하는 쿼리 -->
     <select id="getRepliesByBoardId" resultType="ReplyDTO">
         SELECT r.*, a.admin_id AS userId
         FROM replies AS r
-                 JOIN admin a on r.admin_seq_id = a.seq_id
+                 JOIN admin a ON r.admin_seq_id = a.seq_id
         WHERE r.board_id = #{boardId}
     </select>
 
+    <!-- 게시글에 달린 댓글의 개수를 조회하는 쿼리 -->
     <select id="countRepliesByBoardId" parameterType="java.lang.Integer" resultType="int">
         SELECT COUNT(*) > 0
         FROM replies
         WHERE board_id = #{board_id}
     </select>
-
-
 
 </mapper>

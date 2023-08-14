@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+
 /**
  * 공지 게시글 정보를 담는 DTO
  */
@@ -32,13 +33,11 @@ public class BoardNoticeDTO {
     @NotEmpty(message = "내용은 필수 항목입니다.")
     @Size(max = 4000, message = "내용은 4000자 이하로 입력해야 합니다.")
     private String content;
-
-
+    
     /**
      * 관리자 식별자 아이디
      */
     private int adminSeqId;
-
 
     /**
      * 작성일시
@@ -55,13 +54,20 @@ public class BoardNoticeDTO {
      */
     private int isNoticed;
 
+    /**
+     * 카테고리 값
+     */
     @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
     private String categoryValue;
 
-
+    /**
+     * 카테고리 이름
+     */
     private String categoryName;
 
-
+    /**
+     * 유저 ID
+     */
     private String userId;
 
 }

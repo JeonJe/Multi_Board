@@ -22,7 +22,7 @@ public class AttachmentService {
     private  final BoardRepository boardRepository;
 
     /**
-     * 첨부파일 ID로 첨부파일 정보를 조회
+     * 첨부파일 ID로 첨부파일 정보를 조회합니다.
      * @param attachmentId
      * @return
      */
@@ -30,7 +30,7 @@ public class AttachmentService {
         return attachmentRepository.getAttachmentByAttachmentId(attachmentId);
     }
     /**
-     * 특정 자유게시판의 첨부 파일을 삭제
+     * 특정 자유게시판의 첨부 파일을 삭제합니다.
      *
      * @param boardId 자유게시판의 ID
      */
