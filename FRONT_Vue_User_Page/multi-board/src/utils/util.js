@@ -81,7 +81,11 @@ const validateFiles = async (files) => {
 
   return true;
 };
-
+/**
+ * 이미지 유효성을 검사하는 비동기 함수
+ * @param {Array} images - 유효성을 검사할 이미지 파일 배열
+ * @returns {Promise<boolean>} - 이미지 유효성 여부 (true: 유효, false: 유효하지 않음)
+ */
 const validateImages = async (images) => {
   const allowedExtensions = ["jpg", "jif", "png"];
   const maxFileSize = 1 * 1024 * 1024;

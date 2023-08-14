@@ -201,8 +201,7 @@
   </b-modal>
 </template>
 <script>
-// boardService로부터 최근 게시글 데이터를 가져온다고 가정
-import boardService from "@/services/board-service"; // boardService 경로는 실제 경로에 맞게 수정하세요
+import boardService from "@/services/board-service";
 import { IsNewBoard } from "@/utils/util";
 export default {
   data() {
@@ -228,33 +227,64 @@ export default {
   },
   methods: {
     IsNewBoard,
+    /**
+     * 갤러리 게시글의 썸네일 전체 URL을 생성하는 함수
+     * @param {string} thumbnailPath - 썸네일 이미지 경로
+     * @returns {string} - 썸네일 전체 URL
+     */
     getFullThumbnailURL(thumbnailPath) {
       return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE_THUMBNAIL}/${thumbnailPath}`;
     },
+    /**
+     * 문의 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {Object} - 문의 게시글 상세 정보 페이지의 URL과 쿼리스트링
+     */
     getInquiryBoardDetail(boardId) {
       return {
         path: `${process.env.VUE_APP_BOARD_INQUIRY_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
     },
+    /**
+     * 자유 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {Object} - 자유 게시글 상세 정보 페이지의 URL과 쿼리스트링
+     */
     getFreeBoardDetail(boardId) {
       return {
         path: `${process.env.VUE_APP_BOARD_FREE_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
     },
+
+    /**
+     * 공지사항 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {Object} - 공지사항 게시글 상세 정보 페이지의 URL과 쿼리스트링
+     */
     getNoticeBoardDetail(boardId) {
       return {
         path: `${process.env.VUE_APP_BOARD_NOTICE_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
     },
+    /**
+     * 갤러리 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {Object} - 갤러리 게시글 상세 정보 페이지의 URL과 쿼리스트링
+     */
     getGalleryBoardDetail(boardId) {
       return {
         path: `${process.env.VUE_APP_BOARD_GALLERY_VIEW}/${boardId}`,
         query: this.searchCondition,
       };
     },
+    /**
+     * 비밀 게시글 열람을 위한 모달 팝업을 띄우는 함수
+     * @param {number} boardId - 게시글 ID
+     * @returns {void}
+     */
     clickSecretBoard(boardId) {
       this.showModal = true;
       this.inputPassword = "";
@@ -262,10 +292,19 @@ export default {
       this.selectedBoardId = boardId;
       console.log(this.showModal);
     },
+    /**
+     * 모달 팝업에서 확인 버튼을 눌렀을 때 실행되는 함수
+     * @param {Event} bvModalEvent - 모달 이벤트 객체
+     * @returns {void}
+     */
     handleOk(bvModalEvent) {
       bvModalEvent.preventDefault();
       this.handlePasswordSubmit();
     },
+    /**
+     * 비밀번호를 제출하고 확인하는 함수
+     * @returns {void}
+     */
     async handlePasswordSubmit() {
       if (this.inputPassword.length < 4) {
         this.passwordState = "invalidLength";

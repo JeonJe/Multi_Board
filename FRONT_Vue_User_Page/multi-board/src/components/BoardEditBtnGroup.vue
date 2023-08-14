@@ -30,12 +30,24 @@ export default {
     },
   },
   methods: {
+    /**
+     * 부모 컴포넌트로 'emitUpdateBoard' 이벤트를 전달하는 함수
+     * @returns {void}
+     */
     emitUpdateBoard() {
       this.$emit("emitUpdateBoard");
     },
+    /**
+     * 부모 컴포넌트로 'emitDeleteBoard' 이벤트를 전달하는 함수
+     * @returns {void}
+     */
     emitDeleteBoard() {
       this.$emit("emitDeleteBoard");
     },
+    /**
+     * 부모 컴포넌트로 'emitBackToList' 이벤트를 전달하는 함수
+     * @returns {void}
+     */
     emitBackToList() {
       this.$emit("emitBackToList");
     },

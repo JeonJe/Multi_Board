@@ -105,15 +105,17 @@ export default {
      */
     IsNewBoard,
     /**
-     * 검색 조건을 업데이트하고 공지사항 목록을 가져오는 함수
+     * 검색 조건을 업데이트하고 공지사항 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
+     * @returns {void}
      */
     async updateSearchCondition(searchCondition) {
       this.searchCondition = searchCondition;
       await this.getNoticeBoardList();
     },
     /**
-     * 공지사항 목록을 가져오는 비동기 함수
+     * 공지사항 목록을 가져오는 비동기 함수입니다.
+     * @returns {void}
      */
     async getNoticeBoardList() {
       try {
@@ -137,7 +139,8 @@ export default {
       }
     },
     /**
-     * 공지 게시판 카테고리 조회
+     * 공지 게시판 카테고리를 조회하는 함수입니다.
+     * @returns {void}
      */
     async getNoticeBoardCategories() {
       try {
@@ -152,8 +155,9 @@ export default {
       }
     },
     /**
-     * 페이지네이션을 업데이트하는 함수
+     * 페이지네이션을 업데이트하는 함수입니다.
      * @param {number} page - 업데이트할 페이지 번호
+     * @returns {void}
      */
     updatePagination(page) {
       this.searchCondition.currentPage = page;
@@ -161,7 +165,7 @@ export default {
       this.getNoticeBoardList();
     },
     /**
-     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수입니다.
      * @param {number} boardId - 게시글 ID
      * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
      */

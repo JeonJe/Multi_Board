@@ -73,8 +73,9 @@ export default {
      */
     getFormattedDate,
     /**
-     * 공지사항 상세 정보를 가져오는 비동기 함수
+     * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
      * @param {number} boardId - 공지사항 게시글의 ID
+     * @returns {void}
      */
     async getNoticeBoardDetail(boardId) {
       try {
@@ -87,7 +88,7 @@ export default {
       }
     },
     /**
-     * 공지사항 목록 페이지로 이동하는 함수
+     * 공지사항 목록 페이지로 이동하는 함수입니다.
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
     clickBackToListBtn() {

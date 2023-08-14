@@ -126,9 +126,6 @@ export default {
     await this.getInquiryBoardCategories();
   },
   computed: {
-    // passwordPlaceholder() {
-    //   return this.inputPassword ? "" : "비밀번호";
-    // },
     ...mapGetters(["isLoggedIn", "getUser"]),
   },
   methods: {
@@ -142,7 +139,7 @@ export default {
      */
     IsNewBoard,
     /**
-     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수
+     * 검색 조건을 업데이트하고 문의게시글 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
     async updateSearchCondition(searchCondition) {
@@ -169,7 +166,8 @@ export default {
       }
     },
     /**
-     * 자유 게시판 카테고리를 가져오는 함수
+     * 문의 게시판 카테고리를 조회하는 비동기 함수입니다.
+     * @returns {void}
      */
     async getInquiryBoardCategories() {
       try {
@@ -185,7 +183,8 @@ export default {
     },
 
     /**
-     * 사용자 인증 상태를 확인하는 함수
+     * 사용자 인증 상태를 확인하는 함수입니다.
+     * @returns {boolean} - 사용자 인증 상태 여부
      */
     async checkJWTAuth() {
       try {
@@ -198,7 +197,7 @@ export default {
       }
     },
     /**
-     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수
+     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수입니다.
      * @param {Object} searchCondition - 검색 조건 데이터
      * @returns {Object} - 게시글 작성 페이지의 URL과 쿼리스트링
      */
@@ -209,8 +208,9 @@ export default {
       };
     },
     /**
-     * 페이지네이션을 업데이트하는 함수
+     * 페이지네이션을 업데이트하는 함수입니다.
      * @param {number} page - 업데이트할 페이지 번호
+     * @returns {void}
      */
     updatePagination(page) {
       this.searchCondition.currentPage = page;
@@ -218,7 +218,7 @@ export default {
       this.getInquiryBoardList();
     },
     /**
-     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수입니다.
      * @param {number} boardId - 게시글 ID
      * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
      */
@@ -228,16 +228,33 @@ export default {
         query: this.searchCondition,
       };
     },
+    /**
+     * 비밀 게시글 버튼 클릭 이벤트 핸들러 함수입니다.
+     * 모달을 열고 비밀번호 입력 상태를 초기화합니다.
+     * @param {number} boardId - 게시글 ID
+     * @returns {void}
+     */
     clickSecretBoard(boardId) {
       this.showModal = true;
       this.inputPassword = "";
       this.passwordState = null;
       this.selectedBoardId = boardId;
     },
+    /**
+     * 모달 확인 버튼 핸들러 함수입니다.
+     * 비밀번호 유효성 검사를 진행하고 처리합니다.
+     * @param {bvModalEvent} bvModalEvent - 모달 이벤트 객체
+     * @returns {void}
+     */
     handleOk(bvModalEvent) {
       bvModalEvent.preventDefault();
       this.handlePasswordSubmit();
     },
+    /**
+     * 비밀번호 검증 및 처리 함수입니다.
+     * 비밀번호의 유효성을 확인하고 상태를 처리합니다.
+     * @returns {void}
+     */
     async handlePasswordSubmit() {
       if (this.inputPassword.length < 4) {
         this.passwordState = "invalidLength";

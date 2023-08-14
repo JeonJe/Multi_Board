@@ -160,7 +160,9 @@ export default {
     validateFiles,
     downloadAttachment,
     /**
-     * 게시판 정보를 초기화
+     * 게시판 정보를 초기화하는 함수입니다.
+     * 작성자 정보를 가져오고 게시판 카테고리를 조회합니다.
+     * @returns {void}
      */
     async initBoardInfo() {
       if (this.getUser && this.getUser.userId !== null) {
@@ -175,6 +177,11 @@ export default {
       }
       await this.getInquiryBoardCategories();
     },
+    /**
+     * 기존 문의 게시글 상세 정보를 가져오는 함수입니다.
+     * @param {number} boardId - 게시글의 ID
+     * @returns {void}
+     */
     async getOriginInquiryBoardDetail(boardId) {
       if (!(await boardService.hasInquiryBoardEditPermission(boardId))) {
         alert("수정 권한이 없습니다");
@@ -187,7 +194,8 @@ export default {
       }
     },
     /**
-     * 자유 게시판 카테고리를 조회
+     * 문의 게시판 카테고리를 조회하는 함수입니다.
+     * @returns {void}
      */
     async getInquiryBoardCategories() {
       try {
@@ -207,7 +215,8 @@ export default {
       }
     },
     /**
-     * 게시판 정보를 서버에 저장하는 함수
+     * 게시판 정보를 서버에 저장하는 함수입니다.
+     * @returns {void}
      */
     async clickBoardInfoSubmit() {
       if (!(await this.validateForm())) {
@@ -222,7 +231,7 @@ export default {
       );
     },
     /**
-     * 게시글 수정 폼을 제출하는 함수
+     * 게시글 수정 폼을 제출하는 함수입니다.
      * @param {number} boardId - 수정할 게시글의 ID
      * @returns {void}
      */
@@ -237,6 +246,10 @@ export default {
         query: { ...this.$route.query },
       });
     },
+    /**
+     * 문의 게시판 목록 페이지로 이동하는 함수입니다.
+     * @returns {void}
+     */
     moveToInquiryBoardList() {
       boardService.replaceRouterToBoardList(
         this.$router,
@@ -244,6 +257,10 @@ export default {
         "inquiry"
       );
     },
+    /**
+     * 양식의 유효성을 검사하는 함수입니다.
+     * @returns {boolean} - 유효성 검사 결과 (true: 유효, false: 유효하지 않음)
+     */
     async validateForm() {
       if (
         !this.boardInfo ||

@@ -207,7 +207,9 @@ export default {
     validateFiles,
     downloadAttachment,
     /**
-     * 게시판 정보를 초기화
+     * 게시판 정보를 초기화합니다.
+     * 사용자 정보 및 카테고리 목록을 설정하고, 작성자 정보가 없을 시 알림을 표시합니다.
+     * @returns {void}
      */
     async initBoardInfo() {
       if (this.getUser && this.getUser.userId !== null) {
@@ -222,6 +224,11 @@ export default {
       }
       await this.getFreeBoardCategories();
     },
+    /**
+     * 자유 게시판 카테고리 목록을 조회합니다.
+     * 서버에서 카테고리 목록을 가져오고, 목록이 비어있을 시 알림을 표시합니다.
+     * @returns {void}
+     */
     async getOriginFreeBoardDetail(boardId) {
       if (!(await boardService.hasFreeBoardEditPermission(boardId))) {
         alert("수정 권한이 없습니다");
@@ -234,7 +241,9 @@ export default {
       }
     },
     /**
-     * 자유 게시판 카테고리를 조회
+     * 게시글 작성 또는 수정 폼을 서버에 제출합니다.
+     * 입력한 정보를 기반으로 게시글을 저장하거나 수정하며, 유효성 검사를 수행합니다.
+     * @returns {void}
      */
     async getFreeBoardCategories() {
       try {
@@ -254,7 +263,10 @@ export default {
       }
     },
     /**
-     * 게시판 정보를 서버에 저장하는 함수
+     * 게시글 수정 폼을 제출합니다.
+     * 수정한 정보를 기반으로 게시글을 업데이트하며, 유효성 검사를 수행합니다.
+     * @param {number} boardId - 수정할 게시글의 ID
+     * @returns {void}
      */
     async clickBoardInfoSubmit() {
       if (!(await this.validateForm())) {
@@ -266,9 +278,10 @@ export default {
       boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
     },
     /**
-     * 게시글 수정 폼을 제출하는 함수
-     * @param {number} boardId - 수정할 게시글의 ID
-     * @returns {void}
+     * 게시글 수정을 위한 FormData를 생성합니다.
+     * 작성한 게시글 정보 및 첨부 파일 등을 FormData로 구성하여 반환합니다.
+     * @param {boolean} isUpdate - 수정 모드 여부 (true: 수정, false: 작성)
+     * @returns {FormData} - 게시글 작성 또는 수정에 사용될 FormData 객체
      */
     async clickBoardUpdateSubmit(boardId) {
       if (!(await this.validateForm())) {
@@ -306,9 +319,10 @@ export default {
       return newBoardInfo;
     },
     /**
-     * 파일 선택 이벤트 핸들러
-     *  선택한 파일을 boardInfo.uploadAttachments 배열에 추가
+     * 파일 선택 이벤트를 처리하는 함수입니다.
+     * 선택한 파일을 각각의 입력 양식에 연결하고, 첨부 파일 목록을 업데이트합니다.
      * @param {Event} event - 파일 선택 이벤트 객체
+     * @returns {void}
      */
     handleFileChange(event) {
       const file = event.target.files[0];
@@ -317,14 +331,18 @@ export default {
       // this.uploadAttachments.push(file);
     },
     /**
-     * 첨부 파일 입력 양식을 추가하는 함수
+     * 첨부 파일 입력 양식을 추가하는 함수입니다.
+     * 새로운 첨부 파일 입력 양식을 배열에 추가하여 UI에 표시합니다.
+     * @returns {void}
      */
     clickAddAttachmentForm() {
       this.fileInputBoxes.push({ id: this.nextInputId++ });
     },
     /**
-     * 빈 입력 양식을 제거하는 함수
+     * 빈 첨부 파일 입력 양식을 제거합니다.
+     * 입력 양식을 제거하면 해당 파일도 첨부 목록에서 제거됩니다.
      * @param {number} index - 제거할 입력 양식의 인덱스
+     * @returns {void}
      */
     clickRemoveEmptyInput(index) {
       if (this.inputFiles[index]) {
@@ -337,22 +355,28 @@ export default {
       this.fileInputBoxes.splice(index, 1);
     },
     /**
-     * 첨부 파일을 삭제하는 함수
+     * 첨부 파일을 삭제하는 함수입니다.
+     * 선택한 첨부 파일을 삭제하고, 목록에서도 해당 첨부 파일을 제거합니다.
      * @param {number} index - 삭제할 첨부 파일의 인덱스
      * @param {string} attachmentId - 삭제할 첨부 파일의 ID
+     * @returns {void}
      */
-
     async clickDeleteAttachment(index, attachmentId) {
       this.deletedAttachmentIDs.push(attachmentId);
       this.boardInfo.boardAttachments.splice(index, 1);
     },
     /**
-     * 자유 게시판 목록으로 이동하는 함수
-     * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
+     * 자유 게시판 목록 페이지로 이동합니다.
+     * @returns {void}
      */
     moveToFreeBoardList() {
       boardService.replaceRouterToBoardList(this.$router, this.$route, "free");
     },
+    /**
+     * 폼 입력값의 유효성을 검사합니다.
+     * 제목, 내용, 첨부 파일 등의 유효성을 확인하고, 문제가 있을 시 알림을 표시합니다.
+     * @returns {boolean} - 유효성 검사 결과 (true: 유효, false: 유효하지 않음)
+     */
     async validateForm() {
       if (
         !this.boardInfo ||

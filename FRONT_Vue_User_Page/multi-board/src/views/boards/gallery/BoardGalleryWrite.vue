@@ -216,7 +216,9 @@ export default {
     validateImages,
     downloadAttachment,
     /**
-     * 게시판 정보를 초기화
+     * 게시판 정보를 초기화하는 비동기 함수입니다.
+     * 작성자 정보를 설정하고 갤러리 게시판 카테고리를 조회합니다.
+     * @returns {void}
      */
     async initBoardInfo() {
       if (this.getUser && this.getUser.userId !== null) {
@@ -231,6 +233,12 @@ export default {
       }
       await this.getGalleryBoardCategories();
     },
+    /**
+     * 갤러리 게시판 상세 정보를 가져오는 비동기 함수입니다.
+     * 수정 권한을 확인하고 상세 정보를 가져옵니다.
+     * @param {number} boardId - 게시글의 ID
+     * @returns {void}
+     */
     async getOriginGalleryBoardDetail(boardId) {
       if (!(await boardService.hasGalleryBoardEditPermission(boardId))) {
         alert("수정 권한이 없습니다");
@@ -243,7 +251,9 @@ export default {
       }
     },
     /**
-     * 자유 게시판 카테고리를 조회
+     * 갤러리 게시판 카테고리를 조회하는 비동기 함수입니다.
+     * 카테고리 목록을 가져오고 첫 번째 카테고리를 선택합니다.
+     * @returns {void}
      */
     async getGalleryBoardCategories() {
       try {
@@ -263,7 +273,9 @@ export default {
       }
     },
     /**
-     * 게시판 정보를 서버에 저장하는 함수
+     * 게시판 정보를 서버에 저장하는 함수입니다.
+     * 유효성 검사를 통과하면 새로운 게시글 정보를 서버에 전송합니다.
+     * @returns {void}
      */
     async clickBoardInfoSubmit() {
       if (!(await this.validateForm())) {
@@ -278,8 +290,10 @@ export default {
         "gallery"
       );
     },
+
     /**
-     * 게시글 수정 폼을 제출하는 함수
+     * 게시글 수정 폼을 제출하는 함수입니다.
+     * 유효성 검사를 통과하면 수정된 게시글 정보를 서버에 전송합니다.
      * @param {number} boardId - 수정할 게시글의 ID
      * @returns {void}
      */
@@ -295,7 +309,8 @@ export default {
       });
     },
     /**
-     * 게시글을 수정하기 위해 제출할 FormData를 생성하는 함수
+     * 게시글을 수정하기 위해 제출할 FormData를 생성하는 함수입니다.
+     * @param {boolean} isUpdate - 게시글 수정 여부
      * @returns {FormData} - 게시글 수정에 사용될 FormData 객체
      */
     createFormDataToSumbit(isUpdate) {
@@ -318,10 +333,12 @@ export default {
 
       return newBoardInfo;
     },
+
     /**
-     * 파일 선택 이벤트 핸들러
-     *  선택한 파일을 boardInfo.uploadAttachments 배열에 추가
+     * 파일 선택 이벤트 핸들러입니다.
+     * 선택한 파일을 boardInfo.uploadAttachments 배열에 추가하고 미리보기를 설정합니다.
      * @param {Event} event - 파일 선택 이벤트 객체
+     * @returns {void}
      */
     handleFileChange(event) {
       const file = event.target.files[0];
@@ -336,14 +353,16 @@ export default {
       reader.readAsDataURL(file);
     },
     /**
-     * 첨부 파일 입력 양식을 추가하는 함수
+     * 첨부 파일 입력 양식을 추가하는 함수입니다.
+     * @returns {void}
      */
     clickAddAttachmentForm() {
       this.fileInputBoxes.push({ id: this.nextInputId++ });
     },
     /**
-     * 빈 입력 양식을 제거하는 함수
+     * 빈 입력 양식을 제거하는 함수입니다.
      * @param {number} index - 제거할 입력 양식의 인덱스
+     * @returns {void}
      */
     clickRemoveEmptyInput(index) {
       if (this.inputFiles[index]) {
@@ -366,8 +385,8 @@ export default {
       this.boardInfo.boardImages.splice(index, 1);
     },
     /**
-     * 자유 게시판 목록으로 이동하는 함수
-     * @returns {Object} - 자유 게시판 목록 페이지의 URL과 쿼리스트링
+     * 갤러리 게시판 목록으로 이동하는 함수입니다.
+     * @returns {void}
      */
     moveToGalleryBoardList() {
       boardService.replaceRouterToBoardList(
@@ -376,6 +395,11 @@ export default {
         "gallery"
       );
     },
+    /**
+     * 양식 유효성을 검사하는 비동기 함수입니다.
+     * 유효성 검사를 통과하지 못하면 알림을 표시하고 false를 반환합니다.
+     * @returns {boolean} - 양식 유효성 여부
+     */
     async validateForm() {
       if (
         !this.boardInfo ||

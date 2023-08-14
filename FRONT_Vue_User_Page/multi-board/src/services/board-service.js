@@ -243,7 +243,13 @@ const deleteFreeBoardComment = async (comment, boardId) => {
     alert(error.response.data.message);
   }
 };
-
+/**
+ * 갤러리 게시판의 편집 권한을 확인하는 함수
+ *
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise<boolean>} - 게시글 편집 권한 여부를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const hasGalleryBoardEditPermission = async (boardId) => {
   try {
     const response = await api.get(
@@ -255,7 +261,13 @@ const hasGalleryBoardEditPermission = async (boardId) => {
     return false;
   }
 };
-
+/**
+ * 문의 게시판의 편집 권한을 확인하는 함수
+ *
+ * @param {number} boardId - 게시글 ID
+ * @returns {Promise<boolean>} - 게시글 편집 권한 여부를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const hasInquiryBoardEditPermission = async (boardId) => {
   try {
     const response = await api.get(
@@ -267,7 +279,14 @@ const hasInquiryBoardEditPermission = async (boardId) => {
     return false;
   }
 };
-
+/**
+ * 문의 게시판의 비밀번호를 확인하는 함수
+ *
+ * @param {number} boardId - 게시글 ID
+ * @param {string} password - 게시글 비밀번호
+ * @returns {Promise<boolean>} - 게시글 비밀번호 일치 여부를 담은 Promise 객체
+ * @throws {Error} API 요청 중 발생한 오류
+ */
 const checkInquiryBoardPassword = async (boardId, password) => {
   try {
     const response = await api.post(
@@ -289,6 +308,7 @@ const checkInquiryBoardPassword = async (boardId, password) => {
  *
  * @param {Object} router - Vue Router 객체
  * @param {Object} route - 현재 라우트 정보
+ * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
  */
 const replaceRouterToBoardList = (router, route, boardType) => {
   let path;
@@ -314,11 +334,12 @@ const replaceRouterToBoardList = (router, route, boardType) => {
     query: route.query,
   });
 };
+
 /**
  * 게시판 종류에 따라 해당하는 API URL을 가져오는 함수
  *
  * @param {string} boardType - 게시판 종류 ('notice', 'free', 'gallery', 'inquiry' 등)
- * @returns {Promise} - 게시판 종류에 따른 API URL을 담은 Promise 객체
+ * @returns {Promise<string>} - 게시판 종류에 따른 API URL을 담은 Promise 객체
  * @throws {Error} 지원하지 않는 보드타입인 경우 발생하는 오류
  */
 const getAPIUrlByBoardType = async (boardType) => {

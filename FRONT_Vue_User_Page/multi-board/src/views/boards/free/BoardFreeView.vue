@@ -149,8 +149,9 @@ export default {
      */
     downloadAttachment,
     /**
-     * 공지사항 상세 정보를 가져오는 비동기 함수
+     * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
      * @param {number} boardId - 공지사항 게시글의 ID
+     * @returns {Promise<void>} - 공지사항 상세 정보 가져오는 비동기 작업의 Promise
      */
     async getFreeBoardDetail(boardId) {
       try {
@@ -167,7 +168,7 @@ export default {
       }
     },
     /**
-     * 게시글 수정 버튼 클릭 이벤트 핸들러 함수
+     * 게시글 수정 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {number} boardId - 수정할 게시글의 ID
      * @returns {void}
      */
@@ -178,7 +179,7 @@ export default {
       });
     },
     /**
-     * 게시글 삭제 버튼 클릭 이벤트 핸들러 함수
+     * 게시글 삭제 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {number} boardId - 삭제할 게시글의 ID
      * @returns {void}
      */
@@ -194,7 +195,7 @@ export default {
       }
     },
     /**
-     * 댓글 작성 버튼 클릭 이벤트 핸들러 함수
+     * 댓글 작성 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {string} newComment - 작성한 댓글 내용
      * @param {number} boardId - 댓글이 작성된 게시글의 ID
      * @returns {void}
@@ -204,7 +205,7 @@ export default {
       await this.getFreeBoardDetail(boardId);
     },
     /**
-     * 댓글 삭제 버튼 클릭 이벤트 핸들러 함수
+     * 댓글 삭제 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {Object} comment - 삭제할 댓글 정보 객체
      * @param {number} boardId - 댓글이 작성된 게시글의 ID
      * @returns {void}
@@ -214,7 +215,7 @@ export default {
       await this.getFreeBoardDetail(boardId);
     },
     /**
-     * 공지사항 목록 페이지로 이동하는 함수
+     * 공지사항 목록 페이지로 이동하는 함수입니다.
      * @returns {Object} - 공지사항 목록 페이지의 URL과 query
      */
     clickBackToListBtn() {

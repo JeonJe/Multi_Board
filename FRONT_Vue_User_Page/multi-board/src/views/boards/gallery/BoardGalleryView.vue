@@ -109,7 +109,7 @@ export default {
      */
     downloadAttachment,
     /**
-     * 공지사항 상세 정보를 가져오는 비동기 함수
+     * 공지사항 상세 정보를 가져오는 비동기 함수입니다.
      * @param {number} boardId - 공지사항 게시글의 ID
      */
     async getGalleryBoardDetail(boardId) {
@@ -128,7 +128,7 @@ export default {
       }
     },
     /**
-     * 게시글 수정 버튼 클릭 이벤트 핸들러 함수
+     * 게시글 수정 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {number} boardId - 수정할 게시글의 ID
      * @returns {void}
      */
@@ -139,7 +139,7 @@ export default {
       });
     },
     /**
-     * 게시글 삭제 버튼 클릭 이벤트 핸들러 함수
+     * 게시글 삭제 버튼 클릭 이벤트 핸들러 함수입니다.
      * @param {number} boardId - 삭제할 게시글의 ID
      * @returns {void}
      */
@@ -154,6 +154,10 @@ export default {
         alert("삭제가 불가합니다.");
       }
     },
+    /**
+     * 갤러리 게시판 목록 페이지로 이동하는 함수입니다.
+     * @returns {void}
+     */
     clickBackToListBtn() {
       boardService.replaceRouterToBoardList(
         this.$router,
@@ -161,6 +165,11 @@ export default {
         "gallery"
       );
     },
+    /**
+     * 이미지의 전체 URL을 생성하는 함수입니다.
+     * @param {string} thumbnailPath - 이미지 경로
+     * @returns {string} - 이미지의 전체 URL
+     */
     getImageURL(thumbnailPath) {
       return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE}/${thumbnailPath}`;
     },

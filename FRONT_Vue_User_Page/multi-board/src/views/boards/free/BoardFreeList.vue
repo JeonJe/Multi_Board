@@ -103,7 +103,7 @@ export default {
      */
     IsNewBoard,
     /**
-     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수
+     * 검색 조건을 업데이트하고 자유게시글 목록을 가져오는 함수입니다.
      * @param {Object} searchCondition - 업데이트할 검색 조건 데이터
      */
     async updateSearchCondition(searchCondition) {
@@ -111,7 +111,9 @@ export default {
       await this.getFreeBoardList();
     },
     /**
-     * 자유게시글 목록을 가져오는 비동기 함수
+     * 자유게시글 목록을 가져오는 비동기 함수입니다.
+     *
+     * @returns {Promise<void>} - 자유게시글 목록을 가져오는 비동기 작업의 Promise
      */
     async getFreeBoardList() {
       try {
@@ -133,7 +135,9 @@ export default {
       }
     },
     /**
-     * 자유 게시판 카테고리를 가져오는 함수
+     * 자유 게시판 카테고리를 가져오는 함수입니다.
+     *
+     * @returns {Promise<void>} - 카테고리를 가져오는 비동기 작업의 Promise
      */
     async getFreeBoardCategories() {
       try {
@@ -147,9 +151,10 @@ export default {
         console.log(error);
       }
     },
-
     /**
-     * 사용자 인증 상태를 확인하는 함수
+     * 사용자 인증 상태를 확인하는 함수입니다.
+     *
+     * @returns {Promise<boolean>} - 사용자 인증 상태 확인 결과를 나타내는 Promise
      */
     async checkJWTAuth() {
       try {
@@ -162,7 +167,7 @@ export default {
       }
     },
     /**
-     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수
+     * 게시글 작성 버튼 클릭 시 URL과 쿼리스트링을 반환하는 함수입니다.
      * @param {Object} searchCondition - 검색 조건 데이터
      * @returns {Object} - 게시글 작성 페이지의 URL과 쿼리스트링
      */
@@ -172,9 +177,12 @@ export default {
         query: searchCondition,
       };
     },
+
     /**
-     * 페이지네이션을 업데이트하는 함수
+     * 페이지네이션을 업데이트하는 함수입니다.
+     *
      * @param {number} page - 업데이트할 페이지 번호
+     * @returns {void}
      */
     updatePagination(page) {
       this.searchCondition.currentPage = page;
@@ -182,7 +190,8 @@ export default {
       this.getFreeBoardList();
     },
     /**
-     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수
+     * 게시글 상세 정보 페이지의 URL과 쿼리스트링을 반환하는 함수입니다.
+     *
      * @param {number} boardId - 게시글 ID
      * @returns {Object} - 게시글 상세 정보 페이지의 URL과 쿼리스트링
      */
