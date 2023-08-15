@@ -15,27 +15,43 @@ import java.util.List;
 @AllArgsConstructor
 public class BoardGalleryDTO {
 
+    /**
+     * 게시글 ID
+     */
     private int boardId;
 
-
+    /**
+     * 게시글 제목
+     */
     @NotEmpty(message = "제목은 필수 항목입니다.")
     @Size(max = 100, message = "제목은 100자 이하로 입력해야 합니다.")
     private String title;
 
+    /**
+     * 게시글 내용
+     */
     @NotEmpty(message = "내용은 필수 항목입니다.")
     @Size(max = 4000, message = "내용은 4000자 이하로 입력해야 합니다.")
     private String content;
 
-
+    /**
+     * 게시글 작성자의 사용자 ID
+     */
     private int userSeqId;
 
-
+    /**
+     * 게시글 작성일
+     */
     private Date createdAt;
 
-
+    /**
+     * 게시글 조회수
+     */
     private int visitCount;
 
-
+    /**
+     * 게시글 카테고리 값
+     */
     @NotEmpty(message = "카테고리 값은 필수 항목입니다.")
     private String categoryValue;
 
@@ -53,7 +69,6 @@ public class BoardGalleryDTO {
      * 업로드된 첨부 파일 목록
      */
     private List<ImageDTO> boardImages;
-
 
     /**
      * 업로드된 이미지 파일 목록
@@ -74,6 +89,5 @@ public class BoardGalleryDTO {
      * 게시글과 연관된 이미지 개수
      */
     private int numOfImages;
-
 
 }

@@ -12,7 +12,9 @@ import java.util.Date;
 @Builder
 
 public class ReplyDTO {
-
+    /**
+     * 답변 번호
+     */
     private int replyId;
 
     /**
@@ -35,5 +37,8 @@ public class ReplyDTO {
      */
     private int boardId;
 
+    /**
+     * 답변한 관리자 아이디
+     */
     private String adminId;
 }

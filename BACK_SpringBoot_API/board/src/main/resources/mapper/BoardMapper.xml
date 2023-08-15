@@ -315,6 +315,15 @@
           AND user_seq_id = #{seqId}
     </select>
 
+    <!-- 문의 게시글 정보를 업데이트하는 쿼리 -->
+    <update id="updateGalleryBoardInfo" parameterType="BoardGalleryDTO">
+        UPDATE gallery_board
+        SET title            = #{title},
+            content          = #{content},
+            child_code_value = #{categoryValue}
+        WHERE board_id = #{boardId}
+    </update>
+
     <!-- 갤러리 게시글 삭제하는 쿼리 -->
     <delete id="deleteGalleryBoard">
         DELETE
@@ -422,15 +431,9 @@
                 , password = #{password}
                 , is_secret = 1
             </if>
-        WHERE board_id = #{boardId}
-    </update>
-
-    <!-- 문의 게시글 정보를 업데이트하는 쿼리 -->
-    <update id="updateGalleryBoardInfo" parameterType="BoardGalleryDTO">
-        UPDATE gallery_board
-        SET title            = #{title},
-            content          = #{content},
-            child_code_value = #{categoryValue}
+            <if test="password == null">
+                , is_secret = 0
+            </if>
         WHERE board_id = #{boardId}
     </update>
 

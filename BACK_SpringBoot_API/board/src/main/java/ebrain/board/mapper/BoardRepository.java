@@ -169,6 +169,13 @@ public interface BoardRepository {
     int saveGalleryBoardInfo(BoardGalleryDTO boardDTO);
 
     /**
+     * 갤러리 게시글을 수정합니다.
+     *
+     * @param boardDTO 수정할 문의 게시글 정보 DTO
+     */
+    void updateGalleryBoardInfo(BoardGalleryDTO boardDTO);
+
+    /**
      * 검색 조건에 해당하는 갤러리 게시글 목록을 조회
      *
      * @param searchConditionDTO 검색 조건 DTO
@@ -292,13 +299,6 @@ public interface BoardRepository {
      * @param boardDTO 수정할 문의 게시글 정보 DTO
      */
     void updateInquiryBoardInfo(BoardInquiryDTO boardDTO);
-
-    /**
-     * 갤러리 게시글을 수정합니다.
-     *
-     * @param boardDTO 수정할 문의 게시글 정보 DTO
-     */
-    void updateGalleryBoardInfo(BoardGalleryDTO boardDTO);
 
     /**
      * 각 게시판 종류별 최신 문의 게시글 목록을 조회

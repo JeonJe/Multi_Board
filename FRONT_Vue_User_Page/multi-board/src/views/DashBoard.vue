@@ -317,7 +317,7 @@ export default {
       );
 
       if (response) {
-        this.$router.push(this.getBoardDetail(this.selectedBoardId));
+        this.$router.push(this.getInquiryBoardDetail(this.selectedBoardId));
       } else {
         this.passwordState = "invalidPassword";
       }

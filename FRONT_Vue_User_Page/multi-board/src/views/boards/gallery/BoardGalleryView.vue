@@ -167,11 +167,11 @@ export default {
     },
     /**
      * 이미지의 전체 URL을 생성하는 함수입니다.
-     * @param {string} thumbnailPath - 이미지 경로
+     * @param {string} imagePath - 이미지 경로
      * @returns {string} - 이미지의 전체 URL
      */
-    getImageURL(thumbnailPath) {
-      return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE}/${thumbnailPath}`;
+    getImageURL(imagePath) {
+      return `${process.env.VUE_APP_API_SER_URL}${process.env.VUE_APP_API_IMAGE}/${imagePath}`;
     },
   },
 };

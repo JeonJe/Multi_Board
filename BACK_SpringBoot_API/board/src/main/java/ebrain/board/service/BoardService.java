@@ -4,11 +4,13 @@ import ebrain.board.dto.*;
 import ebrain.board.exception.AppException;
 import ebrain.board.exception.ErrorCode;
 import ebrain.board.mapper.*;
+import ebrain.board.utils.AuthUtil;
 import ebrain.board.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,8 +51,14 @@ public class BoardService {
      */
     private final CommentRepository commentRepository;
 
+    /**
+     * 이미지 저장소 객체
+     */
     private final ImageRepository imageRepository;
 
+    /**
+     * 문의 답변 저장소 객체
+     */
     private final ReplyRepository replyRepository;
 
     /**
@@ -568,8 +576,9 @@ public class BoardService {
         if (boardDTO.getIsSecret() == 1 && boardDTO.getPassword().length() < 4) {
             throw new AppException(ErrorCode.BAD_REQUEST, "게시글 비밀번호는 4자 이상입니다.");
         }
+        String hashedPassword = AuthUtil.hashPassword(boardDTO.getPassword());
+        boardDTO.setPassword(hashedPassword);
         boardRepository.saveInquiryBoardInfo(boardDTO);
-
     }
 
     /**
@@ -594,6 +603,7 @@ public class BoardService {
         if (ObjectUtils.isEmpty(boardDTO)) {
             return null;
         }
+        boardDTO.setPassword(null);
         boardRepository.updateInquiryBoardVisitCount(boardId);
 
         List<ReplyDTO> replies = replyRepository.getRepliesByBoardId(boardId);
@@ -634,7 +644,8 @@ public class BoardService {
     public boolean checkInquiryBoardPassword(int boardId, BoardInquiryDTO boardDTO) {
         BoardInquiryDTO boardInfo = boardRepository.getInquiryBoardDetail(boardId);
 
-        if (!boardInfo.getPassword().equals(boardDTO.getPassword())) {
+        String hashedPassword = AuthUtil.hashPassword(boardDTO.getPassword());
+        if (!boardInfo.getPassword().equals(hashedPassword)) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "비밀번호가 틀렸습니다.");
         }
         return true;
@@ -653,6 +664,12 @@ public class BoardService {
         if (seqId != getUserSeqId) {
             throw new AppException(ErrorCode.INVALID_PERMISSION, "수정 권한이 없습니다.");
         }
+        String enteredPassword = boardDTO.getPassword();
+        if (!StringUtils.isEmpty(enteredPassword)){
+            String hashedPassword = AuthUtil.hashPassword(enteredPassword);
+            boardDTO.setPassword(hashedPassword);
+        }
+
         boardRepository.updateInquiryBoardInfo(boardDTO);
     }
 
