@@ -5,6 +5,10 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
 
+/**
+ * ImageRepository 인터페이스
+ * 이미지 대한 데이터베이스 액세스를 담당하는 매퍼 인터페이스입니다.
+ */
 @Mapper
 public interface ImageRepository {
     /**

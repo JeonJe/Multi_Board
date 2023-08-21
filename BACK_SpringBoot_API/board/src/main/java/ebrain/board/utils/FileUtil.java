@@ -99,7 +99,15 @@ public class FileUtil {
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
-
+    /**
+     * 주어진 {@link MultipartFile}을 업로드하고, 업로드된 파일을 지정된 경로에 저장
+     *
+     * @param file       업로드할 {@link MultipartFile} 객체
+     * @param uploadPath 파일을 업로드할 경로
+     * @return 업로드된 {@link File} 객체
+     * @throws Exception 업로드 과정 중 예외가 발생할 경우 던져집니다.
+     * @throws IllegalArgumentException 이미지 크기가 제한을 초과하거나 확장자가 허용되지 않는 경우 던져집니다.
+     */
     public static File uploadImage(MultipartFile file, String uploadPath) throws Exception {
         String originalFileName = file.getOriginalFilename();
         String baseName = FilenameUtils.getBaseName(originalFileName);

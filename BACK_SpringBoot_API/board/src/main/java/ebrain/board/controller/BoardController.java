@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 게시판 컨트롤러입니다.
+ */
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:8082")

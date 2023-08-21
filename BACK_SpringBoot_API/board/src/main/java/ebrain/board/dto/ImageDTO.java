@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 이미지 정보를 담는 DTO
+ */
 @Data
 @Builder
 @AllArgsConstructor

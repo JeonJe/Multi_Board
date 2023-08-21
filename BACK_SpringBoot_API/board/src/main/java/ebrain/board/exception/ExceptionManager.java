@@ -66,7 +66,12 @@ public class ExceptionManager {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
-
+    /**
+     * SQLException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
+     *
+     * @param e SQLException 예외 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(SQLException.class)
     public ResponseEntity<APIResponse> handleSQLException(SQLException e) {
         String errorMessage = "서버 오류가 발생하였습니다.(SQL Exception)";
@@ -86,7 +91,12 @@ public class ExceptionManager {
         APIResponse apiResponse = ResponseBuilder.ErrorWithData("에러가 발생하였습니다", e.getMessage());
         return ResponseEntity.status(e.getErrorCode().getHttpStatus()).body(apiResponse);
     }
-
+    /**
+     * IllegalArgumentException이 발생했을 때 호출되어 예외 메시지를 반환합니다.
+     *
+     * @param e IllegalArgumentException 예외 객체
+     * @return ResponseEntity 객체
+     */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<APIResponse> handleIllegalArgumentException(IllegalArgumentException e) {
 

@@ -10,6 +10,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 갤러리 게시글 정보를 담는 DTO
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

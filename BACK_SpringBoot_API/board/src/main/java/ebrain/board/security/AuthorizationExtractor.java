@@ -11,6 +11,10 @@ import java.util.List;
  */
 @Component
 public class AuthorizationExtractor {
+    /**
+     * HTTP 요청 헤더에서 인증 토큰을 나타내는 필드 이름을 나타내는 상수입니다.
+     * 이 필드는 주로 "Authorization" 헤더에 인증 토큰을 포함하여 전송됩니다.
+     */
     public static final String AUTHORIZATION = "Authorization";
 
     /**

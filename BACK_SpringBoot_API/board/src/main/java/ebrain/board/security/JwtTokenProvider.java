@@ -34,7 +34,12 @@ public class JwtTokenProvider {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
         this.validityInMilliseconds = validityInMilliseconds;
     }
-
+    /**
+     * 주어진 사용자 ID를 기반으로 JWT 토큰을 생성
+     *
+     * @param seqId 사용자의 고유 ID
+     * @return 생성된 JWT 토큰 문자열
+     */
     public String createToken(int seqId) {
         String subject = String.valueOf(seqId);
         Claims claims = Jwts.claims().setSubject(subject);

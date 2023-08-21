@@ -41,10 +41,12 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * 사용자 회원 가입을 처리합니다.
+     * 주어진 사용자 회원가입 정보를 기반으로 회원가입을 처리하고 JWT 토큰을 발행하는 메서드
      *
-     * @param userSignupDTO 사용자 회원 가입 정보를 담고 있는 DTO입니다.
-     * @return 회원 가입 처리 결과를 담은 APIResponse를 포함하는 ResponseEntity입니다.
+     * @param userSignupDTO 사용자 회원가입 정보를 담은 {@link UserSignupDTO} 객체 (요청 바디)
+     * @return 회원가입 결과와 사용자 정보, JWT 토큰을 담은 {@link ResponseEntity<APIResponse>} 객체.
+     *         회원가입이 성공한 경우 사용자 정보와 JWT 토큰을 함께 반환하며, 실패한 경우 에러 상태와 메시지를 반환합니다.
+     * @throws AppException 회원가입 중 예외가 발생할 수 있습니다.
      */
     @PostMapping("/api/auth/signup")
     public ResponseEntity<APIResponse> signupUser(@Valid @RequestBody UserSignupDTO userSignupDTO) {
@@ -65,11 +67,12 @@ public class UserController {
     }
 
     /**
-     * 특정 사용자 ID가 중복되는지 확인합니다.
+     * 주어진 사용자 ID의 중복 여부를 확인하고, 사용 가능한지 검사
      *
-     * @param userId 사용자 ID
-     * @return 중복 여부에 따른 API 응답 객체 (ResponseEntity<APIResponse>)
-     * @throws AppException 중복된 ID일 경우 발생하는 예외 (ErrorCode.DUPLICATE_USERID)
+     * @param userId 사용자 ID (경로 변수)
+     * @return 사용자 ID의 중복 여부 확인 결과를 담은 {@link ResponseEntity<APIResponse>} 객체.
+     *         중복되지 않은 경우에는 성공 상태를 반환하고, 중복된 경우에는 에러 상태와 해당 아이디의 중복 메시지를 반환합니다.
+     * @throws AppException 사용자 ID가 이미 가입된 경우 예외가 발생할 수 있습니다.
      */
     @GetMapping("/api/auth/check/{userId}")
     public ResponseEntity<APIResponse>
@@ -88,10 +91,12 @@ public class UserController {
     }
 
     /**
-     * 사용자 로그인을 처리합니다.
+     * 주어진 사용자 로그인 정보를 기반으로 로그인을 시도하는 메서드
      *
-     * @param userLoginDTO 사용자 로그인 정보
-     * @return ResponseEntity<APIResponse> 아이디 패스워드 확인에 따른 API 응답
+     * @param userLoginDTO 사용자 로그인 정보를 담은 {@link UserLoginDTO} 객체 (요청 바디)
+     * @return 로그인 결과를 담은 {@link ResponseEntity<APIResponse>} 객체.
+     *         로그인이 성공한 경우 사용자 정보와 JWT 토큰을 함께 반환하며, 실패한 경우 에러 상태와 메시지를 반환합니다.
+     * @throws AppException 아이디 또는 비밀번호가 틀린 경우 예외가 발생할 수 있습니다.
      */
     @PostMapping("/api/auth/login")
     public ResponseEntity<APIResponse> loginUser(@RequestBody UserLoginDTO userLoginDTO) {
@@ -123,10 +128,12 @@ public class UserController {
     }
 
     /**
-     * 유효한 사용자인지 확인하고 사용자 이름을 반환합니다.
+     * 현재 로그인된 사용자의 JWT 토큰 유효성을 확인하고, 유효한 사용자임을 검증하는 메서드
      *
-     * @param request HttpServletRequest 객체
-     * @return API 응답 객체
+     * @param request {@link HttpServletRequest} 객체를 통해 전달받은 요청
+     * @return JWT 토큰의 유효성 확인 결과와 사용자 이름을 담은 {@link ResponseEntity<APIResponse>} 객체.
+     *         유효한 사용자인 경우 성공 상태와 사용자 이름을 반환하며, 유효하지 않은 경우 에러 상태와 메시지를 반환합니다.
+     * @throws AppException JWT 토큰이 유효하지 않거나 해당 사용자가 존재하지 않는 경우 예외가 발생할 수 있습니다.
      */
     @GetMapping("/api/auth/check")
     public ResponseEntity<APIResponse> checkUserToken(HttpServletRequest request) {
@@ -143,10 +150,12 @@ public class UserController {
     }
 
     /**
-     * JWT 토큰 인증 상태를 확인합니다.
+     * 현재 사용자의 JWT 토큰 존재 여부와 유효성을 확인하는 메서드
      *
-     * @param request HttpServletRequest 객체
-     * @return API 응답 객체
+     * @param request {@link HttpServletRequest} 객체를 통해 전달받은 요청
+     * @return JWT 토큰 존재 여부와 유효성 확인 결과를 담은 {@link ResponseEntity<APIResponse>} 객체.
+     *         JWT 토큰이 있는 경우에는 성공 상태와 유효 여부를 반환하며, 토큰이 없는 경우에는 에러 상태와 메시지를 반환합니다.
+     * @throws AppException JWT 토큰이 유효하지 않거나 해당 사용자가 존재하지 않는 경우 예외가 발생할 수 있습니다.
      */
     @GetMapping("/api/auth/status")
     public ResponseEntity<APIResponse> getAuthenticationStatus(HttpServletRequest request) {
