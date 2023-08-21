@@ -69,6 +69,5 @@ tasks.named('test') {
 
 
 javadoc {
-    source = sourceSets.main.java.srcDcdirs
     options.encoding = 'UTF-8'
 }
