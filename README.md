@@ -1,43 +1,61 @@
-# 멀티 게시판
+# 멀티 게시판 (23.06.25 ~ 23.08.04, 1인)
 
 ## 서비스 소개 & 주요 기능
 
-회원가입, 로그인과 4가지 게시판(공지,자유,갤러리,문의)서비스를 제공합니다.
+회원가입, 로그인, 4가지 게시판(공지,자유,갤러리,문의) 서비스를 제공하는 프로젝트입니다.
 
-1. 회원가입 & 로그인
-1. 공지사항
-2. 자유게시판
-3. 갤러리게시판
-4. 공지게시판
-<!-- - **게시판 목록**
-    - 등록일, 카테고리, 검색어 조건을 이용한 게시글 필터링
-    - 페이지네이션
-    - 페이지 이동 후 다시 돌아올 때 기존 검색 조건 유지
-- 게시글 보기
-    - 댓글 출력, 첨부파일 존재 시 다운로드 제공
-    - 수정 또는 삭제 시 비밀번호 검증
-- 게시글 등록
-    - 입력조건에 따른 유효성 검증
-    - 첨부파일 등록
-- 게시판 수정
-    - 첨부파일 추가 폼은 동적으로 생성 (최대 3개)
-    - 첨부파일 변경 시 변경된 첨부파일만 적용
-    - 비밀번호 검증 실패 시 수정 미 반영
-- ERD
-    ![SCR-20230622-jjqx](https://github.com/JeonJe/Board/assets/43032391/ad7e2584-9704-41e4-8eed-935dd51579a9) -->
+각 서비스 특징은 아래와 같습니다.
+- 회원가입  & 로그인
+  - JWT 인증방식 사용
+- 공지사항 
+  - 알림글 설정 
+- 자유게시판 
+  - 첨부파일 업로드/다운로드
+  - 댓글 작성/삭제
+- 갤러리게시판
+  - 썸네일 사용 
+  - 이미지 네비게이션
+- 문의사항 게시판
+  - 문의사항 비밀글 처리
+  - 관리자 답변 여부에따른 미답변/답변완료 표시
 
-### 개발일지
-[Github.io 블로그](https://jeonje.github.io/multi_board_erd.html) 
+## 개발일지
+- [멀티 게시판 개발일지 블로그](https://jeonje.github.io/multi_board_erd.html) 
     
-## 개발 기간 & 아키텍쳐
-### 개발기간
-2023.06.25 ~ 2023.08.04, 1인
+## 아키텍쳐
 
+
+![image](https://github.com/JeonJe/Multi_Board/assets/43032391/02fee8d6-0d47-40c4-920b-18e30e748487)
+- Front-End
+   - @vue/cli 5.0.8(사용자)
+- Back-End
+  - SpringBoot v3.1.0, JDK17, Mybatis3
+- Database
+  - MariaDB 10.11.3
+
+--- 
 ### ERD
+- [ERD Cloud](https://www.erdcloud.com/d/Em46o5hy4evaZy4oN)
 
-### API명세서(gitbook)
+![image](https://github.com/spring-projects/spring-boot/assets/43032391/bfa13e7c-82ed-4586-aa2c-acefcc9f4ba0)
 
-### Project Tree(Directory 명세서)
+
+
+--- 
+### API명세서(Gitbook)
+<details>
+<summary>API명세서(Gitbook) 접기/펼치기</summary>
+<div markdown="1">
+
+- [Gitbook API 명세서 링크](https://premsie.gitbook.io/multi-board/)
+
+![image](https://github.com/spring-projects/spring-boot/assets/43032391/2ab3dc86-d5f2-44a4-97b2-05c09c2e4151)
+
+</div>
+</details>
+
+---
+### Directory Tree
 <details>
 <summary>Project Tree 접기/펼치기</summary>
 <div markdown="1">
@@ -185,22 +203,15 @@
 </div>
 </details>
 
-### javadoc
 
-<details>
-<summary>javadoc 접기/펼치기</summary>
-<div markdown="1">
-
-
-
-</div>
-</details>
+## 느낀 점
+ 앞선 [자바 스터디](https://github.com/JeonJe/Free_Board/tree/main)의 피드백을 떠올리며 비록 개인 프로젝트이지만 개발 코드는 협업을 한다는 생각을 갖고 `설계부터 폴더 구조, 메소드명, 주석까지` 최대한 신경써서 작성하려고 하였습니다. 앞으로도 많은 프로젝트를 하게 될텐데 기본적으로 지켜야하는 부분들을 놓치지 않고 코드의 품질을 유지할 수 있도록 신경써야 겠습니다.
+  
+  개인 복습 겸, 게시판을 구현하는 다른 예비 개발자분들에게 조금이 되고자[블로그](https://jeonje.github.io/multi_board_erd.html) 에 구현 과정, 어려웠던 점, 코드 리팩토링 등을 최대한 자세히 작성하려고 하다보니 원래 예정했던 개발 일정을 조금 넘어버렸습니다. 
+이제 1차 목표였던 게시판 기능 구현은 완료하였으니 미비점을 보완해 나가면서 서비스 배포와 동시성, 부하 테스트 등을 새로운 내용을 공부하면서 적용해 나갈 예정입니다.
+    
 
 
-## 어려웠던 점
-   
-## 배운점
 
 
-## 결과 화면
 
