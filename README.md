@@ -43,16 +43,11 @@
 
 --- 
 ### API명세서(Gitbook)
-<details>
-<summary>API명세서(Gitbook) 접기/펼치기</summary>
-<div markdown="1">
 
 - [Gitbook API 명세서 링크](https://premsie.gitbook.io/multi-board/)
 
 ![image](https://github.com/spring-projects/spring-boot/assets/43032391/2ab3dc86-d5f2-44a4-97b2-05c09c2e4151)
 
-</div>
-</details>
 
 ---
 
